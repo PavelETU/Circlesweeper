@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Circlesweeper</string>
+    <string name="about_game">Circlesweeper - вариация классической игры сапер.\n\n
+        Для того чтобы выиграть необходимо взорвать все шарики одинакового цвета и
+        отметить все бомбы.\n\n
+        Для отметки бомбы нажмите на иконку с бомбой в верхнем правом углу,
+        затем на шарик с бомбой. Отмеченный шарики не могут быть взорваны или перемещены.\n\n
+        Для большего количества очков необходимо взорвать как можно больше шариков одновременно,
+        оставшиеся без пары шарики не считаются.\n\n
+        Не забудьте оценить приложения в Google Play!\n
+        Удачи в уничтожении шариков!</string>
+    <string name="back_to_menu">В предыдущее меню</string>
+    <string name="table_of_best_score">Таблица лучших результатов</string>
+    <string name="level">Уровень</string>
+    <string name="date_and_time">Дата и время</string>
+    <string name="score">Очки</string>
+    <string name="chose_mission">Выбирите уровень</string>
+    <string name="continue_str">Продолжить</string>
+    <string name="size_of_the_field">Размер поля</string>
+    <string name="number_of_mines">Количество бомб</string>
+    <string name="mines">Бомбы</string>
+    <string name="play">Играть</string>
+    <string name="how_to_play">Правила</string>
+    <string name="exit">Выход</string>
+    <string name="game_over">Игра закончена</string>
+    <string name="bad_outcome_out">К сожелению Вы взорвали мину.</string>
+    <string name="try_again">Попробывать снова</string>
+    <string name="winner">Вы выиграли</string>
+    <string name="congratulation">Поздравляем!</string>
+    <string name="valid_value_for_mines_1">Диапазон значений 0&#8230;4</string>
+    <string name="valid_value_for_mines_2">Диапазон значений 0&#8230;8</string>
+    <string name="valid_value_for_mines_3">Диапазон значений 0&#8230;20</string>
+</resources>

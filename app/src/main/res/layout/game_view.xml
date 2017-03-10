@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/background_level_land"
+        android:id="@+id/Background_image"
+        android:scaleType="fitXY"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/zero_number"
+        android:id="@+id/mine_out"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/checking_btn"
+        android:layout_alignRight="@+id/checking_btn"
+        android:layout_marginEnd="19dp"
+        android:layout_marginRight="19dp"
+        android:layout_toEndOf="@+id/game_image"
+        android:layout_toRightOf="@+id/game_image"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_image"
+        android:scaleType="fitXY"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toStartOf="@+id/checking_btn"
+        android:layout_toLeftOf="@+id/checking_btn"/>
+
+    <ImageButton
+        android:layout_width="65dp"
+        android:layout_height="70dp"
+        android:id="@+id/checking_btn"
+        android:scaleType="fitXY"
+        android:src="@drawable/bomb_check"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:onClick="checking_on_off"
+        android:background="@null" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/zero_number"
+        android:id="@+id/score_out"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/mine_out"
+        android:layout_alignLeft="@+id/mine_out"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/mines"
+        android:id="@+id/text_about_mines"
+        android:layout_above="@+id/mine_out"
+        android:layout_toEndOf="@+id/game_image"
+        android:layout_toRightOf="@+id/game_image"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/score"
+        android:id="@+id/text_about_score"
+        android:layout_above="@+id/score_out"
+        android:layout_alignStart="@+id/score_out"
+        android:layout_alignLeft="@+id/score_out"/>
+
+    <ImageButton
+        android:onClick="next_repeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/next_repeat_btn"
+        android:scaleType="fitXY"
+        android:visibility="invisible"
+        android:layout_alignBottom="@+id/checking_btn"
+        android:layout_toRightOf="@+id/game_image"
+        android:layout_toEndOf="@+id/game_image" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/smile_out"
+        android:visibility="invisible"
+        android:layout_alignLeft="@+id/next_repeat_btn"
+        android:layout_alignStart="@+id/next_repeat_btn" />
+
+</RelativeLayout>

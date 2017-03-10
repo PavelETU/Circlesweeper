@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">Circlesweeper</string>
+    <string name="about_game">This is the variation of the classic game Minesweeper.\n\n
+        In order for you to win you have to bang all circles with the same color
+        as well as mark all circles with mine.\n\n
+        For marking bomb click on the bomb sign in the upper right corner, then on
+        the circle with mine itself. Marked circles can\'t be shifted or banged.\n\n
+        For the best score try to bang as many circles as possible simultaneously,
+        and don\'t worry if you\'ve got spare circles - they don\'t count.\n\n
+        Don\'t forget to rate this app and enjoy the game.\n
+        Good luck with your circles handling!</string>
+    <string name="back_to_menu">Back to menu</string>
+    <string name="table_of_best_score">Table of the best scores</string>
+    <string name="level">Level</string>
+    <string name="date_and_time">Date and time</string>
+    <string name="score">Score</string>
+    <string name="dash" translatable="false">-</string>
+    <string name="first_number" translatable="false">1</string>
+    <string name="second_number" translatable="false">2</string>
+    <string name="third_number" translatable="false">3</string>
+    <string name="fourth_number" translatable="false">4</string>
+    <string name="fifth_number" translatable="false">5</string>
+    <string name="zero_number" translatable="false">0</string>
+    <string name="chose_mission">Choose a mission</string>
+    <string name="continue_str">Continue</string>
+    <string name="size_of_the_field">Size of the field</string>
+    <string name="number_of_mines">Number of mines</string>
+    <string name="three_by_fourth" translatable="false">3x4</string>
+    <string name="four_by_six" translatable="false">4x6</string>
+    <string name="six_by_ten" translatable="false">6x10</string>
+    <string name="mines">Mines</string>
+    <string name="play">Play</string>
+    <string name="how_to_play">How to play</string>
+    <string name="exit">Exit</string>
+    <string name="game_over">Game over</string>
+    <string name="bad_outcome_out">Unfortunately there was a mine. Better luck next time!</string>
+    <string name="try_again">Try again</string>
+    <string name="winner">You\'re the winner</string>
+    <string name="congratulation">Congratulation!</string>
+    <string name="valid_value_for_mines_1">Valid value is 0&#8230;4</string>
+    <string name="valid_value_for_mines_2">Valid value is 0&#8230;8</string>
+    <string name="valid_value_for_mines_3">Valid value is 0&#8230;20</string>
 </resources>

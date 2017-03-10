@@ -1,7 +1,7 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -15,21 +15,28 @@ public class my_dialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String out, positive_btn;
+        final String out, positive_btn, title;
         if (getTag().equals("game_over")) {
-            out = "Unfortunately there was a mine. Game over!";
-            positive_btn = "Try again";
+            title = getString(R.string.game_over);
+            out = getString(R.string.bad_outcome_out);
+            positive_btn = getString(R.string.try_again);
         } else {
-            out = "Congratulation! You win!";
-            positive_btn = "Continue";
+            title = getString(R.string.winner);
+            out = getString(R.string.congratulation);
+            positive_btn = getString(R.string.continue_str);
         }
         builder.setMessage(out)
+                .setTitle(title)
                 .setPositiveButton(positive_btn, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ((game)getActivity()).set_circles(24);
+                        if (!getTag().equals("game_over")) {
+                            ((game) getActivity()).set_new_level();
+                        } else {
+                            while (!((game) getActivity()).set_circles());
+                        }
                     }
                 })
-                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.back_to_menu), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                         getActivity().onBackPressed();
