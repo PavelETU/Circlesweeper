@@ -1,13 +1,12 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.WindowManager;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -15,45 +14,53 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        final ImageButton record_btn = (ImageButton) findViewById(R.id.record_btn);
-        final ImageButton play_btn = (ImageButton) findViewById(R.id.play_btn);
-        final ImageButton sound_btn = (ImageButton) findViewById(R.id.sound_btn);
-        final ImageButton help_btn = (ImageButton) findViewById(R.id.help_btn);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int size_of_side = (metrics.widthPixels > metrics.heightPixels) ?
-                    metrics.heightPixels/5: metrics.widthPixels/5;
-        //Bitmap button = Bitmap.createBitmap(size_of_side, size_of_side, Bitmap.Config.ARGB_8888);
-        Bitmap play_bmp = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(getResources(),R.drawable.play),
-                size_of_side, size_of_side, false);
-        Bitmap help_bmp = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(getResources(),R.drawable.help),
-                size_of_side, size_of_side, false);
-        Bitmap sound_bmp = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(getResources(),R.drawable.sound),
-                size_of_side, size_of_side, false);
-        Bitmap crown = Bitmap.createScaledBitmap(
-                            BitmapFactory.decodeResource(getResources(),R.drawable.crown),
-                                            size_of_side, size_of_side, false);
-        play_btn.setImageBitmap(play_bmp);
-        sound_btn.setImageBitmap(sound_bmp);
-        help_btn.setImageBitmap(help_bmp);
-        record_btn.setImageBitmap(crown);
-        //record_btn.setBackground(null);
+        enterFullScreenMode();
+        setClickListeners();
     }
 
-    public void to_choose_level(View view) {
+    private void enterFullScreenMode() {
+        if (sdkOlderWhenKitKat()) {
+            setFullscreenFlag();
+        } else {
+            enterImmersiveSticky();
+        }
+    }
+
+    private void setClickListeners() {
+        findViewById(R.id.play_btn).setOnClickListener(v -> goToChooseLevelActivity());
+        findViewById(R.id.score_btn).setOnClickListener(v -> goToBestScoreActivity());
+        findViewById(R.id.how_to_play_btn).setOnClickListener(v -> goToHowToHowToPlayActivity());
+    }
+
+    public void goToChooseLevelActivity() {
         Intent intent = new Intent(this, ChooseLevelActivity.class);
         startActivity(intent);
     }
-    public void about_game(View view) {
-        Intent intent = new Intent(this, AboutGameActivity.class);
+
+    public void goToBestScoreActivity() {
+        Intent intent = new Intent(this, BestScoreActivity.class);
         startActivity(intent);
     }
 
-    public void on_record(View view) {
-        Intent intent = new Intent(this, BestScoreActivity.class);
+    public void goToHowToHowToPlayActivity() {
+        Intent intent = new Intent(this, HowToPlayActivity.class);
         startActivity(intent);
+    }
+
+    private boolean sdkOlderWhenKitKat() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT;
+    }
+
+    private void setFullscreenFlag() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private void enterImmersiveSticky() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 }
