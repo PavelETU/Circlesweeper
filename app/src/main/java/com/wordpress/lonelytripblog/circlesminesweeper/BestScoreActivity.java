@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-public class best_score extends AppCompatActivity {
+public class BestScoreActivity extends AppCompatActivity {
     private ImageView back_img;
     private TextView[] date_time = new TextView[5];
     private TextView[] score = new TextView[5];

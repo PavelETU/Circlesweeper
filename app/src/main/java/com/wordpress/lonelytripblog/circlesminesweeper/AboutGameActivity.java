@@ -7,13 +7,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class about_the_game extends AppCompatActivity {
+public class AboutGameActivity extends AppCompatActivity {
     private ImageView back_img;
     private TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.about_the_game_view);
+        setContentView(R.layout.activity_about_game);
         textView = (TextView) findViewById(R.id.about_game_txt);
         back_img = (ImageView) findViewById(R.id.Background_image);
         if (getResources().getConfiguration().orientation ==  2) {

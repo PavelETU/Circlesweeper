@@ -14,18 +14,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-public class choose_level extends AppCompatActivity {
+public class ChooseLevelActivity extends AppCompatActivity {
     private ImageButton[] level = new ImageButton[6];
     private ImageView back_img;
     private ImageButton continue_btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.choose_level_view);
+        setContentView(R.layout.activity_choose_level);
         level[0] = (ImageButton) findViewById(R.id.first);
         level[1] = (ImageButton) findViewById(R.id.second);
         level[2] = (ImageButton) findViewById(R.id.third);
@@ -127,44 +126,44 @@ public class choose_level extends AppCompatActivity {
         }
     }
     public void btn_1(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 1);
         startActivity(intent);
     }
     public void btn_2(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 2);
         startActivity(intent);
     }
     public void btn_3(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 3);
         startActivity(intent);
     }
     public void btn_4(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 4);
         startActivity(intent);
     }
     public void btn_5(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 5);
         startActivity(intent);
     }
     public void btn_6(View view) {
-        DialogFragment choose_dialog = new custom_level_dialog();
+        DialogFragment choose_dialog = new CustomLevelDialogFragment();
         //choose_dialog.setCancelable(false);
         choose_dialog.show(getSupportFragmentManager(), "choose");
     }
     public void set_custom(int field_size, int number_of_mines) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 6);
         intent.putExtra("field_size", field_size);
         intent.putExtra("number_of_mines", number_of_mines);
         startActivity(intent);
     }
     public void continue_game(View view) {
-        Intent intent = new Intent(this, game.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", -1);
         startActivity(intent);
     }

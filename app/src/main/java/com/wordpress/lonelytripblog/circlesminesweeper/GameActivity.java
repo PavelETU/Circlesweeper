@@ -18,15 +18,10 @@ import android.os.Bundle;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,13 +30,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class game extends AppCompatActivity implements View.OnTouchListener {
+public class GameActivity extends AppCompatActivity implements View.OnTouchListener {
     private ImageView game_image;
     private TextView out_score;
     private TextView out_mine;
@@ -76,7 +69,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
     private boolean combo = false;
     private boolean game_win_in_checking = false;
     private boolean game_over_in_checking = false;
-    private InterstitialAd my_ads;
 
 
     public void next_repeat(View view) {
@@ -88,11 +80,7 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         }
         checking_btn.setVisibility(View.VISIBLE);
         out_mine.setVisibility(View.VISIBLE);
-        //out_score.setVisibility(View.VISIBLE);
-        //title_score.setVisibility(View.VISIBLE);
         title_mine.setVisibility(View.VISIBLE);
-        //next_repeat_btn.setText("");
-        //smile_out.setImageResource(R.drawable.smile_lost);
         next_repeat_btn.setVisibility(View.INVISIBLE);
         smile_out.setVisibility(View.INVISIBLE);
     }
@@ -126,7 +114,7 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game_view);
+        setContentView(R.layout.activity_game);
         game_image = (ImageView) findViewById(R.id.game_image);
         out_mine = (TextView) findViewById(R.id.mine_out);
         out_score = (TextView) findViewById(R.id.score_out);
@@ -135,7 +123,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         next_repeat_btn = (ImageButton) findViewById(R.id.next_repeat_btn);
         title_mine = (TextView) findViewById(R.id.text_about_mines);
         title_score = (TextView) findViewById(R.id.text_about_score);
-        //checking_btn.setBackground(null);
         game_image.setOnTouchListener(this);
         my_paint = new Paint();
         my_paint.setTextAlign(Paint.Align.CENTER);
@@ -226,20 +213,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         orientation = getResources().getConfiguration().orientation;
         out_mine.setText( String.format(Locale.US, "%d", score_of_mines) );
         out_score.setText( String.format(Locale.US, "%d", score) );
-        my_ads = new InterstitialAd(this);
-        my_ads.setAdUnitId("ca-app-pub-7738095997745719/7321128783");
-        my_ads.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                AdRequest request = new AdRequest.Builder()
-                        .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                        .build();
-                my_ads.loadAd(request);
-            }
-        });
-        //game_image.Draw
-        //set_circles(24);
     }
     public void recreate_circles(ArrayList<Circle> old_circles, int[][] old_position) {
         int circles_in_short_side, circles_in_long_side;
@@ -305,7 +278,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                 current_row ++;
             }
             if (current_row >= size_row) {
-            //if ( (current_y + radius) >  game_image.getHeight()) {
                 current_y = radius + margin_height;
                 current_x += radius*2;
                 current_col ++;
@@ -324,7 +296,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
             circles.get(circles.size()-1).mines_near = tmp_circle.mines_near;
             position[current_row][current_col] = circles.size();
         }
-        //game_over_flag = false;
         bang = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bang),
                 2*radius, 2*radius, false);
         bomb_pict = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bomb),
@@ -335,14 +306,8 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         checking_btn.setVisibility(View.INVISIBLE);
         out_mine.setVisibility(View.INVISIBLE);
         title_mine.setVisibility(View.INVISIBLE);
-        //Bitmap play_bmp = Bitmap.createScaledBitmap(
-        //        BitmapFactory.decodeResource(getResources(),R.drawable.play),
-        //        checking_btn.getMeasuredWidth(), next_repeat_btn.getMeasuredWidth(), false);
         next_repeat_btn.setImageResource(R.drawable.play);
-        //next_repeat_btn.setImageBitmap(play_bmp);
         last_game_won = false;
-        //next_repeat_btn.set
-                //setText(getString(R.string.try_again))
         smile_out.setImageResource(R.drawable.smile_lost);
         next_repeat_btn.setVisibility(View.VISIBLE);
         smile_out.setVisibility(View.VISIBLE);
@@ -350,23 +315,8 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
             if (circle.alive) circle.alive = false;
         }
         redraw_game();
-        //DialogFragment newDialog = new my_dialog();
-        //newDialog.setCancelable(false);
-        //newDialog.show(getSupportFragmentManager(), "game_over");
     }
     public void game_win() {
-        if ((level != 1) && (!my_ads.isLoaded()))  {
-            Handler handler = new Handler();
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    AdRequest request = new AdRequest.Builder()
-                            .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                            .build();
-                    my_ads.loadAd(request);
-                }
-            });
-        }
         SharedPreferences sharedPreferences = getSharedPreferences("levels", MODE_PRIVATE);
         int opened_levels = sharedPreferences.getInt("opened_levels", 1);
         if (opened_levels < (level+1)) {
@@ -445,15 +395,9 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         }
         checking_btn.setVisibility(View.INVISIBLE);
         out_mine.setVisibility(View.INVISIBLE);
-        //out_score.setVisibility(View.INVISIBLE);
-        //title_score.setVisibility(View.INVISIBLE);
         title_mine.setVisibility(View.INVISIBLE);
-        //Bitmap play_bmp = Bitmap.createScaledBitmap(
-        //        BitmapFactory.decodeResource(getResources(),R.drawable.play),
-        //        radius, radius, false);
         next_repeat_btn.setImageResource(R.drawable.play);
         last_game_won = true;
-        //next_repeat_btn.setText(getString(R.string.continue_str));
         smile_out.setImageResource(R.drawable.smile_win);
         next_repeat_btn.setVisibility(View.VISIBLE);
         smile_out.setVisibility(View.VISIBLE);
@@ -461,9 +405,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
             if (circle.alive) circle.alive = false;
         }
         redraw_game();
-        //DialogFragment newDialog = new my_dialog();
-        //newDialog.setCancelable(false);
-        //newDialog.show(getSupportFragmentManager(), "game_win");
     }
     public void set_level() {
         switch (level) {
@@ -554,15 +495,7 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                     taken_circle = circle;
                     if (taken_circle.with_mine) {
                         game_over_flag = true;
-                        //redraw_game();
                         game_over();
-                        /*Handler handler_end = new Handler();
-                        handler_end.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                game_over();
-                            }
-                        }, 1000);*/
                         return true;
                     }
                     if (taken_circle.alive) {
@@ -634,7 +567,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                                 taken_circle = null;
                                 game_over_flag = true;
                                 game_over();
-                                //redraw_game();
                                 return true;
                             }
                             int new_index_for_taken = circles.indexOf(circle);
@@ -643,14 +575,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                                     (circles.get(old_index_for_taken).with_mine)  ) {
                                 game_over_flag = true;
                                 game_over();
-                                /*redraw_game();
-                                Handler handler_end = new Handler();
-                                handler_end.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        game_over();
-                                    }
-                                }, 1000);*/
                             }
                             circles.set(new_index_for_taken, taken_circle); // Swapping circles
                             circles.set(old_index_for_taken, circle);
@@ -663,7 +587,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                             tmp = circle.y;
                             circle.y = prime_y;
                             prime_y = tmp;
-                            //position[prime_row][prime_col] = new_index_for_taken+1;
                             boolean something_deleted = false;
                             if (check_out(prime_row, prime_col) ) {
                                 taken_circle.x = prime_x;
@@ -674,7 +597,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                             }
                             prime_row = (prime_y - margin_height - radius) / (2 * radius);
                             prime_col = (prime_x - margin_width - radius) / (2 * radius);
-                            //position[prime_row][prime_col] = old_index_for_taken+1;
                             if (check_out(prime_row, prime_col) ) {
                                 taken_circle.x = prime_x;
                                 taken_circle.y = prime_y;
@@ -777,15 +699,7 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                         circles.get(position[row][col]-1).color) {
                     if (circles.get(position[row + 1][col] - 1).with_mine) {
                         game_over_flag = true;
-                        //redraw_game();
                         game_over_in_checking = true;
-                        /*Handler handler_end = new Handler();
-                        handler_end.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                game_over();
-                            }
-                        }, 1000);*/
                         return false;
                     }
                     has_to_be_deleted = true;
@@ -811,14 +725,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                     if (circles.get(position[row][col - 1] - 1).with_mine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
-                        /*redraw_game();
-                        Handler handler_end = new Handler();
-                        handler_end.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                game_over();
-                            }
-                        }, 1000);*/
                         return false;
                     }
                     has_to_be_deleted = true;
@@ -844,14 +750,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                     if (circles.get(position[row][col + 1] - 1).with_mine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
-                        /*redraw_game();
-                        Handler handler_end = new Handler();
-                        handler_end.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                game_over();
-                            }
-                        }, 1000);*/
                         return false;
                     }
                     has_to_be_deleted = true;
@@ -882,8 +780,6 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
                     game_win_in_checking = true;
                 }
             }
-            //circles.get(position[row][col]-1).x = prime_x;
-            //circles.get(position[row][col]-1).y = prime_y;
             return true;
         }
         return false;
@@ -1404,18 +1300,15 @@ public class game extends AppCompatActivity implements View.OnTouchListener {
         game_image.setImageBitmap(out);
     }
     public void set_new_level() {
-        if (my_ads.isLoaded()) {
-                my_ads.show();
-        }
         if (level < 6) {
             level++;
             set_level();
             while (!set_circles());
         }
         if (level == 6) {
-            DialogFragment choose_dialog = new custom_level_dialog();
+            DialogFragment choose_dialog = new CustomLevelDialogFragment();
             choose_dialog.setCancelable(false);
-            choose_dialog.show(getSupportFragmentManager(), "game");
+            choose_dialog.show(getSupportFragmentManager(), "GameActivity");
         }
     }
     public void set_custom(int field_size, int number_of_mines) {

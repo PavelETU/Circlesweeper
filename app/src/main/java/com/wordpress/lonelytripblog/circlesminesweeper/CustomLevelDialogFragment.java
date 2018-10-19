@@ -23,13 +23,13 @@ import java.util.Locale;
 /**
  * Created by Павел on 13.11.2016.
  */
-public class custom_level_dialog extends DialogFragment {
+public class CustomLevelDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View dialog_view =  layoutInflater.inflate(R.layout.dialog_layout, null);
+        View dialog_view =  layoutInflater.inflate(R.layout.dialog_custom_level, null);
         builder.setView(dialog_view);
         final EditText number = (EditText) dialog_view.findViewById(R.id.number_of_mines);
         final RadioGroup rg = (RadioGroup) dialog_view.findViewById(R.id.radioGroup);
@@ -133,15 +133,15 @@ public class custom_level_dialog extends DialogFragment {
                             }
                         }
                         if (getTag().equals("choose")) {
-                            ((choose_level) getActivity()).set_custom(field_size, number_of_mines);
+                            ((ChooseLevelActivity) getActivity()).set_custom(field_size, number_of_mines);
                         } else {
-                            ((game) getActivity()).set_custom(field_size, number_of_mines);
+                            ((GameActivity) getActivity()).set_custom(field_size, number_of_mines);
                         }
                     }
                 })
                 .setNegativeButton("Back to menu", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if (getTag().equals("game")) {
+                        if (getTag().equals("GameActivity")) {
                             getActivity().onBackPressed();
                         }
                         // User cancelled the dialog

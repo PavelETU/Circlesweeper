@@ -3,20 +3,18 @@ package com.wordpress.lonelytripblog.circlesminesweeper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class main_menu extends AppCompatActivity {
+public class MainMenuActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_menu_view);
+        setContentView(R.layout.activity_main_menu);
         final ImageButton record_btn = (ImageButton) findViewById(R.id.record_btn);
         final ImageButton play_btn = (ImageButton) findViewById(R.id.play_btn);
         final ImageButton sound_btn = (ImageButton) findViewById(R.id.sound_btn);
@@ -46,16 +44,16 @@ public class main_menu extends AppCompatActivity {
     }
 
     public void to_choose_level(View view) {
-        Intent intent = new Intent(this, choose_level.class);
+        Intent intent = new Intent(this, ChooseLevelActivity.class);
         startActivity(intent);
     }
     public void about_game(View view) {
-        Intent intent = new Intent(this, about_the_game.class);
+        Intent intent = new Intent(this, AboutGameActivity.class);
         startActivity(intent);
     }
 
     public void on_record(View view) {
-        Intent intent = new Intent(this, best_score.class);
+        Intent intent = new Intent(this, BestScoreActivity.class);
         startActivity(intent);
     }
 }

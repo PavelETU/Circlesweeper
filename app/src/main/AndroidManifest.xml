@@ -8,21 +8,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".main_menu"
+        <activity android:name=".MainMenuActivity"
             android:screenOrientation="landscape">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".game"
+        <activity android:name=".GameActivity"
             android:screenOrientation="landscape"/>
-        <activity android:name=".choose_level"
+        <activity android:name=".ChooseLevelActivity"
             android:screenOrientation="landscape"/>
-        <activity android:name=".about_the_game"
+        <activity android:name=".AboutGameActivity"
             android:screenOrientation="landscape"/>
-        <activity android:name=".best_score"
+        <activity android:name=".BestScoreActivity"
             android:screenOrientation="landscape" />
     </application>
 
