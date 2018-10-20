@@ -1,160 +1,67 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
-import android.graphics.RadialGradient;
-import android.graphics.Shader;
-import android.support.v4.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.Button;
+
+import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 
 public class ChooseLevelActivity extends AppCompatActivity {
-    private ImageButton[] level = new ImageButton[6];
-    private ImageView back_img;
-    private ImageButton continue_btn;
+
+    private SharedPreferences cachedSharedPref = null;
+    private final Button[] levelButtons = new Button[6];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
-        level[0] = (ImageButton) findViewById(R.id.first);
-        level[1] = (ImageButton) findViewById(R.id.second);
-        level[2] = (ImageButton) findViewById(R.id.third);
-        level[3] = (ImageButton) findViewById(R.id.fourth);
-        level[4] = (ImageButton) findViewById(R.id.fifth);
-        level[5] = (ImageButton) findViewById(R.id.sixth);
-        continue_btn = (ImageButton) findViewById(R.id.continue_btn);
-        back_img = (ImageView) findViewById(R.id.Background_image);
-        if (getResources().getConfiguration().orientation ==  2) {
-            back_img.setImageResource(R.drawable.background_level_land);
-        }
+        FullWindowUtils.enterFullScreenMode(getWindow());
+        levelButtons[0] = findViewById(R.id.first);
+        levelButtons[1] = findViewById(R.id.second);
+        levelButtons[2] = findViewById(R.id.third);
+        levelButtons[3] = findViewById(R.id.fourth);
+        levelButtons[4] = findViewById(R.id.fifth);
+        levelButtons[5] = findViewById(R.id.sixth);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = getSharedPreferences("levels", MODE_PRIVATE);
-        int opened_levels = sharedPreferences.getInt("opened_levels", 1);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int size_of_side = (metrics.widthPixels > metrics.heightPixels) ?
-                metrics.heightPixels/5: metrics.widthPixels/4;
-        Bitmap lock = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeResource(getResources(),R.drawable.lock),
-                size_of_side/2, size_of_side/2, false);
-        if (sharedPreferences.getInt("game_saved", 0) == 1) {
-            Bitmap play_bmp = Bitmap.createScaledBitmap(
-                    BitmapFactory.decodeResource(getResources(),R.drawable.play),
-                    size_of_side, size_of_side, false);
-            continue_btn.setImageBitmap(play_bmp);
-            continue_btn.setVisibility(View.VISIBLE);
-        } else {
-            continue_btn.setVisibility(View.INVISIBLE);
-        }
-        for (int i = 0; i < 6; i++) {
-            if (i >= opened_levels) {
-                level[i].setEnabled(false);
-            } else {
-                level[i].setEnabled(true);
-            }
-        }
+        syncContinueButtonVisibility();
+        syncLevelButtonsWithPastLevels();
+        setListenersForLevelButtons();
+    }
 
-        for (int i = 0; i<6; i++) {
-            Bitmap button = Bitmap.createBitmap(
-                                    size_of_side, size_of_side, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(button);
-            Paint paint = new Paint();
-            paint.setTextAlign(Paint.Align.CENTER);
-            int color = Color.rgb(255,255,255);
-            int color2 = Color.rgb(0,0,0);
-            switch (i) {
-                case 0:     // Blue
-                    color = Color.rgb(81,118,151);
-                    color2 = Color.rgb(38,55,70);
-                    //paint.setColor(Color.rgb(81,118,151));
-                    break;
-                case 1:     // Purple
-                    color = Color.rgb(200,60,190);
-                    color2 = Color.rgb(77,21,72);
-                    //paint.setColor(Color.rgb(200,60,190));
-                    break;
-                case 2:     // Red
-                    color = Color.rgb(255,55,55);
-                    color2 = Color.rgb(89,0,0);
-                    //paint.setColor(Color.rgb(255,55,55));
-                    break;
-                case 3:     // Brown
-                    color = Color.rgb(255, 128, 0);
-                    color2 = Color.rgb(108,54,0);
-                    //paint.setColor(Color.rgb(255, 128, 0));
-                    break;
-                case 4:     // Yellow
-                    color = Color.rgb(250,243,12);
-                    color2 = Color.rgb(89,87,2);
-                    //paint.setColor(Color.rgb(250,243,12));
-                    break;
-                case 5:     // Green
-                    color = Color.rgb(0,174,44);
-                    color2 = Color.rgb(0,45,12);
-                    //paint.setColor(Color.rgb(0,174,44));
-                    break;
-            }
-            RadialGradient rd = new RadialGradient(size_of_side/2, size_of_side/2,
-                        size_of_side/2, color, color2, Shader.TileMode.CLAMP);
-            paint.setDither(true);
-            paint.setShader(rd);
-            canvas.drawCircle(size_of_side/2, size_of_side/2, size_of_side/2, paint);
-            paint.setTextSize(size_of_side/2);
-            paint.setDither(false);
-            paint.setShader(null);
-            paint.setColor(Color.BLACK);
-            if (i >= opened_levels) {
-                canvas.drawBitmap(lock, size_of_side / 4, size_of_side / 4, paint);
+    private void setListenersForLevelButtons() {
+        for (int i = 0; i < levelButtons.length; i++) {
+            if (!isThisLevelOpensDialog(i)) {
+                final int level = i + 1;
+                levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
             } else {
-                canvas.drawText(Integer.toString(i + 1), size_of_side / 2,
-                        size_of_side / 2 + size_of_side / 8, paint);
+                levelButtons[i].setOnClickListener(view -> openDialogForCustomLevel());
             }
-            level[i].setImageBitmap(button);
-            //level[i].setBackground(null);
         }
     }
-    public void btn_1(View view) {
+
+    private void openGameActivityWithLevel(final int level) {
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 1);
+        intent.putExtra("level", level);
         startActivity(intent);
     }
-    public void btn_2(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 2);
-        startActivity(intent);
+
+    private boolean isThisLevelOpensDialog(int i) {
+        return i == 5;
     }
-    public void btn_3(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 3);
-        startActivity(intent);
-    }
-    public void btn_4(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 4);
-        startActivity(intent);
-    }
-    public void btn_5(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 5);
-        startActivity(intent);
-    }
-    public void btn_6(View view) {
+
+    public void openDialogForCustomLevel() {
         DialogFragment choose_dialog = new CustomLevelDialogFragment();
-        //choose_dialog.setCancelable(false);
         choose_dialog.show(getSupportFragmentManager(), "choose");
     }
+
     public void set_custom(int field_size, int number_of_mines) {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", 6);
@@ -162,14 +69,86 @@ public class ChooseLevelActivity extends AppCompatActivity {
         intent.putExtra("number_of_mines", number_of_mines);
         startActivity(intent);
     }
-    public void continue_game(View view) {
+
+    public void continueLastGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("level", -1);
         startActivity(intent);
     }
-    public void back_to_menu(View view) {
-        onBackPressed();
+
+    private void syncContinueButtonVisibility() {
+        final Button continueButton = findViewById(R.id.continue_btn);
+        if (gameWasSaved()) {
+            continueButton.setVisibility(View.VISIBLE);
+        } else {
+            continueButton.setVisibility(View.INVISIBLE);
+        }
     }
 
+    private boolean gameWasSaved() {
+        return getSharedPreferences().getInt("game_saved", 0) == 1;
+    }
+
+    private void syncLevelButtonsWithPastLevels() {
+        int openedLevels = getAmountOfOpenedLevels();
+        for (int i = 1; i < 6; i++) {
+            if (i >= openedLevels) {
+                levelButtons[i].setEnabled(false);
+                levelButtons[i].setBackgroundResource(getBackgroundWithLockDependingOnPosition(i));
+            } else {
+                levelButtons[i].setEnabled(true);
+                final int level = i + 1;
+                levelButtons[i].setText(String.valueOf(level));
+                levelButtons[i].setBackgroundResource(getBackgroundDependingOnPosition(i));
+            }
+        }
+    }
+
+    private int getAmountOfOpenedLevels() {
+        return getSharedPreferences().getInt("opened_levels", 1);
+    }
+
+    private SharedPreferences getSharedPreferences() {
+        if (cachedSharedPref == null) {
+            cachedSharedPref = getSharedPreferences("levels", MODE_PRIVATE);
+        }
+        return cachedSharedPref;
+    }
+
+    private int getBackgroundWithLockDependingOnPosition(final int i) {
+        switch (i) {
+            case 1:
+                return R.drawable.purple_ball_with_lock;
+            case 2:
+                return R.drawable.red_ball_with_lock;
+            case 3:
+                return R.drawable.orange_ball_with_lock;
+            case 4:
+                return R.drawable.yellow_ball_with_lock;
+            case 5:
+                return R.drawable.green_ball_with_lock;
+            default:
+                throw new UnsupportedOperationException("Not defined level");
+
+        }
+    }
+
+    private int getBackgroundDependingOnPosition(final int i) {
+        switch (i) {
+            case 1:
+                return R.drawable.purple_ball;
+            case 2:
+                return R.drawable.red_ball;
+            case 3:
+                return R.drawable.orange_ball;
+            case 4:
+                return R.drawable.yellow_ball;
+            case 5:
+                return R.drawable.green_ball;
+            default:
+                throw new UnsupportedOperationException("Not defined level");
+
+        }
+    }
 
 }

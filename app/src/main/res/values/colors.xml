@@ -6,4 +6,16 @@
     <color name="color_back">#FFFFFF</color>
     <color name="color_white">#FFFFFF</color>
     <color name="half_transparent_black">#80000000</color>
+    <color name="blue_ball_center">#517697</color>
+    <color name="blue_ball_edge">#1a252e</color>
+    <color name="purple_ball_center">#c83cbe</color>
+    <color name="purple_ball_edge">#290b27</color>
+    <color name="red_ball_center">#ff3737</color>
+    <color name="red_ball_edge">#410000</color>
+    <color name="orange_ball_center">#ff8000</color>
+    <color name="orange_ball_edge">#5b2d00</color>
+    <color name="yellow_ball_center">#faf30c</color>
+    <color name="yellow_ball_edge">#454309</color>
+    <color name="green_ball_center">#00ae2c</color>
+    <color name="green_ball_edge">#001506</color>
 </resources>

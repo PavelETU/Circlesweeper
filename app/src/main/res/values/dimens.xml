@@ -5,4 +5,5 @@
     <dimen name="button_corner_radius">10dp</dimen>
     <dimen name="margin_for_button_im_main_menu">20dp</dimen>
     <dimen name="margin_start_end_button">30dp</dimen>
+    <dimen name="padding_for_continue_btn">15dp</dimen>
 </resources>
