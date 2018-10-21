@@ -11,8 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseIntArray;
@@ -23,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.Circle;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 import java.io.FileInputStream;
@@ -292,11 +291,11 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                 number_in_old = old_position[size_of_old_row - current_col - 1][current_row];
             }
             tmp_circle = old_circles.get(number_in_old - 1);
-            circles.add( new Circle(current_x, current_y, radius, tmp_circle.color, tmp_circle.with_mine)   );
+            circles.add( new Circle(current_x, current_y, radius, tmp_circle.color, tmp_circle.withMine)   );
             circles.get(circles.size()-1).alive = tmp_circle.alive;
-            circles.get(circles.size()-1).animation = tmp_circle.animation;
+            circles.get(circles.size()-1).animated = tmp_circle.animated;
             circles.get(circles.size()-1).marked = tmp_circle.marked;
-            circles.get(circles.size()-1).mines_near = tmp_circle.mines_near;
+            circles.get(circles.size()-1).minesNear = tmp_circle.minesNear;
             position[current_row][current_col] = circles.size();
         }
         bang = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bang),
@@ -449,7 +448,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                             circle.marked = true;
                             score_of_mines--;
                             out_mine.setText( String.format(Locale.US, "%d", score_of_mines) );
-                            if (circle.with_mine) {
+                            if (circle.withMine) {
                                 amount_of_right_guesses ++;
                             } else {
                                 amount_of_right_guesses --;
@@ -462,7 +461,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                             circle.marked = false;
                             score_of_mines++;
                             out_mine.setText( String.format(Locale.US, "%d", score_of_mines) );
-                            if (circle.with_mine) {
+                            if (circle.withMine) {
                                 amount_of_right_guesses --;
                             } else {
                                 amount_of_right_guesses ++;
@@ -496,7 +495,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                         return true;
                     }
                     taken_circle = circle;
-                    if (taken_circle.with_mine) {
+                    if (taken_circle.withMine) {
                         game_over_flag = true;
                         game_over();
                         return true;
@@ -563,7 +562,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                                 redraw_game();
                                 return true;
                             }
-                            if (circle.with_mine) {
+                            if (circle.withMine) {
                                 taken_circle.x = prime_x;
                                 taken_circle.y = prime_y;
                                 taken_circle.radius = prime_r;
@@ -574,16 +573,16 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                             }
                             int new_index_for_taken = circles.indexOf(circle);
                             int old_index_for_taken = circles.indexOf(taken_circle);
-                            if ( (circles.get(new_index_for_taken).with_mine) ||
-                                    (circles.get(old_index_for_taken).with_mine)  ) {
+                            if ( (circles.get(new_index_for_taken).withMine) ||
+                                    (circles.get(old_index_for_taken).withMine)  ) {
                                 game_over_flag = true;
                                 game_over();
                             }
                             circles.set(new_index_for_taken, taken_circle); // Swapping circles
                             circles.set(old_index_for_taken, circle);
-                            int tmp_mines = circle.mines_near;
-                            circle.mines_near = taken_circle.mines_near;
-                            taken_circle.mines_near = tmp_mines;
+                            int tmp_mines = circle.minesNear;
+                            circle.minesNear = taken_circle.minesNear;
+                            taken_circle.minesNear = tmp_mines;
                             int tmp = circle.x;
                             circle.x = prime_x;
                             prime_x = tmp;
@@ -626,21 +625,11 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                                 taken_circle.radius = prime_r;
                                 game_win_in_checking = false;
                                 Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        game_win();
-                                    }
-                                }, 900);
+                                handler.postDelayed(this::game_win, 900);
                             }
                             if (something_deleted) {
                                 Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        redraw_game();
-                                    }
-                                }, 1000);
+                                handler.postDelayed(this::redraw_game, 1000);
                             }
                             break;
                         }
@@ -656,10 +645,10 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             if (amount_of_right_guesses != amount_of_mines) {
                 return false;
             }
-            if ((circles.get(i).alive) && (!circles.get(i).with_mine)) {
+            if ((circles.get(i).alive) && (!circles.get(i).withMine)) {
                 for (int j = i+1; j < circles.size(); j++) {
                     if ((circles.get(j).color == circles.get(i).color) &&
-                            (circles.get(j).alive) && (!circles.get(j).with_mine)) {
+                            (circles.get(j).alive) && (!circles.get(j).withMine)) {
                         return false;
                     }
                 }
@@ -675,7 +664,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             if (!circles.get(position[row - 1][col] - 1).marked) {
                 if (circles.get(position[row - 1][col] - 1).color ==
                         circles.get(position[row][col] - 1).color) {
-                    if (circles.get(position[row - 1][col] - 1).with_mine) {
+                    if (circles.get(position[row - 1][col] - 1).withMine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
                         return false;
@@ -683,7 +672,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                     has_to_be_deleted = true;
                     pos_for_remove = position[row - 1][col];
                     circles.get(pos_for_remove - 1).alive = false;
-                    circles.get(pos_for_remove - 1).animation = true;
+                    circles.get(pos_for_remove - 1).animated = true;
                     amount_of_alive--;
                     if (amount_of_alive <=
                             ((position.length > position[0].length ?
@@ -700,7 +689,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             if (!circles.get(position[row + 1][col] - 1).marked) {
                 if (circles.get(position[row+1][col]-1).color ==
                         circles.get(position[row][col]-1).color) {
-                    if (circles.get(position[row + 1][col] - 1).with_mine) {
+                    if (circles.get(position[row + 1][col] - 1).withMine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
                         return false;
@@ -708,7 +697,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                     has_to_be_deleted = true;
                     pos_for_remove = position[row + 1][col];
                     circles.get(pos_for_remove - 1).alive = false;
-                    circles.get(pos_for_remove - 1).animation = true;
+                    circles.get(pos_for_remove - 1).animated = true;
                     amount_of_alive--;
                     if (amount_of_alive <=
                             ((position.length > position[0].length ?
@@ -725,7 +714,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             if (!circles.get(position[row][col - 1] - 1).marked) {
                 if (circles.get(position[row][col-1]-1).color ==
                     circles.get(position[row][col]-1).color) {
-                    if (circles.get(position[row][col - 1] - 1).with_mine) {
+                    if (circles.get(position[row][col - 1] - 1).withMine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
                         return false;
@@ -733,7 +722,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                     has_to_be_deleted = true;
                     pos_for_remove = position[row][col - 1];
                     circles.get(pos_for_remove - 1).alive = false;
-                    circles.get(pos_for_remove - 1).animation = true;
+                    circles.get(pos_for_remove - 1).animated = true;
                     amount_of_alive--;
                     if (amount_of_alive <=
                             ((position.length > position[0].length ?
@@ -750,7 +739,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             if (!circles.get(position[row][col + 1] - 1).marked) {
                 if (circles.get(position[row][col + 1] - 1).color ==
                         circles.get(position[row][col] - 1).color) {
-                    if (circles.get(position[row][col + 1] - 1).with_mine) {
+                    if (circles.get(position[row][col + 1] - 1).withMine) {
                         game_over_flag = true;
                         game_over_in_checking = true;
                         return false;
@@ -758,7 +747,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                     has_to_be_deleted = true;
                     pos_for_remove = position[row][col + 1];
                     circles.get(pos_for_remove - 1).alive = false;
-                    circles.get(pos_for_remove - 1).animation = true;
+                    circles.get(pos_for_remove - 1).animated = true;
                     amount_of_alive--;
                     if (amount_of_alive <=
                             ((position.length > position[0].length ?
@@ -773,7 +762,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
         }
         if (has_to_be_deleted) {
             circles.get(position[row][col]-1).alive = false;
-            circles.get(position[row][col] - 1).animation = true;
+            circles.get(position[row][col] - 1).animated = true;
             amount_of_alive--;
             if (amount_of_alive <=
                     ((position.length > position[0].length ?
@@ -929,33 +918,33 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             Circle random_circle;
             do {
                 random_circle = circles.get( r.nextInt(amount_of_circles) );
-            } while ((random_circle.with_mine) || (!random_circle.alive));
-            random_circle.with_mine = true;
+            } while ((random_circle.withMine) || (!random_circle.alive));
+            random_circle.withMine = true;
             int row_with_mine = (random_circle.y - margin_height - radius) / (2*radius);
             int col_with_mine = (random_circle.x - margin_width - radius) / (2*radius);
             // Here comes checking all juxtapositions with the circle containing mine
             if (row_with_mine != 0) {
-                circles.get(position[row_with_mine-1][col_with_mine]-1).mines_near++;
+                circles.get(position[row_with_mine-1][col_with_mine]-1).minesNear++;
                 if (col_with_mine < ( size_col - 1) ) {
-                    circles.get(position[row_with_mine - 1][col_with_mine + 1] - 1).mines_near++;
+                    circles.get(position[row_with_mine - 1][col_with_mine + 1] - 1).minesNear++;
                 }
             }
             if (col_with_mine != 0) {
-                circles.get(position[row_with_mine][col_with_mine - 1]-1).mines_near++;
+                circles.get(position[row_with_mine][col_with_mine - 1]-1).minesNear++;
                 if (row_with_mine != 0) {
-                    circles.get(position[row_with_mine - 1][col_with_mine - 1]-1).mines_near++;
+                    circles.get(position[row_with_mine - 1][col_with_mine - 1]-1).minesNear++;
                 }
             }
             if (row_with_mine < (size_row - 1)) {
-                circles.get(position[row_with_mine + 1][col_with_mine]-1).mines_near++;
+                circles.get(position[row_with_mine + 1][col_with_mine]-1).minesNear++;
                 if (col_with_mine != 0) {
-                    circles.get(position[row_with_mine + 1][col_with_mine - 1] - 1).mines_near++;
+                    circles.get(position[row_with_mine + 1][col_with_mine - 1] - 1).minesNear++;
                 }
             }
             if (col_with_mine < (size_col - 1)) {
-                circles.get(position[row_with_mine][col_with_mine + 1]-1).mines_near++;
+                circles.get(position[row_with_mine][col_with_mine + 1]-1).minesNear++;
                 if (row_with_mine < (size_row - 1)) {
-                    circles.get(position[row_with_mine + 1][col_with_mine + 1]-1).mines_near++;
+                    circles.get(position[row_with_mine + 1][col_with_mine + 1]-1).minesNear++;
                 }
             }
         }
@@ -995,7 +984,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                 result = tmp.array();
                 tmp.flip();
                 game_saved.write(result);
-                tmp.putInt(circle.mines_near);
+                tmp.putInt(circle.minesNear);
                 result = tmp.array();
                 tmp.flip();
                 game_saved.write(result);
@@ -1013,8 +1002,8 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                 game_saved.write(result);
                 game_saved.write((byte)(circle.alive? 1: 0 ));
                 game_saved.write((byte)(circle.marked? 1: 0 ));
-                game_saved.write((byte)(circle.with_mine? 1: 0 ));
-                game_saved.write((byte)(circle.animation? 1: 0 ));
+                game_saved.write((byte)(circle.withMine ? 1: 0 ));
+                game_saved.write((byte)(circle.animated ? 1: 0 ));
             }
             tmp.putInt(position.length);
             result = tmp.array();
@@ -1096,7 +1085,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                 circle.color = ((in[0]<< 24)&0xFF000000)|((in[1] << 16)&0x00FF0000)|
                                     ((in[2] << 8)&0x0000FF00)|(in[3]&0x000000FF);
                 game_saved.read(in);
-                circle.mines_near = ((in[0]<< 24)&0xFF000000)|((in[1] << 16)&0x00FF0000)|
+                circle.minesNear = ((in[0]<< 24)&0xFF000000)|((in[1] << 16)&0x00FF0000)|
                                     ((in[2] << 8)&0x0000FF00)|(in[3]&0x000000FF);
                 game_saved.read(in);
                 circle.radius = ((in[0]<< 24)&0xFF000000)|((in[1] << 16)&0x00FF0000)|
@@ -1110,8 +1099,8 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                 game_saved.read(in);
                 circle.alive = (in[0] == 1);
                 circle.marked = (in[1] == 1);
-                circle.with_mine =(in[2] == 1);
-                circle.animation = (in[3] == 1);
+                circle.withMine =(in[2] == 1);
+                circle.animated = (in[3] == 1);
             }
             radius = circles.get(0).radius;
 
@@ -1254,7 +1243,7 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                             circle.y + circle.radius * (float)Math.sin(3*Math.PI/4), my_paint);
                 }
             } else {
-                if (circle.animation) {
+                if (circle.animated) {
                     canvas.drawBitmap(bang, circle.x - radius, circle.y - radius,  my_paint);
                     if (min_x > circle.x) {
                         min_x = circle.x;
@@ -1269,14 +1258,14 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
                         max_y = circle.y;
                     }
                     count_animated++;
-                    circle.animation = false;
+                    circle.animated = false;
                 } else {
-                    if (circle.with_mine) {
+                    if (circle.withMine) {
                        canvas.drawBitmap(bomb_pict, circle.x - radius, circle.y - radius, my_paint);
                     } else {
                         my_paint.setColor(Color.BLACK);
                         my_paint.setTextSize(radius);
-                        canvas.drawText(Integer.toString(circle.mines_near), circle.x, circle.y, my_paint);
+                        canvas.drawText(Integer.toString(circle.minesNear), circle.x, circle.y, my_paint);
                     }
                 }
             }
@@ -1336,64 +1325,5 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
     public void onDismiss() {
         onBackPressed();
     }
-
-    private class Circle implements Parcelable {
-        public int x;
-        public int y;
-        public int color;
-        public int radius;
-        public int mines_near = 0;
-        public boolean animation = false;
-        public boolean alive = true;
-        public boolean with_mine;
-        public boolean marked = false;
-        public Circle(int init_x, int init_y, int init_radius,int init_color, boolean init_mine) {
-            x = init_x;
-            y = init_y;
-            radius = init_radius;
-            color = init_color;
-            with_mine = init_mine;
-        }
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-        @Override
-        public void writeToParcel(Parcel dest, int flag) {
-            dest.writeInt(x);
-            dest.writeInt(y);
-            dest.writeInt(color);
-            dest.writeInt(radius);
-            dest.writeInt(mines_near);
-            boolean[] array_of_boolean = {animation, alive, with_mine, marked};
-            dest.writeBooleanArray(array_of_boolean);
-        }
-        public final Parcelable.Creator CREATOR
-                = new Parcelable.Creator() {
-            public Circle createFromParcel(Parcel in) {
-                return new Circle(in);
-            }
-
-            public Circle[] newArray(int size) {
-                return new Circle[size];
-            }
-        };
-
-        private Circle(Parcel in) {
-            x = in.readInt();
-            y = in.readInt();
-            color = in.readInt();
-            radius = in.readInt();
-            mines_near = in.readInt();
-            boolean[] array_of_boolean = new boolean[4];
-            in.readBooleanArray(array_of_boolean);
-            animation = array_of_boolean[0];
-            alive = array_of_boolean[1];
-            with_mine = array_of_boolean[2];
-            marked = array_of_boolean[3];
-        }
-
-    }
-
 
 }
