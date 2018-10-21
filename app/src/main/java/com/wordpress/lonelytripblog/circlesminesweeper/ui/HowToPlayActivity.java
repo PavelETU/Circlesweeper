@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 public class HowToPlayActivity extends AppCompatActivity {
     private ImageView back_img;

@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
@@ -22,6 +22,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
