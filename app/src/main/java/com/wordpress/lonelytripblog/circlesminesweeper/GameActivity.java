@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class GameActivity extends AppCompatActivity implements View.OnTouchListener {
+public class GameActivity extends AppCompatActivity implements View.OnTouchListener,
+        CustomLevelDialogFragment.CustomLevelDialogCallback {
     private ImageView game_image;
     private TextView out_score;
     private TextView out_mine;
@@ -1311,9 +1312,11 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
             choose_dialog.show(getSupportFragmentManager(), "GameActivity");
         }
     }
-    public void set_custom(int field_size, int number_of_mines) {
-        amount_of_mines = number_of_mines;
-        switch (field_size) {
+
+    @Override
+    public void onLevelParamsChosen(int fieldSize, int amountOfMines) {
+        amount_of_mines = amountOfMines;
+        switch (fieldSize) {
             case 1:
                 amount_of_circles = 12;
                 break;
@@ -1326,6 +1329,12 @@ public class GameActivity extends AppCompatActivity implements View.OnTouchListe
         }
         while (!set_circles());
     }
+
+    @Override
+    public void onDismiss() {
+        onBackPressed();
+    }
+
     private class Circle implements Parcelable {
         public int x;
         public int y;

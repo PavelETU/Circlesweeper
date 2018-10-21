@@ -41,4 +41,5 @@
     <string name="valid_value_for_mines_2">Valid value is 0&#8230;8</string>
     <string name="valid_value_for_mines_3">Valid value is 0&#8230;20</string>
     <string name="continue_last_game">Continue last game</string>
+    <string name="specify_mines_amount">Specify number of mines</string>
 </resources>

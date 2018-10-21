@@ -10,8 +10,12 @@ import android.widget.Button;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 
-public class ChooseLevelActivity extends AppCompatActivity {
+public class ChooseLevelActivity extends AppCompatActivity
+        implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
+    private static final int SAVED_GAME_LEVEL = -1;
+    private static final int LAST_LEVEL = 6;
+    private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
     private SharedPreferences cachedSharedPref = null;
     private final Button[] levelButtons = new Button[6];
 
@@ -38,8 +42,8 @@ public class ChooseLevelActivity extends AppCompatActivity {
 
     private void setListenersForLevelButtons() {
         for (int i = 0; i < levelButtons.length; i++) {
-            if (!isThisLevelOpensDialog(i)) {
-                final int level = i + 1;
+            final int level = i + 1;
+            if (!isThisLevelOpensDialog(level)) {
                 levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
             } else {
                 levelButtons[i].setOnClickListener(view -> openDialogForCustomLevel());
@@ -53,8 +57,8 @@ public class ChooseLevelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private boolean isThisLevelOpensDialog(int i) {
-        return i == 5;
+    private boolean isThisLevelOpensDialog(int level) {
+        return level == LAST_LEVEL;
     }
 
     public void openDialogForCustomLevel() {
@@ -62,18 +66,8 @@ public class ChooseLevelActivity extends AppCompatActivity {
         choose_dialog.show(getSupportFragmentManager(), "choose");
     }
 
-    public void set_custom(int field_size, int number_of_mines) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", 6);
-        intent.putExtra("field_size", field_size);
-        intent.putExtra("number_of_mines", number_of_mines);
-        startActivity(intent);
-    }
-
     public void continueLastGame(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", -1);
-        startActivity(intent);
+        openGameActivityWithLevel(SAVED_GAME_LEVEL);
     }
 
     private void syncContinueButtonVisibility() {
@@ -91,13 +85,13 @@ public class ChooseLevelActivity extends AppCompatActivity {
 
     private void syncLevelButtonsWithPastLevels() {
         int openedLevels = getAmountOfOpenedLevels();
-        for (int i = 1; i < 6; i++) {
+        for (int i = AMOUNT_OF_ALWAYS_OPENED_LEVELS; i < levelButtons.length; i++) {
             if (i >= openedLevels) {
                 levelButtons[i].setEnabled(false);
                 levelButtons[i].setBackgroundResource(getBackgroundWithLockDependingOnPosition(i));
             } else {
-                levelButtons[i].setEnabled(true);
                 final int level = i + 1;
+                levelButtons[i].setEnabled(true);
                 levelButtons[i].setText(String.valueOf(level));
                 levelButtons[i].setBackgroundResource(getBackgroundDependingOnPosition(i));
             }
@@ -149,6 +143,19 @@ public class ChooseLevelActivity extends AppCompatActivity {
                 throw new UnsupportedOperationException("Not defined level");
 
         }
+    }
+
+    @Override
+    public void onLevelParamsChosen(final int fieldSize, final int amountOfMines) {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("level", LAST_LEVEL);
+        intent.putExtra("field_size", fieldSize);
+        intent.putExtra("number_of_mines", amountOfMines);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDismiss() {
     }
 
 }

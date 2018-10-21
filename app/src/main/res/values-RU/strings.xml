@@ -31,4 +31,6 @@
     <string name="valid_value_for_mines_1">Диапазон значений 0&#8230;4</string>
     <string name="valid_value_for_mines_2">Диапазон значений 0&#8230;8</string>
     <string name="valid_value_for_mines_3">Диапазон значений 0&#8230;20</string>
+    <string name="continue_last_game">Продолжить последнюю игру</string>
+    <string name="specify_mines_amount">Укажите количество мин</string>
 </resources>
