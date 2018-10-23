@@ -3,6 +3,16 @@ package com.wordpress.lonelytripblog.circlesminesweeper;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.Observer;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.data.Circle;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.CirclesGenerator;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FifthLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FirstLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FourthLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -39,7 +49,8 @@ public class GameViewModelTests {
 
     @Test
     public void firstLevelSetup() {
-        viewModel.setLevel(0);
+        GameLevel level = new FirstLevel();
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 
@@ -48,7 +59,8 @@ public class GameViewModelTests {
 
     @Test
     public void secondLevelSetup() {
-        viewModel.setLevel(1);
+        GameLevel level = new SecondLevel();
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 
@@ -57,7 +69,8 @@ public class GameViewModelTests {
 
     @Test
     public void thirdLevelSetup() {
-        viewModel.setLevel(2);
+        GameLevel level = new ThirdLevel();
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 
@@ -66,7 +79,8 @@ public class GameViewModelTests {
 
     @Test
     public void fourthLevelSetup() {
-        viewModel.setLevel(3);
+        GameLevel level = new FourthLevel();
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 
@@ -75,7 +89,8 @@ public class GameViewModelTests {
 
     @Test
     public void verifyFifthLevelSetup() {
-        viewModel.setLevel(4);
+        GameLevel level = new FifthLevel();
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 
@@ -84,7 +99,8 @@ public class GameViewModelTests {
 
     @Test
     public void customLevelSetup() {
-        viewModel.setCustomLevel(GameViewModel.FIELD_4X6, 4);
+        GameLevel level = new CustomLevel(GameViewModel.FIELD_4X6, 4);
+        viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(100, 100);
         viewModel.startGame();
 

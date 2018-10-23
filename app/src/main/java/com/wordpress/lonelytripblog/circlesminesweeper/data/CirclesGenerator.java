@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper;
+package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 public interface CirclesGenerator {
 

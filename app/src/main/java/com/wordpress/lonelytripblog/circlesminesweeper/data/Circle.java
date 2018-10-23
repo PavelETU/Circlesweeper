@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper;
+package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

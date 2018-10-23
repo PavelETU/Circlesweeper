@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.Circle;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.Circle;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 import java.io.FileInputStream;
