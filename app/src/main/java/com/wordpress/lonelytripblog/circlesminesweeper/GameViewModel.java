@@ -3,11 +3,9 @@ package com.wordpress.lonelytripblog.circlesminesweeper;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.data.Circle;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.CirclesGenerator;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 
 public class GameViewModel extends ViewModel {
@@ -15,14 +13,15 @@ public class GameViewModel extends ViewModel {
     public static final int FIELD_3X4 = 0;
     public static final int FIELD_4X6 = 1;
     public static final int FIELD_6X10 = 2;
-    private final CirclesGenerator circlesGenerator;
+    private final CellsGenerator cellsGenerator;
     private GameLevel level;
     private int width;
     private int height;
-    private MutableLiveData<Circle[][]> circlesLiveData = new MutableLiveData<>();
+    private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
+    private GameCell takenGameCell;
 
-    public GameViewModel(final CirclesGenerator circlesGenerator) {
-        this.circlesGenerator = circlesGenerator;
+    public GameViewModel(final CellsGenerator cellsGenerator) {
+        this.cellsGenerator = cellsGenerator;
     }
 
     // For convenience get circles as array[row][col],
@@ -30,8 +29,8 @@ public class GameViewModel extends ViewModel {
     // For example for the first level field is 3X4,
     // so array with size 3X4 returned even in portrait orientation,
     // while technically it should be 4x3
-    public LiveData<Circle[][]> getCircles() {
-        return circlesLiveData;
+    public LiveData<GameCell[][]> getGameCells() {
+        return cellsLiveData;
     }
 
     public void setLevel(final GameLevel level) {
@@ -45,12 +44,12 @@ public class GameViewModel extends ViewModel {
 
     public void startGame() {
         throwExceptionIfSizeNotSet();
-        Circle[][] circles = getCirclesForLevel();
-        circlesLiveData.setValue(circles);
+        GameCell[][] gameCells = getCirclesForLevel();
+        cellsLiveData.setValue(gameCells);
     }
 
-    private Circle[][] getCirclesForLevel() {
-        return level.generateCircles(circlesGenerator, width, height);
+    private GameCell[][] getCirclesForLevel() {
+        return level.generateCircles(cellsGenerator, width, height);
     }
 
     private void throwExceptionIfSizeNotSet() {
@@ -60,37 +59,49 @@ public class GameViewModel extends ViewModel {
     }
 
     public void actionDown(final int x, final int y) {
-        Pair<Integer, Integer> rowAndColumn = findRowAndColumnForPosition(x, y);
-        if (rowAndColumn == null) return;
-        moveCircleAndUpdateLiveData(x, y, rowAndColumn.first, rowAndColumn.second);
+        if (coordsOutOfCircles(x, y)) return;
+        updateTakenCircle(x, y);
+        moveCircleAndUpdateLiveData(x, y);
     }
 
-    @Nullable
-    private Pair<Integer, Integer> findRowAndColumnForPosition(final int x, final int y) {
-        Circle[][] currentCircles = circlesLiveData.getValue();
-        if (currentCircles == null) return null;
+    private boolean coordsOutOfCircles(final int x, final int y) {
+        GameCell[][] currentGameCells = cellsLiveData.getValue();
+        GameCell firstGameCell = currentGameCells[0][0];
+        GameCell lastGameCell = currentGameCells[currentGameCells.length - 1][currentGameCells[0].length - 1];
+        return firstGameCell.getLeft() >= x || firstGameCell.getTop() >= y
+                || lastGameCell.getRight() <= x || lastGameCell.getBottom() <= y;
+    }
+
+    private void updateTakenCircle(final int x, final int y) {
+        GameCell[][] currentGameCells = cellsLiveData.getValue();
         // TODO optimize algorithm from O(n^2) to O(1)
-        for (int i = 0; i < currentCircles.length; i++) {
-            for (int j = 0; j < currentCircles[0].length; j++) {
-                Circle circle = currentCircles[i][j];
-                if (circle.getX() + circle.getRadius() > x && circle.getX() - circle.getRadius() < x
-                        && circle.getY() + circle.getRadius() > y && circle.getY() - circle.getRadius() < y) {
-                    return new Pair<>(i, j);
+        for (int i = 0; i < currentGameCells.length; i++) {
+            for (int j = 0; j < currentGameCells[0].length; j++) {
+                GameCell gameCell = currentGameCells[i][j];
+                if (gameCell.getRight() > x && gameCell.getLeft() < x && gameCell.getBottom() > y
+                        && gameCell.getTop() < y) {
+                    takenGameCell = gameCell;
+                    return;
                 }
             }
         }
-        return null;
     }
 
-    private void moveCircleAndUpdateLiveData(final int x, final int y,
-                                             final int row, final int column) {
-        Circle[][] currentCircles = circlesLiveData.getValue();
-        Circle ourCircle = currentCircles[row][column];
-        int oldRadius = ourCircle.getRadius();
-        ourCircle.setX(x);
-        ourCircle.setY(y);
-        ourCircle.setRadius(oldRadius - (oldRadius / 8));
-        circlesLiveData.setValue(currentCircles);
+    public void actionUp() {
+        takenGameCell.moveCircleToDefaultPosition();
+        takenGameCell.makeCircleBigger();
+        updateLiveData();
+    }
+
+    private void moveCircleAndUpdateLiveData(final int x, final int y) {
+        takenGameCell.moveCircleTo(x, y);
+        takenGameCell.makeCircleSmaller();
+        updateLiveData();
+    }
+
+    private void updateLiveData() {
+        // TODO this looks kind of ugly. Think how to do better
+        cellsLiveData.setValue(cellsLiveData.getValue());
     }
 
 }
