@@ -43,6 +43,7 @@ public class GameViewModelTests {
     // blue_ball green_ball
     // green_ball blue_ball
     GameCell[][] gameCells = new GameCell[2][2];
+
     {
         gameCells[0][0] = new GameCell(new Circle(50, 50, 50, R.color.blue_ball_center), false);
         gameCells[0][1] = new GameCell(new Circle(150, 50, 50, R.color.green_ball_center), false);
@@ -173,18 +174,6 @@ public class GameViewModelTests {
     }
 
     @Test
-    public void clickOnCirclesBounds() {
-        startGameWithMockCell();
-        teachMockCellSoItWillBeOnEdgeOfXAndY(15, 25);
-
-        viewModel.actionDown(15, 25);
-
-        verify(mockCell, times(0)).moveCircleTo(anyInt(), anyInt());
-        verify(mockCell, times(0)).makeCircleBigger();
-        verify(circleObserver, times(1)).onChanged(any());
-    }
-
-    @Test
     public void singleCircleMovesToDefaultOnActionUp() {
         startGameWithMockCell();
         teachMockCellSoItWillInclude(60, 120);
@@ -231,24 +220,11 @@ public class GameViewModelTests {
     }
 
     private void teachMockCellSoItWillExclude(final int x, final int y) {
-        when(mockCell.getLeft()).thenReturn(x + 10);
-        when(mockCell.getRight()).thenReturn(x + 20);
-        when(mockCell.getTop()).thenReturn(y + 10);
-        when(mockCell.getBottom()).thenReturn(y + 20);
+        when(mockCell.contains(x, y)).thenReturn(false);
     }
 
     private void teachMockCellSoItWillInclude(final int x, final int y) {
-        when(mockCell.getLeft()).thenReturn(x - 10);
-        when(mockCell.getRight()).thenReturn(x + 10);
-        when(mockCell.getTop()).thenReturn(y - 10);
-        when(mockCell.getBottom()).thenReturn(y + 10);
-    }
-
-    private void teachMockCellSoItWillBeOnEdgeOfXAndY(final int x, final int y) {
-        when(mockCell.getLeft()).thenReturn(x);
-        when(mockCell.getRight()).thenReturn(x + 5);
-        when(mockCell.getTop()).thenReturn(y);
-        when(mockCell.getBottom()).thenReturn(y + 5);
+        when(mockCell.contains(x, y)).thenReturn(true);
     }
 
 }

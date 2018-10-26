@@ -59,17 +59,9 @@ public class GameViewModel extends ViewModel {
     }
 
     public void actionDown(final int x, final int y) {
-        if (coordsOutOfCircles(x, y)) return;
         updateTakenCircle(x, y);
+        if (takenGameCell == null) return;
         moveCircleAndUpdateLiveData(x, y);
-    }
-
-    private boolean coordsOutOfCircles(final int x, final int y) {
-        GameCell[][] currentGameCells = cellsLiveData.getValue();
-        GameCell firstGameCell = currentGameCells[0][0];
-        GameCell lastGameCell = currentGameCells[currentGameCells.length - 1][currentGameCells[0].length - 1];
-        return firstGameCell.getLeft() >= x || firstGameCell.getTop() >= y
-                || lastGameCell.getRight() <= x || lastGameCell.getBottom() <= y;
     }
 
     private void updateTakenCircle(final int x, final int y) {
@@ -78,8 +70,7 @@ public class GameViewModel extends ViewModel {
         for (int i = 0; i < currentGameCells.length; i++) {
             for (int j = 0; j < currentGameCells[0].length; j++) {
                 GameCell gameCell = currentGameCells[i][j];
-                if (gameCell.getRight() > x && gameCell.getLeft() < x && gameCell.getBottom() > y
-                        && gameCell.getTop() < y) {
+                if (gameCell.contains(x, y)) {
                     takenGameCell = gameCell;
                     return;
                 }
