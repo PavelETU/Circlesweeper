@@ -59,29 +59,50 @@ public class GameViewModel extends ViewModel {
     }
 
     public void actionDown(final int x, final int y) {
-        updateTakenCircle(x, y);
-        if (takenGameCell == null) return;
+        GameCell gameCell = findCellThatContainsPosition(x, y);
+        if (gameCell == null) return;
+        takenGameCell = gameCell;
         moveCircleAndUpdateLiveData(x, y);
     }
 
-    private void updateTakenCircle(final int x, final int y) {
+    public void actionMove(final int x, final int y) {
+        if (takenGameCell == null) return;
+        swapCirclesIfTheyOverlapped(x, y);
+        takenGameCell.moveCircleTo(x, y);
+        updateLiveData();
+    }
+
+    public void actionUp() {
+        if (takenGameCell == null) return;
+        takenGameCell.moveCircleToDefaultPosition();
+        takenGameCell.makeCircleBigger();
+        takenGameCell = null;
+        updateLiveData();
+    }
+
+    private GameCell findCellThatContainsPosition(final int x, final int y) {
         GameCell[][] currentGameCells = cellsLiveData.getValue();
-        // TODO optimize algorithm from O(n^2) to O(1)
         for (int i = 0; i < currentGameCells.length; i++) {
             for (int j = 0; j < currentGameCells[0].length; j++) {
                 GameCell gameCell = currentGameCells[i][j];
                 if (gameCell.contains(x, y)) {
-                    takenGameCell = gameCell;
-                    return;
+                    return gameCell;
                 }
             }
         }
+        return null;
     }
 
-    public void actionUp() {
-        takenGameCell.moveCircleToDefaultPosition();
-        takenGameCell.makeCircleBigger();
-        updateLiveData();
+    private void swapCirclesIfTheyOverlapped(final int x, final int y) {
+        if (!takenGameCell.contains(x, y)) {
+            GameCell gameCell = findCellThatContainsPosition(x, y);
+            if (gameCell != null) {
+                takenGameCell.makeCircleBigger();
+                takenGameCell.moveCircleToDefaultPosition();
+                takenGameCell.swapCirclesWith(gameCell);
+                takenGameCell = gameCell;
+            }
+        }
     }
 
     private void moveCircleAndUpdateLiveData(final int x, final int y) {

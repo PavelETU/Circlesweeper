@@ -1,10 +1,13 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
+import android.support.annotation.VisibleForTesting;
+
 public class GameCell {
 
     private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private static final float PERCENTAGE_FOR_BIGGER_CIRCLE = 1.15f;
-    private Circle circle;
+    @VisibleForTesting
+    Circle circle;
     private int minesNear = 0;
     private boolean animated = false;
     private boolean circleInsideAlive = true;
@@ -85,5 +88,10 @@ public class GameCell {
                 && topLeftY + sizeLength > y && topLeftY < y;
     }
 
+    public void swapCirclesWith(final GameCell gameCellToSwapBy) {
+        Circle circleToSwap = circle;
+        circle = gameCellToSwapBy.circle;
+        gameCellToSwapBy.circle = circleToSwap;
+    }
 
 }

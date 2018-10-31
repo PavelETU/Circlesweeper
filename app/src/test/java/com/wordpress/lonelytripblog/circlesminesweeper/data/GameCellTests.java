@@ -2,6 +2,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -130,7 +131,7 @@ public class GameCellTests {
         gameCell.makeCircleSmaller();
 
         verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int)(defaultRadius * 0.85));
+        verify(circle).setRadius((int) (defaultRadius * 0.85));
         verifyNoMoreInteractions(circle);
     }
 
@@ -141,8 +142,21 @@ public class GameCellTests {
         gameCell.makeCircleBigger();
 
         verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int)(defaultRadius * 1.15f));
+        verify(circle).setRadius((int) (defaultRadius * 1.15f));
         verifyNoMoreInteractions(circle);
+    }
+
+    @Test
+    public void testSwapping() {
+        Circle circleForFirstCell = new Circle(50, 50, 25, 0);
+        Circle circleForSecondCell = new Circle(100, 50, 25, 1);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+
+        gameCell1.swapCirclesWith(gameCell2);
+
+        assertEquals(circleForSecondCell, gameCell1.circle);
+        assertEquals(circleForFirstCell, gameCell2.circle);
     }
 
     private void verifyCirclesFieldsRequested(final int timesGetRadiusInvoked) {
