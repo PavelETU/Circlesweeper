@@ -6,12 +6,18 @@ public class Circle {
     private int y;
     private int color;
     private int radius;
+    private boolean isAlive;
 
     public Circle(int x, int y, int radius, int color) {
+        this(x, y, radius, color, true);
+    }
+
+    private Circle(int x, int y, int radius, int color, boolean isAlive) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
+        this.isAlive = isAlive;
     }
 
     public int getX() {
@@ -44,5 +50,13 @@ public class Circle {
 
     public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
     }
 }

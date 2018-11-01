@@ -41,6 +41,7 @@ public class GameViewModelTests {
     private final int defaultHeight = 150;
     private GameCell mockCell = mock(GameCell.class);
     private GameCell mockCell2 = mock(GameCell.class);
+    private GameCell[][] mockCells;
 
     // blue_ball green_ball
     private GameCell[][] gameCells = new GameCell[1][2];
@@ -51,6 +52,7 @@ public class GameViewModelTests {
         gameCells[0][0] = new GameCell(circleForGameCell1, false);
         gameCells[0][1] = new GameCell(circleForGameCell2, false);
     }
+
     // blue_ball green_ball
     // green_ball blue_ball
     private GameCell[][] gameCells2 = new GameCell[2][2];
@@ -215,13 +217,27 @@ public class GameViewModelTests {
         startGameWithMockCells1x2();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         teachMockCellSoItWillInclude(mockCell2, 150, 100);
-        teachMockCellSoItWillExclude(mockCell, 150, 100);
-        teachMockCellSoItWillInclude(mockCell2, 100, 100);
 
         viewModel.actionDown(100, 100);
         viewModel.actionMove(150, 100);
 
         verify(mockCell).swapCirclesWith(mockCell2);
+    }
+
+    @Test
+    public void circlesWithTheSameColorWillBeEliminated() {
+        startGameWithMockCells2x2();
+        teachMockCellSoItWillInclude(mockCells[0][0], 100, 100);
+        teachMockCellSoItWillInclude(mockCells[0][1], 150, 100);
+        teachMockCellSoItWillInclude(mockCells[1][0], 100, 150);
+        teachMockCellSoItWillInclude(mockCells[1][1], 150, 150);
+        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(150, 100);
+
+        verify(mockCells[0][1]).eliminateCircle();
+        verify(mockCells[1][1]).eliminateCircle();
     }
 
     private void createLevelWithDefaultWindow(final GameLevel level) {
@@ -253,6 +269,25 @@ public class GameViewModelTests {
         // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(gameCells);
+
+        GameLevel level = new FirstLevel();
+        viewModel.setLevel(level);
+        viewModel.setSizeOfGameWindow(200, 200);
+        viewModel.startGame();
+    }
+
+    private void startGameWithMockCells2x2() {
+        mockCells = new GameCell[2][2];
+        for (int i = 0; i < mockCells.length; i++) {
+            for (int j = 0; j < mockCells[0].length; j++) {
+                mockCells[i][j] = mock(GameCell.class);
+            }
+        }
+
+        // This method is generic and not restricting the size of returned gameCells,
+        // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
+        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
+                .thenReturn(mockCells);
 
         GameLevel level = new FirstLevel();
         viewModel.setLevel(level);

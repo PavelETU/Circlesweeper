@@ -10,7 +10,6 @@ public class GameCell {
     Circle circle;
     private int minesNear = 0;
     private boolean animated = false;
-    private boolean circleInsideAlive = true;
     private boolean withMine;
     private boolean marked = false;
     private final int topLeftX;
@@ -43,44 +42,9 @@ public class GameCell {
         circle.setRadius((int) (circle.getRadius() * PERCENTAGE_FOR_BIGGER_CIRCLE));
     }
 
-    public int getMinesNear() {
-        return minesNear;
-    }
-
-    public void setMinesNear(int minesNear) {
-        this.minesNear = minesNear;
-    }
-
-    public boolean isAnimated() {
-        return animated;
-    }
-
-    public void setAnimated(boolean animated) {
-        this.animated = animated;
-    }
-
-    public boolean isCircleInsideAlive() {
-        return circleInsideAlive;
-    }
-
-    public void setCircleInsideAlive(boolean circleInsideAlive) {
-        this.circleInsideAlive = circleInsideAlive;
-    }
-
-    public boolean isWithMine() {
-        return withMine;
-    }
-
-    public void setWithMine(boolean withMine) {
-        this.withMine = withMine;
-    }
-
-    public boolean isMarked() {
-        return marked;
-    }
-
-    public void setMarked(boolean marked) {
-        this.marked = marked;
+    public void eliminateCircle() {
+        circle.setAlive(false);
+        animated = true;
     }
 
     public boolean contains(final int x, final int y) {
@@ -94,4 +58,9 @@ public class GameCell {
         gameCellToSwapBy.circle = circleToSwap;
     }
 
+    public boolean isColorTheSame(final GameCell gameCell) {
+        // Does this violate the Law of Demeter? I don't think so:)
+        if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
+        return circle.getColor() == gameCell.circle.getColor();
+    }
 }

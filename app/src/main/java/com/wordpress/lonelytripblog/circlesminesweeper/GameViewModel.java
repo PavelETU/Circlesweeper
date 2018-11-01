@@ -3,6 +3,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.support.v4.util.Pair;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
@@ -15,10 +16,13 @@ public class GameViewModel extends ViewModel {
     public static final int FIELD_6X10 = 2;
     private final CellsGenerator cellsGenerator;
     private GameLevel level;
+    private GameCell[][] gameCells;
     private int width;
     private int height;
     private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
     private GameCell takenGameCell;
+    private Pair<Integer, Integer> takenGameCellPosition;
+    private Pair<Integer, Integer> swappedCirclePosition;
 
     public GameViewModel(final CellsGenerator cellsGenerator) {
         this.cellsGenerator = cellsGenerator;
@@ -44,8 +48,8 @@ public class GameViewModel extends ViewModel {
 
     public void startGame() {
         throwExceptionIfSizeNotSet();
-        GameCell[][] gameCells = getCirclesForLevel();
-        cellsLiveData.setValue(gameCells);
+        gameCells = getCirclesForLevel();
+        updateLiveData();
     }
 
     private GameCell[][] getCirclesForLevel() {
@@ -59,15 +63,16 @@ public class GameViewModel extends ViewModel {
     }
 
     public void actionDown(final int x, final int y) {
-        GameCell gameCell = findCellThatContainsPosition(x, y);
-        if (gameCell == null) return;
-        takenGameCell = gameCell;
+        takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
+        if (takenGameCellPosition == null) return;
+        takenGameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
         moveCircleAndUpdateLiveData(x, y);
     }
 
     public void actionMove(final int x, final int y) {
         if (takenGameCell == null) return;
-        swapCirclesIfTheyOverlapped(x, y);
+        swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
+        eliminateSwappedCirclesIfTheyHaveNeighborsWithSameColor();
         takenGameCell.moveCircleTo(x, y);
         updateLiveData();
     }
@@ -81,10 +86,9 @@ public class GameViewModel extends ViewModel {
     }
 
     private GameCell findCellThatContainsPosition(final int x, final int y) {
-        GameCell[][] currentGameCells = cellsLiveData.getValue();
-        for (int i = 0; i < currentGameCells.length; i++) {
-            for (int j = 0; j < currentGameCells[0].length; j++) {
-                GameCell gameCell = currentGameCells[i][j];
+        for (int i = 0; i < gameCells.length; i++) {
+            for (int j = 0; j < gameCells[0].length; j++) {
+                GameCell gameCell = gameCells[i][j];
                 if (gameCell.contains(x, y)) {
                     return gameCell;
                 }
@@ -93,16 +97,86 @@ public class GameViewModel extends ViewModel {
         return null;
     }
 
-    private void swapCirclesIfTheyOverlapped(final int x, final int y) {
-        if (!takenGameCell.contains(x, y)) {
-            GameCell gameCell = findCellThatContainsPosition(x, y);
-            if (gameCell != null) {
-                takenGameCell.makeCircleBigger();
-                takenGameCell.moveCircleToDefaultPosition();
-                takenGameCell.swapCirclesWith(gameCell);
-                takenGameCell = gameCell;
+    private Pair<Integer, Integer> findPositionForCellThatContainsPosition(final int x, final int y) {
+        for (int i = 0; i < gameCells.length; i++) {
+            for (int j = 0; j < gameCells[0].length; j++) {
+                GameCell gameCell = gameCells[i][j];
+                if (gameCell.contains(x, y)) {
+                    return new Pair<>(i, j);
+                }
             }
         }
+        return null;
+    }
+
+    private void swapCirclesIfTheyOverlappedAndCachedItsLocations(final int x, final int y) {
+        if (!takenGameCell.contains(x, y)) {
+            Pair<Integer, Integer> gameCellPosition = findPositionForCellThatContainsPosition(x, y);
+            if (gameCellPosition != null) {
+                GameCell cellToSwapBy = gameCells[gameCellPosition.first][gameCellPosition.second];
+                takenGameCell.makeCircleBigger();
+                takenGameCell.moveCircleToDefaultPosition();
+                swappedCirclePosition = takenGameCellPosition;
+                takenGameCell.swapCirclesWith(cellToSwapBy);
+                takenGameCell = cellToSwapBy;
+                takenGameCellPosition = gameCellPosition;
+            }
+        }
+    }
+
+    private void eliminateSwappedCirclesIfTheyHaveNeighborsWithSameColor() {
+        if (swappedCirclePosition != null) {
+            eliminateAllNeighborsWithSameColor(swappedCirclePosition.first, swappedCirclePosition.second);
+            eliminateAllNeighborsWithSameColor(takenGameCellPosition.first, takenGameCellPosition.second);
+            swappedCirclePosition = null;
+        }
+    }
+
+    private void eliminateAllNeighborsWithSameColor(final int row, final int col) {
+        int eliminatedCirclesCount = 0;
+        if (cellToTheLeftIsSameColor(row, col)) {
+            eliminateCircleAtPosition(row, col - 1);
+            eliminatedCirclesCount++;
+        }
+        if (cellToTheRightIsSameColor(row, col)) {
+            eliminateCircleAtPosition(row, col + 1);
+            eliminatedCirclesCount++;
+        }
+        if (cellToTheBottomIsSameColor(row, col)) {
+            eliminateCircleAtPosition(row + 1, col);
+            eliminatedCirclesCount++;
+        }
+        if (cellToTheTopIsSameColor(row, col)) {
+            eliminateCircleAtPosition(row - 1, col);
+            eliminatedCirclesCount++;
+        }
+        if (eliminatedCirclesCount > 0) {
+            eliminateCircleAtPosition(row, col);
+        }
+    }
+
+    private boolean cellToTheLeftIsSameColor(final int row, final int column) {
+        if (column == 0) return false;
+        return gameCells[row][column].isColorTheSame(gameCells[row][column - 1]);
+    }
+
+    private boolean cellToTheRightIsSameColor(final int row, final int column) {
+        if (column + 1 == gameCells[0].length) return false;
+        return gameCells[row][column].isColorTheSame(gameCells[row][column + 1]);
+    }
+
+    private boolean cellToTheBottomIsSameColor(final int row, final int column) {
+        if (row + 1 == gameCells.length) return false;
+        return gameCells[row][column].isColorTheSame(gameCells[row + 1][column]);
+    }
+
+    private boolean cellToTheTopIsSameColor(final int row, final int column) {
+        if (row == 0) return false;
+        return gameCells[row][column].isColorTheSame(gameCells[row - 1][column]);
+    }
+
+    private void eliminateCircleAtPosition(final int row, final int col) {
+        gameCells[row][col].eliminateCircle();
     }
 
     private void moveCircleAndUpdateLiveData(final int x, final int y) {
@@ -112,8 +186,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void updateLiveData() {
-        // TODO this looks kind of ugly. Think how to do better
-        cellsLiveData.setValue(cellsLiveData.getValue());
+        cellsLiveData.setValue(gameCells);
     }
 
 }

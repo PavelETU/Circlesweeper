@@ -159,6 +159,26 @@ public class GameCellTests {
         assertEquals(circleForFirstCell, gameCell2.circle);
     }
 
+    @Test
+    public void sameColorNegative() {
+        Circle circleForFirstCell = new Circle(50, 50, 25, 0);
+        Circle circleForSecondCell = new Circle(100, 50, 25, 1);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+
+        assertFalse(gameCell1.isColorTheSame(gameCell2));
+    }
+
+    @Test
+    public void sameColorPositive() {
+        Circle circleForFirstCell = new Circle(50, 50, 25, 1);
+        Circle circleForSecondCell = new Circle(100, 50, 25, 1);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+
+        assertTrue(gameCell1.isColorTheSame(gameCell2));
+    }
+
     private void verifyCirclesFieldsRequested(final int timesGetRadiusInvoked) {
         verify(circle).getX();
         verify(circle).getY();
