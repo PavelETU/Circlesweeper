@@ -6,4 +6,5 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 public interface GameLevel {
     GameCell[][] generateCircles(final CellsGenerator cellsGenerator, final int width,
                                  final int height);
+    int getMinesAmount();
 }

@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.v4.util.Pair;
+import android.support.v4.util.SparseArrayCompat;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
@@ -11,19 +12,23 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 
 public class GameViewModel extends ViewModel {
 
-    public static final int FIELD_3X4 = 0;
-    public static final int FIELD_4X6 = 1;
-    public static final int FIELD_6X10 = 2;
+    public static final int GAME_IN_PROCESS = 0;
+    public static final int GAME_WON = 1;
+    public static final int GAME_LOST = 2;
+
     private final CellsGenerator cellsGenerator;
     private GameLevel level;
     private GameCell[][] gameCells;
-    private int width;
-    private int height;
+    private int gameWindowWidth;
+    private int gameWindowHeight;
     private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
+    private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
+    private int minesLeft;
+    private boolean circleWithBombWasEliminated;
 
     public GameViewModel(final CellsGenerator cellsGenerator) {
         this.cellsGenerator = cellsGenerator;
@@ -42,36 +47,35 @@ public class GameViewModel extends ViewModel {
         return gameScore;
     }
 
+    public LiveData<Integer> getGameCondition() {
+        return gameCondition;
+    }
+
     public void setLevel(final GameLevel level) {
         this.level = level;
     }
 
     public void setSizeOfGameWindow(final int width, final int height) {
-        this.width = width;
-        this.height = height;
+        gameWindowWidth = width;
+        gameWindowHeight = height;
     }
 
     public void startGame() {
         throwExceptionIfSizeNotSet();
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
-        updateLiveData();
-    }
-
-    private GameCell[][] getCirclesForLevel() {
-        return level.generateCircles(cellsGenerator, width, height);
-    }
-
-    private void throwExceptionIfSizeNotSet() {
-        if (width <= 0 || height <= 0) {
-            throw new RuntimeException("Specify width and height for game window");
-        }
+        gameCondition.setValue(GAME_IN_PROCESS);
+        minesLeft = level.getMinesAmount();
+        updateCellsLiveData();
     }
 
     public void actionDown(final int x, final int y) {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
         takenGameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
+        if (takenGameCell.isWithMine()) {
+            endGameWithLoosing();
+        }
         moveCircleAndUpdateLiveData(x, y);
     }
 
@@ -79,8 +83,17 @@ public class GameViewModel extends ViewModel {
         if (takenGameCell == null) return;
         swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
         eliminateNeighborsWithSameColorAndUpdateScore();
+        if (circleWithBombWasEliminated) {
+            circleWithBombWasEliminated = false;
+            endGameWithLoosing();
+            return;
+        }
+        if (gameWon()) {
+            endGameWithWinning();
+            return;
+        }
         takenGameCell.moveCircleTo(x, y);
-        updateLiveData();
+        updateCellsLiveData();
     }
 
     public void actionUp() {
@@ -88,19 +101,7 @@ public class GameViewModel extends ViewModel {
         takenGameCell.moveCircleToDefaultPosition();
         takenGameCell.makeCircleBigger();
         takenGameCell = null;
-        updateLiveData();
-    }
-
-    private GameCell findCellThatContainsPosition(final int x, final int y) {
-        for (int i = 0; i < gameCells.length; i++) {
-            for (int j = 0; j < gameCells[0].length; j++) {
-                GameCell gameCell = gameCells[i][j];
-                if (gameCell.contains(x, y)) {
-                    return gameCell;
-                }
-            }
-        }
-        return null;
+        updateCellsLiveData();
     }
 
     private Pair<Integer, Integer> findPositionForCellThatContainsPosition(final int x, final int y) {
@@ -154,6 +155,46 @@ public class GameViewModel extends ViewModel {
         gameScore.setValue(gameScore.getValue() + scoreToAdd);
     }
 
+    private boolean gameWon() {
+        return minesLeft == 0 && noSpareCirclesWithSameColor();
+    }
+
+    private boolean noSpareCirclesWithSameColor() {
+        SparseArrayCompat<Integer> colorMap = new SparseArrayCompat<>();
+        for (int i = 0; i < gameCells.length; i++) {
+            for (int j = 0; j < gameCells[0].length; j++) {
+                GameCell currentCell = gameCells[i][j];
+                if (!currentCell.isWithMine() && currentCell.isCircleInsideAlive()) {
+                    colorMap.put(currentCell.getColor(),
+                            getValueFromSparseArrayAtKey(colorMap, currentCell.getColor()) + 1);
+                }
+            }
+        }
+        for (int i = 0; i < colorMap.size(); i++) {
+            int countForColor = colorMap.valueAt(i);
+            if (countForColor > 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int getValueFromSparseArrayAtKey(SparseArrayCompat<Integer> sparseArray, int key) {
+        Integer rawValue = sparseArray.get(key);
+        if (rawValue != null) {
+            return rawValue;
+        }
+        return 0;
+    }
+
+    private void endGameWithWinning() {
+        gameCondition.setValue(GAME_WON);
+    }
+
+    private void endGameWithLoosing() {
+        gameCondition.setValue(GAME_LOST);
+    }
+
     // Breaks Command-Query separation
     private int eliminateCirclesAndReturnEliminatedAmount(final int row, final int col) {
         int eliminatedCirclesCount = 0;
@@ -201,16 +242,30 @@ public class GameViewModel extends ViewModel {
     }
 
     private void eliminateCircleAtPosition(final int row, final int col) {
-        gameCells[row][col].eliminateCircle();
+        GameCell cellToEliminate = gameCells[row][col];
+        if (cellToEliminate.isWithMine()) {
+            circleWithBombWasEliminated = true;
+        }
+        cellToEliminate.eliminateCircle();
+    }
+
+    private GameCell[][] getCirclesForLevel() {
+        return level.generateCircles(cellsGenerator, gameWindowWidth, gameWindowHeight);
+    }
+
+    private void throwExceptionIfSizeNotSet() {
+        if (gameWindowWidth <= 0 || gameWindowHeight <= 0) {
+            throw new RuntimeException("Specify width and height for game window");
+        }
     }
 
     private void moveCircleAndUpdateLiveData(final int x, final int y) {
         takenGameCell.moveCircleTo(x, y);
         takenGameCell.makeCircleSmaller();
-        updateLiveData();
+        updateCellsLiveData();
     }
 
-    private void updateLiveData() {
+    private void updateCellsLiveData() {
         cellsLiveData.setValue(gameCells);
     }
 

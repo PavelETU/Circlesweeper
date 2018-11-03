@@ -63,4 +63,24 @@ public class GameCell {
         if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
         return circle.getColor() == gameCell.circle.getColor();
     }
+
+    public boolean isWithMine() {
+        return withMine;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
+    }
+
+    public int getColor() {
+        return minesNear;
+    }
+
+    public boolean isCircleInsideAlive() {
+        return circle.isAlive();
+    }
 }

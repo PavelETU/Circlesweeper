@@ -16,4 +16,9 @@ public class CustomLevel4X6 implements GameLevel {
     public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int width, int height) {
         return cellsGenerator.generateCellsForField4X6(width, height, minesAmount);
     }
+
+    @Override
+    public int getMinesAmount() {
+        return minesAmount;
+    }
 }

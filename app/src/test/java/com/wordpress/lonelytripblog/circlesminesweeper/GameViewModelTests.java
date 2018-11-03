@@ -4,7 +4,6 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.Observer;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.Circle;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel4X6;
@@ -32,6 +31,11 @@ import static org.mockito.Mockito.when;
 
 public class GameViewModelTests {
 
+    private final int DEFAULT_X_FOR_FIRST_COLUMN = 100;
+    private final int DEFAULT_Y_FOR_FIRST_ROW = 100;
+    private final int DEFAULT_X_FOR_SECOND_COLUMN = 150;
+    private final int DEFAULT_Y_FOR_SECOND_ROW = 150;
+
     @Rule
     public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
     private GameViewModel viewModel;
@@ -42,27 +46,7 @@ public class GameViewModelTests {
     private GameCell mockCell = mock(GameCell.class);
     private GameCell mockCell2 = mock(GameCell.class);
     private GameCell[][] mockCells;
-
-    // blue_ball green_ball
     private GameCell[][] gameCells = new GameCell[1][2];
-    private Circle circleForGameCell1 = new Circle(50, 50, 50, 1);
-    private Circle circleForGameCell2 = new Circle(150, 50, 50, 2);
-
-    {
-        gameCells[0][0] = new GameCell(circleForGameCell1, false);
-        gameCells[0][1] = new GameCell(circleForGameCell2, false);
-    }
-
-    // blue_ball green_ball
-    // green_ball blue_ball
-    private GameCell[][] gameCells2 = new GameCell[2][2];
-
-    {
-        gameCells2[0][0] = new GameCell(new Circle(50, 50, 50, R.color.blue_ball_center), false);
-        gameCells2[0][1] = new GameCell(new Circle(150, 50, 50, R.color.green_ball_center), false);
-        gameCells2[1][0] = new GameCell(new Circle(50, 150, 50, R.color.green_ball_center), false);
-        gameCells2[1][1] = new GameCell(new Circle(150, 150, 50, R.color.blue_ball_center), false);
-    }
 
     @Before
     public void setUp() {
@@ -71,6 +55,8 @@ public class GameViewModelTests {
         viewModel.getGameCells().observeForever(circleObserver);
         Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);
         viewModel.getScore().observeForever(scoreObserver);
+        Observer<Integer> gameConditionObserver = (Observer<Integer>) mock(Observer.class);
+        viewModel.getGameCondition().observeForever(gameConditionObserver);
     }
 
     @Test
@@ -203,7 +189,7 @@ public class GameViewModelTests {
 
     @Test
     public void movingCircleWorks() {
-        startGameWithMockCell1x1();
+        startGameWithMockCells1x2WithOneBomb();
         teachMockCellSoItWillInclude(mockCell, 60, 120);
 
         viewModel.actionDown(60, 120);
@@ -216,7 +202,7 @@ public class GameViewModelTests {
 
     @Test
     public void verifySwappingCircles() {
-        startGameWithMockCells1x2();
+        startGameWithMockCells1x2WithNoBombs();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         teachMockCellSoItWillInclude(mockCell2, 150, 100);
 
@@ -231,8 +217,8 @@ public class GameViewModelTests {
         startGameWithMockCells2x2WithDefaultCoords();
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(150, 100);
+        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
         verify(mockCells[0][1]).eliminateCircle();
         verify(mockCells[1][1]).eliminateCircle();
@@ -243,18 +229,74 @@ public class GameViewModelTests {
         startGameWithMockCells2x2WithDefaultCoords();
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(150, 100);
+        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
-        assertEquals(20, (int)viewModel.getScore().getValue());
+        assertEquals(20, (int) viewModel.getScore().getValue());
+    }
+
+    @Test
+    public void scoreDoublesIfBothSwappedCirclesGone() {
+        startGameWithMockCells2x2WithDefaultCoords();
+        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+        when(mockCells[0][0].isColorTheSame(mockCells[1][0])).thenReturn(true);
+
+        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+
+        assertEquals(80, (int) viewModel.getScore().getValue());
+    }
+
+    @Test
+    public void defaultGameConditionIsGameInProcess() {
+        startGameWithGameCells();
+
+        assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void gameWonAfterMoveIfNoMoreSameCircleAndMines() {
+        startGameWithMockCells1x2WithNoBombs();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isWithMine()).thenReturn(false);
+        when(mockCell2.isWithMine()).thenReturn(false);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(101, 100);
+
+        assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void gameOverIfBombTouched() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isWithMine()).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+
+        assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void gameOverIfCircleWithBombEliminated() {
+        startGameWithMockCells2x2WithDefaultCoords();
+        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+        when(mockCells[1][1].isWithMine()).thenReturn(true);
+
+        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+
+        assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
     }
 
     private void startGameWithMockCells2x2WithDefaultCoords() {
         startGameWithMockCells2x2();
-        teachMockCellSoItWillInclude(mockCells[0][0], 100, 100);
-        teachMockCellSoItWillInclude(mockCells[0][1], 150, 100);
-        teachMockCellSoItWillInclude(mockCells[1][0], 100, 150);
-        teachMockCellSoItWillInclude(mockCells[1][1], 150, 150);
+        teachMockCellSoItWillInclude(mockCells[0][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        teachMockCellSoItWillInclude(mockCells[0][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        teachMockCellSoItWillInclude(mockCells[1][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
+        teachMockCellSoItWillInclude(mockCells[1][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
     }
 
     private void createLevelWithDefaultWindow(final GameLevel level) {
@@ -277,7 +319,15 @@ public class GameViewModelTests {
         viewModel.startGame();
     }
 
-    private void startGameWithMockCells1x2() {
+    private void startGameWithMockCells1x2WithNoBombs() {
+        startGameWithMockCells1X2WithLevel(new FirstLevel());
+    }
+
+    private void startGameWithMockCells1x2WithOneBomb() {
+        startGameWithMockCells1X2WithLevel(new SecondLevel());
+    }
+
+    private void startGameWithMockCells1X2WithLevel(final GameLevel level) {
         GameCell[][] gameCells = new GameCell[1][2];
         gameCells[0][0] = mockCell;
         gameCells[0][1] = mockCell2;
@@ -287,7 +337,6 @@ public class GameViewModelTests {
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
-        GameLevel level = new FirstLevel();
         viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(200, 200);
         viewModel.startGame();

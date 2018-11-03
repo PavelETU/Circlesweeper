@@ -15,4 +15,10 @@ public class CustomLevel3X4 implements GameLevel {
     public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int width, int height) {
         return cellsGenerator.generateCellsForField3X4(width, height, minesAmount);
     }
+
+    @Override
+    public int getMinesAmount() {
+        return minesAmount;
+    }
+
 }
