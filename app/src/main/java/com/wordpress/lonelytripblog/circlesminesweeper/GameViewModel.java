@@ -20,6 +20,7 @@ public class GameViewModel extends ViewModel {
     private int width;
     private int height;
     private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -37,6 +38,10 @@ public class GameViewModel extends ViewModel {
         return cellsLiveData;
     }
 
+    public LiveData<Integer> getScore() {
+        return gameScore;
+    }
+
     public void setLevel(final GameLevel level) {
         this.level = level;
     }
@@ -49,6 +54,7 @@ public class GameViewModel extends ViewModel {
     public void startGame() {
         throwExceptionIfSizeNotSet();
         gameCells = getCirclesForLevel();
+        gameScore.setValue(0);
         updateLiveData();
     }
 
@@ -72,7 +78,7 @@ public class GameViewModel extends ViewModel {
     public void actionMove(final int x, final int y) {
         if (takenGameCell == null) return;
         swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
-        eliminateSwappedCirclesIfTheyHaveNeighborsWithSameColor();
+        eliminateNeighborsWithSameColorAndUpdateScore();
         takenGameCell.moveCircleTo(x, y);
         updateLiveData();
     }
@@ -124,15 +130,32 @@ public class GameViewModel extends ViewModel {
         }
     }
 
-    private void eliminateSwappedCirclesIfTheyHaveNeighborsWithSameColor() {
+    private void eliminateNeighborsWithSameColorAndUpdateScore() {
         if (swappedCirclePosition != null) {
-            eliminateAllNeighborsWithSameColor(swappedCirclePosition.first, swappedCirclePosition.second);
-            eliminateAllNeighborsWithSameColor(takenGameCellPosition.first, takenGameCellPosition.second);
+            int countForFirst = eliminateCirclesAndReturnEliminatedAmount(
+                    swappedCirclePosition.first, swappedCirclePosition.second);
+            int countForSecond = eliminateCirclesAndReturnEliminatedAmount(
+                    takenGameCellPosition.first, takenGameCellPosition.second);
+            updateScoreBasedOnGoneCircles(countForFirst, countForSecond);
             swappedCirclePosition = null;
         }
     }
 
-    private void eliminateAllNeighborsWithSameColor(final int row, final int col) {
+    private void updateScoreBasedOnGoneCircles(final int circlesGoneBecauseOfFirstCircle,
+                                               final int circlesGoneBecauseOfSecondCircle) {
+        int scoreToAdd = circlesGoneBecauseOfFirstCircle * 10 + circlesGoneBecauseOfSecondCircle * 10;
+        if (circlesGoneBecauseOfFirstCircle != 0 && circlesGoneBecauseOfSecondCircle != 0) {
+            scoreToAdd *= 2;
+        }
+        addToScoreLiveData(scoreToAdd);
+    }
+
+    private void addToScoreLiveData(final int scoreToAdd) {
+        gameScore.setValue(gameScore.getValue() + scoreToAdd);
+    }
+
+    // Breaks Command-Query separation
+    private int eliminateCirclesAndReturnEliminatedAmount(final int row, final int col) {
         int eliminatedCirclesCount = 0;
         if (cellToTheLeftIsSameColor(row, col)) {
             eliminateCircleAtPosition(row, col - 1);
@@ -152,7 +175,9 @@ public class GameViewModel extends ViewModel {
         }
         if (eliminatedCirclesCount > 0) {
             eliminateCircleAtPosition(row, col);
+            eliminatedCirclesCount++;
         }
+        return eliminatedCirclesCount;
     }
 
     private boolean cellToTheLeftIsSameColor(final int row, final int column) {

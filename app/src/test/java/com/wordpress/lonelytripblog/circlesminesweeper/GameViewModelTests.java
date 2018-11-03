@@ -69,6 +69,8 @@ public class GameViewModelTests {
         viewModel = new GameViewModel(cellsGenerator);
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
         viewModel.getGameCells().observeForever(circleObserver);
+        Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);
+        viewModel.getScore().observeForever(scoreObserver);
     }
 
     @Test
@@ -226,11 +228,7 @@ public class GameViewModelTests {
 
     @Test
     public void circlesWithTheSameColorWillBeEliminated() {
-        startGameWithMockCells2x2();
-        teachMockCellSoItWillInclude(mockCells[0][0], 100, 100);
-        teachMockCellSoItWillInclude(mockCells[0][1], 150, 100);
-        teachMockCellSoItWillInclude(mockCells[1][0], 100, 150);
-        teachMockCellSoItWillInclude(mockCells[1][1], 150, 150);
+        startGameWithMockCells2x2WithDefaultCoords();
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
 
         viewModel.actionDown(100, 100);
@@ -238,6 +236,25 @@ public class GameViewModelTests {
 
         verify(mockCells[0][1]).eliminateCircle();
         verify(mockCells[1][1]).eliminateCircle();
+    }
+
+    @Test
+    public void scoreCorrectForTwoCircles() {
+        startGameWithMockCells2x2WithDefaultCoords();
+        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(150, 100);
+
+        assertEquals(20, (int)viewModel.getScore().getValue());
+    }
+
+    private void startGameWithMockCells2x2WithDefaultCoords() {
+        startGameWithMockCells2x2();
+        teachMockCellSoItWillInclude(mockCells[0][0], 100, 100);
+        teachMockCellSoItWillInclude(mockCells[0][1], 150, 100);
+        teachMockCellSoItWillInclude(mockCells[1][0], 100, 150);
+        teachMockCellSoItWillInclude(mockCells[1][1], 150, 150);
     }
 
     private void createLevelWithDefaultWindow(final GameLevel level) {
