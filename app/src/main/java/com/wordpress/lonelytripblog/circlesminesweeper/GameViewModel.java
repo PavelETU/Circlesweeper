@@ -24,11 +24,13 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
+    private MutableLiveData<Integer> leftMinesLiveData = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
     private int minesLeft;
     private boolean circleWithBombWasEliminated;
+    private boolean markState;
 
     public GameViewModel(final CellsGenerator cellsGenerator) {
         this.cellsGenerator = cellsGenerator;
@@ -51,6 +53,10 @@ public class GameViewModel extends ViewModel {
         return gameCondition;
     }
 
+    public LiveData<Integer> getLeftMines() {
+        return leftMinesLiveData;
+    }
+
     public void setLevel(final GameLevel level) {
         this.level = level;
     }
@@ -66,12 +72,22 @@ public class GameViewModel extends ViewModel {
         gameScore.setValue(0);
         gameCondition.setValue(GAME_IN_PROCESS);
         minesLeft = level.getMinesAmount();
+        updateMinesLiveData();
         updateCellsLiveData();
+    }
+
+    public void markClicked() {
+        markState = !markState;
     }
 
     public void actionDown(final int x, final int y) {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
+        if (markState) {
+            gameCells[takenGameCellPosition.first][takenGameCellPosition.second].setMarked(true);
+            markState = false;
+            return;
+        }
         takenGameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
         if (takenGameCell.isWithMine()) {
             endGameWithLoosing();
@@ -267,6 +283,10 @@ public class GameViewModel extends ViewModel {
 
     private void updateCellsLiveData() {
         cellsLiveData.setValue(gameCells);
+    }
+
+    private void updateMinesLiveData() {
+        leftMinesLiveData.setValue(minesLeft);
     }
 
 }

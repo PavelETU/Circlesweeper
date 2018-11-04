@@ -20,6 +20,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -289,6 +290,36 @@ public class GameViewModelTests {
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
         assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void verifyDefaultMines() {
+        startGameWithMockCells1x2WithOneBomb();
+
+        assertEquals(1, (int) viewModel.getLeftMines().getValue());
+    }
+
+    @Test
+    public void verifyLeftMinesGetsSmallerOnChoose() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        verify(mockCell).setMarked(true);
+    }
+
+    @Test
+    public void afterTogglingMarkedNotCalled() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+
+        viewModel.markClicked();
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        verify(mockCell, Mockito.never()).setMarked(true);
     }
 
     private void startGameWithMockCells2x2WithDefaultCoords() {
