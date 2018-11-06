@@ -24,11 +24,12 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
-    private MutableLiveData<Integer> leftMinesLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
-    private int minesLeft;
+    private int minesCountToDisplayToTheUser;
+    private int notMarkedCellsWithMines;
     private boolean circleWithBombWasEliminated;
     private boolean markState;
 
@@ -53,8 +54,8 @@ public class GameViewModel extends ViewModel {
         return gameCondition;
     }
 
-    public LiveData<Integer> getLeftMines() {
-        return leftMinesLiveData;
+    public LiveData<Integer> getMinesToDisplay() {
+        return minesToDisplayLiveData;
     }
 
     public void setLevel(final GameLevel level) {
@@ -71,7 +72,8 @@ public class GameViewModel extends ViewModel {
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
         gameCondition.setValue(GAME_IN_PROCESS);
-        minesLeft = level.getMinesAmount();
+        minesCountToDisplayToTheUser = level.getMinesAmount();
+        notMarkedCellsWithMines = level.getMinesAmount();
         updateMinesLiveData();
         updateCellsLiveData();
     }
@@ -83,12 +85,16 @@ public class GameViewModel extends ViewModel {
     public void actionDown(final int x, final int y) {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
+        GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
         if (markState) {
-            gameCells[takenGameCellPosition.first][takenGameCellPosition.second].setMarked(true);
+            gameCell.setMarked(!gameCell.isMarked());
+            updateMinesCount(gameCell);
             markState = false;
+            endGameIfWon();
             return;
         }
-        takenGameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
+        if (gameCell.isMarked()) return;
+        takenGameCell = gameCell;
         if (takenGameCell.isWithMine()) {
             endGameWithLoosing();
         }
@@ -97,6 +103,11 @@ public class GameViewModel extends ViewModel {
 
     public void actionMove(final int x, final int y) {
         if (takenGameCell == null) return;
+        if (positionOutsideGameMetrics(x, y)) {
+            returnTakenCircleToDefaultPositionAndZeroingIt();
+            updateCellsLiveData();
+            return;
+        }
         swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
         eliminateNeighborsWithSameColorAndUpdateScore();
         if (circleWithBombWasEliminated) {
@@ -104,19 +115,20 @@ public class GameViewModel extends ViewModel {
             endGameWithLoosing();
             return;
         }
-        if (gameWon()) {
-            endGameWithWinning();
-            return;
-        }
         takenGameCell.moveCircleTo(x, y);
         updateCellsLiveData();
+        endGameIfWon();
+    }
+
+    private void endGameIfWon() {
+        if (gameWon()) {
+            endGameWithWinning();
+        }
     }
 
     public void actionUp() {
         if (takenGameCell == null) return;
-        takenGameCell.moveCircleToDefaultPosition();
-        takenGameCell.makeCircleBigger();
-        takenGameCell = null;
+        returnTakenCircleToDefaultPositionAndZeroingIt();
         updateCellsLiveData();
     }
 
@@ -172,7 +184,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private boolean gameWon() {
-        return minesLeft == 0 && noSpareCirclesWithSameColor();
+        return notMarkedCellsWithMines == 0 && noSpareCirclesWithSameColor();
     }
 
     private boolean noSpareCirclesWithSameColor() {
@@ -275,6 +287,16 @@ public class GameViewModel extends ViewModel {
         }
     }
 
+    private boolean positionOutsideGameMetrics(final int x, final int y) {
+        return x <= 1 || y <= 1 || x >= gameWindowWidth - 1 || y >= gameWindowHeight - 1;
+    }
+
+    private void returnTakenCircleToDefaultPositionAndZeroingIt() {
+        takenGameCell.moveCircleToDefaultPosition();
+        takenGameCell.makeCircleBigger();
+        takenGameCell = null;
+    }
+
     private void moveCircleAndUpdateLiveData(final int x, final int y) {
         takenGameCell.moveCircleTo(x, y);
         takenGameCell.makeCircleSmaller();
@@ -285,8 +307,23 @@ public class GameViewModel extends ViewModel {
         cellsLiveData.setValue(gameCells);
     }
 
+    private void updateMinesCount(final GameCell gameCell) {
+        if (gameCell.isMarked()) {
+            minesCountToDisplayToTheUser--;
+            if (gameCell.isWithMine()) {
+                notMarkedCellsWithMines--;
+            }
+        } else {
+            minesCountToDisplayToTheUser++;
+            if (gameCell.isWithMine()) {
+                notMarkedCellsWithMines++;
+            }
+        }
+        updateMinesLiveData();
+    }
+
     private void updateMinesLiveData() {
-        leftMinesLiveData.setValue(minesLeft);
+        minesToDisplayLiveData.setValue(minesCountToDisplayToTheUser);
     }
 
 }

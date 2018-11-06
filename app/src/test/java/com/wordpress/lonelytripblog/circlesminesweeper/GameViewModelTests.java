@@ -26,6 +26,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -296,7 +297,7 @@ public class GameViewModelTests {
     public void verifyDefaultMines() {
         startGameWithMockCells1x2WithOneBomb();
 
-        assertEquals(1, (int) viewModel.getLeftMines().getValue());
+        assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
     }
 
     @Test
@@ -320,6 +321,108 @@ public class GameViewModelTests {
         viewModel.actionDown(100, 100);
 
         verify(mockCell, Mockito.never()).setMarked(true);
+    }
+
+    @Test
+    public void toggleWorks() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
+
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        verify(mockCell).setMarked(true);
+        verify(mockCell).setMarked(false);
+    }
+
+    @Test
+    public void defaultMinesAmountDisplayed() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+
+        assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
+    }
+
+    @Test
+    public void bombAmountDecreaseAfterMarking() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
+
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        assertEquals(0, (int) viewModel.getMinesToDisplay().getValue());
+    }
+
+    @Test
+    public void bombAmountIncreaseAfterUnmarking() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(true).thenReturn(false);
+
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        assertEquals(2, (int) viewModel.getMinesToDisplay().getValue());
+    }
+
+    @Test
+    public void markedCircleDoesNotMove() {
+        startGameWithMockCells1x2WithNoBombs();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(101, 100);
+
+        verify(mockCell, never()).makeCircleSmaller();
+        verify(mockCell, never()).moveCircleTo(anyInt(), anyInt());
+    }
+
+    @Test
+    public void gameContinuesWithWrongMarkedMine() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(true);
+        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isWithMine()).thenReturn(false);
+        when(mockCell2.isWithMine()).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(101, 100);
+
+        assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void gameWonWhenRightCellGetsMarked() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
+        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isWithMine()).thenReturn(true);
+        when(mockCell2.isWithMine()).thenReturn(false);
+
+        viewModel.markClicked();
+        viewModel.actionDown(100, 100);
+
+        assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void movingToOutsideOfWindowReturnsToDefaultPosition() {
+        startGameWithMockCell1x1();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(1, 1);
+
+        verify(mockCell).moveCircleToDefaultPosition();
+        verify(mockCell).makeCircleBigger();
     }
 
     private void startGameWithMockCells2x2WithDefaultCoords() {
