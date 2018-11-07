@@ -155,8 +155,8 @@ public class GameCellTests {
 
         gameCell1.swapCirclesWith(gameCell2);
 
-        assertEquals(circleForSecondCell, gameCell1.circle);
-        assertEquals(circleForFirstCell, gameCell2.circle);
+        assertEquals(circleForSecondCell, gameCell1.getCircle());
+        assertEquals(circleForFirstCell, gameCell2.getCircle());
     }
 
     @Test

@@ -6,22 +6,21 @@ public class GameCell {
 
     private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private static final float PERCENTAGE_FOR_BIGGER_CIRCLE = 1.15f;
-    @VisibleForTesting
-    Circle circle;
+    private Circle circle;
     private int minesNear = 0;
     private boolean animated = false;
     private boolean withMine;
     private boolean marked = false;
     private final int topLeftX;
     private final int topLeftY;
-    private final int sizeLength;
+    private final int sideLength;
 
     public GameCell(Circle circle, boolean initWithMine) {
         this.circle = circle;
         int radius = circle.getRadius();
         topLeftX = circle.getX() - radius;
         topLeftY = circle.getY() - radius;
-        sizeLength = radius * 2;
+        sideLength = radius * 2;
         withMine = initWithMine;
     }
 
@@ -31,7 +30,7 @@ public class GameCell {
     }
 
     public void moveCircleToDefaultPosition() {
-        moveCircleTo(topLeftX + sizeLength / 2, topLeftY + sizeLength / 2);
+        moveCircleTo(topLeftX + sideLength / 2, topLeftY + sideLength / 2);
     }
 
     public void makeCircleSmaller() {
@@ -48,8 +47,8 @@ public class GameCell {
     }
 
     public boolean contains(final int x, final int y) {
-        return topLeftX + sizeLength > x && topLeftX < x
-                && topLeftY + sizeLength > y && topLeftY < y;
+        return topLeftX + sideLength > x && topLeftX < x
+                && topLeftY + sideLength > y && topLeftY < y;
     }
 
     public void swapCirclesWith(final GameCell gameCellToSwapBy) {
@@ -82,5 +81,25 @@ public class GameCell {
 
     public boolean isCircleInsideAlive() {
         return circle.isAlive();
+    }
+
+    @VisibleForTesting
+    int getTopLeftX() {
+        return topLeftX;
+    }
+
+    @VisibleForTesting
+    int getTopLeftY() {
+        return topLeftY;
+    }
+
+    @VisibleForTesting
+    int getSideLength() {
+        return sideLength;
+    }
+
+    @VisibleForTesting
+    public Circle getCircle() {
+        return circle;
     }
 }
