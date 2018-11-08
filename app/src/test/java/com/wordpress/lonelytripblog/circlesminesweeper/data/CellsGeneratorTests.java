@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class CellsGeneratorTests {
 
@@ -58,6 +59,62 @@ public class CellsGeneratorTests {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
                 assertEquals(row * 100 + 50, generatedGameCells[row][col].getTopLeftY());
+            }
+        }
+    }
+
+    @Test
+    public void verifyCellProperPositionsFor3X4WithShiftRight() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(300 + 100, 400, 0);
+
+        for (int row = 0; row < generatedGameCells.length; row++) {
+            for (int col = 0; col < generatedGameCells[0].length; col++) {
+                assertEquals(col * 100 + 50, generatedGameCells[row][col].getTopLeftX());
+                assertEquals(row * 100, generatedGameCells[row][col].getTopLeftY());
+            }
+        }
+    }
+
+    @Test
+    public void verifyCellProperPositionsFor4X6() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(400, 600, 0);
+
+        for (int row = 0; row < generatedGameCells.length; row++) {
+            for (int col = 0; col < generatedGameCells[0].length; col++) {
+                assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
+                assertEquals(row * 100, generatedGameCells[row][col].getTopLeftY());
+            }
+        }
+    }
+
+    @Test
+    public void verifyCellProperPositionsFor6X10() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(600, 1000, 0);
+
+        for (int row = 0; row < generatedGameCells.length; row++) {
+            for (int col = 0; col < generatedGameCells[0].length; col++) {
+                assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
+                assertEquals(row * 100, generatedGameCells[row][col].getTopLeftY());
+            }
+        }
+    }
+
+    @Test
+    public void noNeighborsWithSameColorFor3X4Field() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(300, 400, 0);
+
+        // To check for colors it would be sufficient to check right circle and bottom circle
+        // cause left and top circles already checked
+        for (int row = 0; row < generatedGameCells.length; row++) {
+            for (int col = 0; col < generatedGameCells[0].length; col++) {
+                if (col != generatedGameCells[0].length - 1) {
+                    assertNotEquals(generatedGameCells[row][col].getCircle().getColor(),
+                            generatedGameCells[row][col + 1].getCircle().getColor());
+                }
+                if (row != generatedGameCells.length - 1) {
+                    assertNotEquals(generatedGameCells[row][col].getCircle().getColor(),
+                            generatedGameCells[row + 1][col].getCircle().getColor());
+                }
             }
         }
     }
