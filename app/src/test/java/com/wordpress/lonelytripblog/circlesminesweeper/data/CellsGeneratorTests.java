@@ -103,6 +103,24 @@ public class CellsGeneratorTests {
     public void noNeighborsWithSameColorFor3X4Field() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(300, 400, 0);
 
+        assertNoNeighborsWithSameColorForCells(generatedGameCells);
+    }
+
+    @Test
+    public void noNeighborsWithSameColorFor4X6Field() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(400, 600, 0);
+
+        assertNoNeighborsWithSameColorForCells(generatedGameCells);
+    }
+
+    @Test
+    public void noNeighborsWithSameColorFor6X10Field() {
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(600, 1000, 0);
+
+        assertNoNeighborsWithSameColorForCells(generatedGameCells);
+    }
+
+    private void assertNoNeighborsWithSameColorForCells(final GameCell[][] generatedGameCells) {
         // To check for colors it would be sufficient to check right circle and bottom circle
         // cause left and top circles already checked
         for (int row = 0; row < generatedGameCells.length; row++) {

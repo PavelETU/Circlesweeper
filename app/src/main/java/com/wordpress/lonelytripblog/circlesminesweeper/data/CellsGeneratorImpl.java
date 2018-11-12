@@ -23,7 +23,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int radiusForCircles;
     private int[] actualColors;
     private Random random;
-    private List<Integer> amountOfCirclesForColor;
+    private List<Integer> amountOfCellsWithSameColorForIndex;
 
 
     @Override
@@ -82,43 +82,53 @@ public class CellsGeneratorImpl implements CellsGenerator {
     }
 
     private void generateColors() {
-        colorsForCircles = new int[amountOnSmallerSide][amountOnBiggerSide];
         final int amountOfDifferentColorsThatWillBeUsed = amountOnSmallerSide;
         final int amountOfCirclesWithSameColor = amountOnBiggerSide;
-        ArrayList<Integer> arrayOfAllColors = new ArrayList<>(Arrays.asList(R.drawable.blue_ball, R.drawable.green_ball,
-                R.drawable.yellow_ball, R.drawable.orange_ball, R.drawable.red_ball,
-                R.drawable.purple_ball
-        ));
-        actualColors = new int[amountOfDifferentColorsThatWillBeUsed];
-        for (int i = 0; i < actualColors.length; i++) {
-            actualColors[i] = arrayOfAllColors.remove(getRandom().nextInt(arrayOfAllColors.size()));
-        }
-        boolean startCreateCircleFromScratch = true;
-        while (startCreateCircleFromScratch) {
-            amountOfCirclesForColor = new ArrayList<>(amountOfDifferentColorsThatWillBeUsed);
-            for (int i = 0; i < amountOfDifferentColorsThatWillBeUsed; i++) {
-                amountOfCirclesForColor.add(amountOfCirclesWithSameColor);
-            }
-            startCreateCircleFromScratch = false;
-            for (int row = 0; row < gameCells.length && !startCreateCircleFromScratch; row++) {
-                for (int col = 0; col < gameCells[0].length && !startCreateCircleFromScratch; col++) {
+        colorsForCircles = new int[amountOnSmallerSide][amountOnBiggerSide];
+        populateActualColors(amountOfDifferentColorsThatWillBeUsed);
+        boolean startCreateColorsFromScratch = true;
+        // TODO come up with more efficient algorithm or use safe net after two or three tries, but remove that while loop
+        while (startCreateColorsFromScratch) {
+            startCreateColorsFromScratch = false;
+            populateAmountOfCellsWithSameColorForIndex(amountOfDifferentColorsThatWillBeUsed, amountOfCirclesWithSameColor);
+            for (int row = 0; row < gameCells.length && !startCreateColorsFromScratch; row++) {
+                for (int col = 0; col < gameCells[0].length && !startCreateColorsFromScratch; col++) {
                     int colorIndex;
                     if (firstCell(row, col)) {
                         colorIndex = generateRandomColorIndex();
                     } else if (cellInFirstRow(row)) {
                         colorIndex = generateRandomColorIndexTakenLeftCellIntoConsideration(row, col);
                     } else {
-                        colorIndex = getIndexWithBiggestAmountOfDedicatedCellsTakenIntoConsiderationTopAndLeftCells(row, col);
+                        colorIndex = getIndexForColorWithBiggestAmountOfLeftCellsCheckingTopAndLeftCells(row, col);
                         if (colorIndex == INVALID_INDEX) {
-                            startCreateCircleFromScratch = true;
+                            startCreateColorsFromScratch = true;
                         }
                     }
-                    if (!startCreateCircleFromScratch) {
-                        amountOfCirclesForColor.set(colorIndex, amountOfCirclesForColor.get(colorIndex) - 1);
+                    if (!startCreateColorsFromScratch) {
+                        amountOfCellsWithSameColorForIndex.set(colorIndex, amountOfCellsWithSameColorForIndex.get(colorIndex) - 1);
                         colorsForCircles[row][col] = actualColors[colorIndex];
                     }
                 }
             }
+        }
+    }
+
+    private void populateActualColors(final int amountOfDifferentColorsThatWillBeUsed) {
+        actualColors = new int[amountOfDifferentColorsThatWillBeUsed];
+        ArrayList<Integer> arrayOfAllColors = new ArrayList<>(Arrays.asList(R.drawable.blue_ball, R.drawable.green_ball,
+                R.drawable.yellow_ball, R.drawable.orange_ball, R.drawable.red_ball,
+                R.drawable.purple_ball
+        ));
+        for (int i = 0; i < actualColors.length; i++) {
+            actualColors[i] = arrayOfAllColors.remove(getRandom().nextInt(arrayOfAllColors.size()));
+        }
+    }
+
+    private void populateAmountOfCellsWithSameColorForIndex(final int amountOfDifferentColorsThatWillBeUsed,
+                                                            final int amountOfCirclesWithSameColor) {
+        amountOfCellsWithSameColorForIndex = new ArrayList<>(amountOfDifferentColorsThatWillBeUsed);
+        for (int i = 0; i < amountOfDifferentColorsThatWillBeUsed; i++) {
+            amountOfCellsWithSameColorForIndex.add(amountOfCirclesWithSameColor);
         }
     }
 
@@ -146,14 +156,14 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return indexToTry;
     }
 
-    private int getIndexWithBiggestAmountOfDedicatedCellsTakenIntoConsiderationTopAndLeftCells(
-            final int row, final int col) {
+    private int getIndexForColorWithBiggestAmountOfLeftCellsCheckingTopAndLeftCells(final int row,
+                                                                                    final int col) {
         int indexToTry = INVALID_INDEX;
         int maxAmount = 0;
-        for (int i = 0; i < amountOfCirclesForColor.size(); i++) {
-            if (amountOfCirclesForColor.get(i) > maxAmount
+        for (int i = 0; i < amountOfCellsWithSameColorForIndex.size(); i++) {
+            if (amountOfCellsWithSameColorForIndex.get(i) > maxAmount
                     && isColorDifferentFromTopAndLeft(row, col, actualColors[i])) {
-                maxAmount = amountOfCirclesForColor.get(i);
+                maxAmount = amountOfCellsWithSameColorForIndex.get(i);
                 indexToTry = i;
             }
         }
