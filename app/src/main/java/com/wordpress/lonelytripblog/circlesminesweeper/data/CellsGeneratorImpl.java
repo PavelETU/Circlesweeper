@@ -4,12 +4,12 @@ import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public class CellsGeneratorImpl implements CellsGenerator {
 
+    private static final int INVALID_INDEX = -1;
     private int amountOnSmallerSide;
     private int amountOnBiggerSide;
     private int smallerSideLength;
@@ -19,7 +19,11 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int shiftForBiggerSide;
     private int bombsAmount;
     private GameCell[][] gameCells;
+    private int[][] colorsForCircles;
     private int radiusForCircles;
+    private int[] actualColors;
+    private Random random;
+    private List<Integer> amountOfCirclesForColor;
 
 
     @Override
@@ -67,51 +71,108 @@ public class CellsGeneratorImpl implements CellsGenerator {
     }
 
     private void populateGameCells() {
-        legacyAlgorithm();
+        generateColors();
+        for (int row = 0; row < gameCells.length; row++) {
+            for (int col = 0; col < gameCells[0].length; col++) {
+                Circle circle = new Circle(getXForCol(col), getYForRow(row), radiusForCircles,
+                        colorsForCircles[row][col]);
+                gameCells[row][col] = new GameCell(circle, false);
+            }
+        }
     }
 
-    private void legacyAlgorithm() {
-        int amountOfDifferentColorsThatWillBeUsed = amountOnSmallerSide;
-        int amountOfCirclesWithSameColor = amountOnBiggerSide;
+    private void generateColors() {
+        colorsForCircles = new int[amountOnSmallerSide][amountOnBiggerSide];
+        final int amountOfDifferentColorsThatWillBeUsed = amountOnSmallerSide;
+        final int amountOfCirclesWithSameColor = amountOnBiggerSide;
         ArrayList<Integer> arrayOfAllColors = new ArrayList<>(Arrays.asList(R.drawable.blue_ball, R.drawable.green_ball,
                 R.drawable.yellow_ball, R.drawable.orange_ball, R.drawable.red_ball,
                 R.drawable.purple_ball
         ));
-        Random random = new Random();
-        List<Integer> amountOfCirclesForColor = new ArrayList<>(amountOfDifferentColorsThatWillBeUsed);
-        for (int i = 0; i < amountOfDifferentColorsThatWillBeUsed; i++) {
-            amountOfCirclesForColor.add(amountOfCirclesWithSameColor);
-        }
-        int[] actualColors = new int[amountOfDifferentColorsThatWillBeUsed];
+        actualColors = new int[amountOfDifferentColorsThatWillBeUsed];
         for (int i = 0; i < actualColors.length; i++) {
-            actualColors[i] = arrayOfAllColors.remove(random.nextInt(arrayOfAllColors.size()));
+            actualColors[i] = arrayOfAllColors.remove(getRandom().nextInt(arrayOfAllColors.size()));
         }
-        for (int row = 0; row < gameCells.length; row++) {
-            for (int col = 0; col < gameCells[0].length; col++) {
-                boolean checked = false;
-                int colorToTake = 0;
-                while (!checked) {
+        boolean startCreateCircleFromScratch = true;
+        while (startCreateCircleFromScratch) {
+            amountOfCirclesForColor = new ArrayList<>(amountOfDifferentColorsThatWillBeUsed);
+            for (int i = 0; i < amountOfDifferentColorsThatWillBeUsed; i++) {
+                amountOfCirclesForColor.add(amountOfCirclesWithSameColor);
+            }
+            startCreateCircleFromScratch = false;
+            for (int row = 0; row < gameCells.length && !startCreateCircleFromScratch; row++) {
+                for (int col = 0; col < gameCells[0].length && !startCreateCircleFromScratch; col++) {
                     int colorIndex;
-                    // For first third circles pick up colors pretty much on random
-                    if (row * col < (amountOnSmallerSide * amountOnBiggerSide / 3)) {
-                        colorIndex = random.nextInt(actualColors.length);
-                        colorToTake = actualColors[colorIndex];
+                    if (firstCell(row, col)) {
+                        colorIndex = generateRandomColorIndex();
+                    } else if (cellInFirstRow(row)) {
+                        colorIndex = generateRandomColorIndexTakenLeftCellIntoConsideration(row, col);
                     } else {
-                        // after that choose max from the left
-                        amountOfCirclesForColor.indexOf(Collections.max(amountOfCirclesForColor));
-                        colorIndex = random.nextInt(actualColors.length);
-                        colorToTake = actualColors[colorIndex];
+                        colorIndex = getIndexWithBiggestAmountOfDedicatedCellsTakenIntoConsiderationTopAndLeftCells(row, col);
+                        if (colorIndex == INVALID_INDEX) {
+                            startCreateCircleFromScratch = true;
+                        }
                     }
-                    if ((row == 0 || (gameCells[row - 1][col].getCircle().getColor() != colorToTake))
-                            && (col == 0 || (gameCells[row][col - 1].getCircle().getColor() != colorToTake))) {
+                    if (!startCreateCircleFromScratch) {
                         amountOfCirclesForColor.set(colorIndex, amountOfCirclesForColor.get(colorIndex) - 1);
-                        checked = true;
+                        colorsForCircles[row][col] = actualColors[colorIndex];
                     }
                 }
-                Circle circle = new Circle(getXForCol(col), getYForRow(row), radiusForCircles, colorToTake);
-                gameCells[row][col] = new GameCell(circle, false);
             }
         }
+    }
+
+    private boolean firstCell(final int row, final int col) {
+        return row == 0 && col == 0;
+    }
+
+    private boolean cellInFirstRow(final int row) {
+        return row == 0;
+    }
+
+    private int generateRandomColorIndex() {
+        return getRandom().nextInt(actualColors.length);
+    }
+
+    private int generateRandomColorIndexTakenLeftCellIntoConsideration(final int row, final int col) {
+        int indexToTry = random.nextInt(actualColors.length);
+        if (actualColors[indexToTry] == colorsForCircles[row][col - 1]) {
+            if (indexToTry + 1 == actualColors.length) {
+                indexToTry = 0;
+            } else {
+                indexToTry = indexToTry + 1;
+            }
+        }
+        return indexToTry;
+    }
+
+    private int getIndexWithBiggestAmountOfDedicatedCellsTakenIntoConsiderationTopAndLeftCells(
+            final int row, final int col) {
+        int indexToTry = INVALID_INDEX;
+        int maxAmount = 0;
+        for (int i = 0; i < amountOfCirclesForColor.size(); i++) {
+            if (amountOfCirclesForColor.get(i) > maxAmount
+                    && isColorDifferentFromTopAndLeft(row, col, actualColors[i])) {
+                maxAmount = amountOfCirclesForColor.get(i);
+                indexToTry = i;
+            }
+        }
+        return indexToTry;
+    }
+
+    private Random getRandom() {
+        if (random == null) random = new Random();
+        return random;
+    }
+
+    private boolean isColorDifferentFromTopAndLeft(int row, int col, int color) {
+        if (col != 0 && colorsForCircles[row][col - 1] == color) {
+            return false;
+        }
+        if (row != 0 && colorsForCircles[row - 1][col] == color) {
+            return false;
+        }
+        return true;
     }
 
     private int getXForCol(final int col) {
