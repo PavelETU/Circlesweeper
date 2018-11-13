@@ -20,6 +20,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int bombsAmount;
     private GameCell[][] gameCells;
     private int[][] colorsForCircles;
+    private boolean[][] withMine;
     private int radiusForCircles;
     private int[] actualColors;
     private Random random;
@@ -45,9 +46,10 @@ public class CellsGeneratorImpl implements CellsGenerator {
                                                         int amountOnSmallerSide, int amountOnBiggerSide) {
         smallerSideLength = smallerSide;
         biggerSideLength = biggerSide;
-        this.bombsAmount = bombsAmount;
         this.amountOnSmallerSide = amountOnSmallerSide;
         this.amountOnBiggerSide = amountOnBiggerSide;
+        this.bombsAmount = bombsAmount;
+        throwExceptionIfMinesOfLimit();
         return generateCells();
     }
 
@@ -72,11 +74,12 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     private void populateGameCells() {
         generateColors();
+        generateMines();
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 Circle circle = new Circle(getXForCol(col), getYForRow(row), radiusForCircles,
                         colorsForCircles[row][col]);
-                gameCells[row][col] = new GameCell(circle, false);
+                gameCells[row][col] = new GameCell(circle, withMine[row][col]);
             }
         }
     }
@@ -109,6 +112,19 @@ public class CellsGeneratorImpl implements CellsGenerator {
                         colorsForCircles[row][col] = actualColors[colorIndex];
                     }
                 }
+            }
+        }
+    }
+
+    private void generateMines() {
+        withMine = new boolean[gameCells.length][gameCells[0].length];
+        // TODO optimize algorithm
+        while (bombsAmount != 0) {
+            int row = getRandom().nextInt(gameCells.length);
+            int col = getRandom().nextInt(gameCells[0].length);
+            if (!withMine[row][col]) {
+                withMine[row][col] = true;
+                bombsAmount--;
             }
         }
     }
@@ -191,6 +207,12 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     private int getYForRow(final int row) {
         return radiusForCircles + lengthOfCellSide * row + shiftForBiggerSide;
+    }
+
+    private void throwExceptionIfMinesOfLimit() {
+        if (bombsAmount > amountOnSmallerSide * amountOnBiggerSide || bombsAmount < 0) {
+            throw new RuntimeException("Mines should be in range 0..cells.size");
+        }
     }
 
 
