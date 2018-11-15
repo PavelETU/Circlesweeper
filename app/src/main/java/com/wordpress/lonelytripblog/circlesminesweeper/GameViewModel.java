@@ -33,7 +33,7 @@ public class GameViewModel extends ViewModel {
     private boolean circleWithBombWasEliminated;
     private boolean markState;
 
-    public GameViewModel(final CellsGenerator cellsGenerator) {
+    public GameViewModel(CellsGenerator cellsGenerator) {
         this.cellsGenerator = cellsGenerator;
     }
 
@@ -58,11 +58,11 @@ public class GameViewModel extends ViewModel {
         return minesToDisplayLiveData;
     }
 
-    public void setLevel(final GameLevel level) {
+    public void setLevel(GameLevel level) {
         this.level = level;
     }
 
-    public void setSizeOfGameWindow(final int width, final int height) {
+    public void setSizeOfGameWindow(int width, int height) {
         gameWindowWidth = width;
         gameWindowHeight = height;
     }
@@ -82,7 +82,7 @@ public class GameViewModel extends ViewModel {
         markState = !markState;
     }
 
-    public void actionDown(final int x, final int y) {
+    public void actionDown(int x, int y) {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
         GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
@@ -101,7 +101,7 @@ public class GameViewModel extends ViewModel {
         moveCircleAndUpdateLiveData(x, y);
     }
 
-    public void actionMove(final int x, final int y) {
+    public void actionMove(int x, int y) {
         if (takenGameCell == null) return;
         if (positionOutsideGameMetrics(x, y)) {
             returnTakenCircleToDefaultPositionAndZeroingIt();
@@ -132,7 +132,7 @@ public class GameViewModel extends ViewModel {
         updateCellsLiveData();
     }
 
-    private Pair<Integer, Integer> findPositionForCellThatContainsPosition(final int x, final int y) {
+    private Pair<Integer, Integer> findPositionForCellThatContainsPosition(int x, int y) {
         for (int i = 0; i < gameCells.length; i++) {
             for (int j = 0; j < gameCells[0].length; j++) {
                 GameCell gameCell = gameCells[i][j];
@@ -144,7 +144,7 @@ public class GameViewModel extends ViewModel {
         return null;
     }
 
-    private void swapCirclesIfTheyOverlappedAndCachedItsLocations(final int x, final int y) {
+    private void swapCirclesIfTheyOverlappedAndCachedItsLocations(int x, int y) {
         if (!takenGameCell.contains(x, y)) {
             Pair<Integer, Integer> gameCellPosition = findPositionForCellThatContainsPosition(x, y);
             if (gameCellPosition != null) {
@@ -170,8 +170,8 @@ public class GameViewModel extends ViewModel {
         }
     }
 
-    private void updateScoreBasedOnGoneCircles(final int circlesGoneBecauseOfFirstCircle,
-                                               final int circlesGoneBecauseOfSecondCircle) {
+    private void updateScoreBasedOnGoneCircles(int circlesGoneBecauseOfFirstCircle,
+                                               int circlesGoneBecauseOfSecondCircle) {
         int scoreToAdd = circlesGoneBecauseOfFirstCircle * 10 + circlesGoneBecauseOfSecondCircle * 10;
         if (circlesGoneBecauseOfFirstCircle != 0 && circlesGoneBecauseOfSecondCircle != 0) {
             scoreToAdd *= 2;
@@ -179,7 +179,7 @@ public class GameViewModel extends ViewModel {
         addToScoreLiveData(scoreToAdd);
     }
 
-    private void addToScoreLiveData(final int scoreToAdd) {
+    private void addToScoreLiveData(int scoreToAdd) {
         gameScore.setValue(gameScore.getValue() + scoreToAdd);
     }
 
@@ -224,7 +224,7 @@ public class GameViewModel extends ViewModel {
     }
 
     // Breaks Command-Query separation
-    private int eliminateCirclesAndReturnEliminatedAmount(final int row, final int col) {
+    private int eliminateCirclesAndReturnEliminatedAmount(int row, int col) {
         int eliminatedCirclesCount = 0;
         if (cellToTheLeftIsSameColor(row, col)) {
             eliminateCircleAtPosition(row, col - 1);
@@ -249,27 +249,27 @@ public class GameViewModel extends ViewModel {
         return eliminatedCirclesCount;
     }
 
-    private boolean cellToTheLeftIsSameColor(final int row, final int column) {
+    private boolean cellToTheLeftIsSameColor(int row, int column) {
         if (column == 0) return false;
         return gameCells[row][column].isColorTheSame(gameCells[row][column - 1]);
     }
 
-    private boolean cellToTheRightIsSameColor(final int row, final int column) {
+    private boolean cellToTheRightIsSameColor(int row, int column) {
         if (column + 1 == gameCells[0].length) return false;
         return gameCells[row][column].isColorTheSame(gameCells[row][column + 1]);
     }
 
-    private boolean cellToTheBottomIsSameColor(final int row, final int column) {
+    private boolean cellToTheBottomIsSameColor(int row, int column) {
         if (row + 1 == gameCells.length) return false;
         return gameCells[row][column].isColorTheSame(gameCells[row + 1][column]);
     }
 
-    private boolean cellToTheTopIsSameColor(final int row, final int column) {
+    private boolean cellToTheTopIsSameColor(int row, int column) {
         if (row == 0) return false;
         return gameCells[row][column].isColorTheSame(gameCells[row - 1][column]);
     }
 
-    private void eliminateCircleAtPosition(final int row, final int col) {
+    private void eliminateCircleAtPosition(int row, int col) {
         GameCell cellToEliminate = gameCells[row][col];
         if (cellToEliminate.isWithMine()) {
             circleWithBombWasEliminated = true;
@@ -287,7 +287,7 @@ public class GameViewModel extends ViewModel {
         }
     }
 
-    private boolean positionOutsideGameMetrics(final int x, final int y) {
+    private boolean positionOutsideGameMetrics(int x, int y) {
         return x <= 1 || y <= 1 || x >= gameWindowWidth - 1 || y >= gameWindowHeight - 1;
     }
 
@@ -297,7 +297,7 @@ public class GameViewModel extends ViewModel {
         takenGameCell = null;
     }
 
-    private void moveCircleAndUpdateLiveData(final int x, final int y) {
+    private void moveCircleAndUpdateLiveData(int x, int y) {
         takenGameCell.moveCircleTo(x, y);
         takenGameCell.makeCircleSmaller();
         updateCellsLiveData();
@@ -307,7 +307,7 @@ public class GameViewModel extends ViewModel {
         cellsLiveData.setValue(gameCells);
     }
 
-    private void updateMinesCount(final GameCell gameCell) {
+    private void updateMinesCount(GameCell gameCell) {
         if (gameCell.isMarked()) {
             minesCountToDisplayToTheUser--;
             if (gameCell.isWithMine()) {

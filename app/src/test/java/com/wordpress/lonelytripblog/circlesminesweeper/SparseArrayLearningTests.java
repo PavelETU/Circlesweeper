@@ -9,7 +9,7 @@ import org.junit.Test;
 public class SparseArrayLearningTests {
 
     @Test(expected = NullPointerException.class)
-    public void nullPointerExceptionThrows() {
+    public void nullPointerExceptionThrownWhileUnboxingNullElement() {
         SparseArrayCompat<Integer> sparseArray = new SparseArrayCompat<>();
         int count = sparseArray.get(50);
     }

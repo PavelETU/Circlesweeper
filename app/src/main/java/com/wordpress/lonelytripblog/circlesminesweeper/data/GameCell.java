@@ -46,18 +46,18 @@ public class GameCell {
         animated = true;
     }
 
-    public boolean contains(final int x, final int y) {
+    public boolean contains(int x, int y) {
         return topLeftX + sideLength > x && topLeftX < x
                 && topLeftY + sideLength > y && topLeftY < y;
     }
 
-    public void swapCirclesWith(final GameCell gameCellToSwapBy) {
+    public void swapCirclesWith(GameCell gameCellToSwapBy) {
         Circle circleToSwap = circle;
         circle = gameCellToSwapBy.circle;
         gameCellToSwapBy.circle = circleToSwap;
     }
 
-    public boolean isColorTheSame(final GameCell gameCell) {
+    public boolean isColorTheSame(GameCell gameCell) {
         // Does this violate the Law of Demeter? I don't think so:)
         if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
         return circle.getColor() == gameCell.circle.getColor();

@@ -140,8 +140,8 @@ public class CellsGeneratorImpl implements CellsGenerator {
         }
     }
 
-    private void populateAmountOfCellsWithSameColorForIndex(final int amountOfDifferentColorsThatWillBeUsed,
-                                                            final int amountOfCirclesWithSameColor) {
+    private void populateAmountOfCellsWithSameColorForIndex(int amountOfDifferentColorsThatWillBeUsed,
+                                                            int amountOfCirclesWithSameColor) {
         amountOfCellsWithSameColorForIndex = new ArrayList<>(amountOfDifferentColorsThatWillBeUsed);
         for (int i = 0; i < amountOfDifferentColorsThatWillBeUsed; i++) {
             amountOfCellsWithSameColorForIndex.add(amountOfCirclesWithSameColor);
@@ -160,7 +160,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return getRandom().nextInt(actualColors.length);
     }
 
-    private int generateRandomColorIndexTakenLeftCellIntoConsideration(final int row, final int col) {
+    private int generateRandomColorIndexTakenLeftCellIntoConsideration(int row, int col) {
         int indexToTry = random.nextInt(actualColors.length);
         if (actualColors[indexToTry] == colorsForCircles[row][col - 1]) {
             if (indexToTry + 1 == actualColors.length) {
@@ -172,8 +172,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return indexToTry;
     }
 
-    private int getIndexForColorWithBiggestAmountOfLeftCellsCheckingTopAndLeftCells(final int row,
-                                                                                    final int col) {
+    private int getIndexForColorWithBiggestAmountOfLeftCellsCheckingTopAndLeftCells(int row, int col) {
         int indexToTry = INVALID_INDEX;
         int maxAmount = 0;
         for (int i = 0; i < amountOfCellsWithSameColorForIndex.size(); i++) {

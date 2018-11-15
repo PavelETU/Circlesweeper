@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 public class GameCellTests {
 
     private Circle circle = mock(Circle.class);
-    private final int defaultX = 50;
-    private final int defaultY = 60;
-    private final int defaultRadius = 100;
+    private final static int DEFAULT_X = 50;
+    private final static int DEFAULT_Y = 60;
+    private final static int DEFAULT_RADIUS = 100;
     private GameCell gameCell;
 
     @Test
@@ -120,7 +120,7 @@ public class GameCellTests {
 
         verifyCirclesFieldsRequested();
         verifyCircleMovedTo(100, 120);
-        verifyCircleMovedTo(defaultX, defaultY);
+        verifyCircleMovedTo(DEFAULT_X, DEFAULT_Y);
         verifyNoMoreInteractions(circle);
     }
 
@@ -131,7 +131,7 @@ public class GameCellTests {
         gameCell.makeCircleSmaller();
 
         verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int) (defaultRadius * 0.85));
+        verify(circle).setRadius((int) (DEFAULT_RADIUS * 0.85));
         verifyNoMoreInteractions(circle);
     }
 
@@ -142,7 +142,7 @@ public class GameCellTests {
         gameCell.makeCircleBigger();
 
         verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int) (defaultRadius * 1.15f));
+        verify(circle).setRadius((int) (DEFAULT_RADIUS * 1.15f));
         verifyNoMoreInteractions(circle);
     }
 
@@ -179,7 +179,7 @@ public class GameCellTests {
         assertTrue(gameCell1.isColorTheSame(gameCell2));
     }
 
-    private void verifyCirclesFieldsRequested(final int timesGetRadiusInvoked) {
+    private void verifyCirclesFieldsRequested(int timesGetRadiusInvoked) {
         verify(circle).getX();
         verify(circle).getY();
         verify(circle, times(timesGetRadiusInvoked)).getRadius();
@@ -189,15 +189,15 @@ public class GameCellTests {
         verifyCirclesFieldsRequested(1);
     }
 
-    private void verifyCircleMovedTo(final int x, final int y) {
+    private void verifyCircleMovedTo(int x, int y) {
         verify(circle).setX(x);
         verify(circle).setY(y);
     }
 
     private void teachCircleToReturnDefaultValueAndCreateGameCellWithIt() {
-        when(circle.getX()).thenReturn(defaultX);
-        when(circle.getY()).thenReturn(defaultY);
-        when(circle.getRadius()).thenReturn(defaultRadius);
+        when(circle.getX()).thenReturn(DEFAULT_X);
+        when(circle.getY()).thenReturn(DEFAULT_Y);
+        when(circle.getRadius()).thenReturn(DEFAULT_RADIUS);
 
         gameCell = new GameCell(circle, false);
     }

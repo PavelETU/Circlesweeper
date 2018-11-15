@@ -433,7 +433,7 @@ public class GameViewModelTests {
         teachMockCellSoItWillInclude(mockCells[1][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
     }
 
-    private void createLevelWithDefaultWindow(final GameLevel level) {
+    private void createLevelWithDefaultWindow(GameLevel level) {
         viewModel.setLevel(level);
         viewModel.setSizeOfGameWindow(defaultWidth, defaultHeight);
     }
@@ -461,7 +461,7 @@ public class GameViewModelTests {
         startGameWithMockCells1X2WithLevel(new SecondLevel());
     }
 
-    private void startGameWithMockCells1X2WithLevel(final GameLevel level) {
+    private void startGameWithMockCells1X2WithLevel(GameLevel level) {
         GameCell[][] gameCells = new GameCell[1][2];
         gameCells[0][0] = mockCell;
         gameCells[0][1] = mockCell2;
@@ -507,11 +507,11 @@ public class GameViewModelTests {
         viewModel.startGame();
     }
 
-    private void teachMockCellSoItWillExclude(GameCell mockCellToTeach, final int x, final int y) {
+    private void teachMockCellSoItWillExclude(GameCell mockCellToTeach, int x, int y) {
         when(mockCellToTeach.contains(x, y)).thenReturn(false);
     }
 
-    private void teachMockCellSoItWillInclude(GameCell mockCellToTeach, final int x, final int y) {
+    private void teachMockCellSoItWillInclude(GameCell mockCellToTeach, int x, int y) {
         when(mockCellToTeach.contains(x, y)).thenReturn(true);
     }
 
