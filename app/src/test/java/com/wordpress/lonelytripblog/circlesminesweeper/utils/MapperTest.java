@@ -1,9 +1,9 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

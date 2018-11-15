@@ -1,6 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
-import android.support.v4.util.SparseArrayCompat;
+import androidx.collection.SparseArrayCompat;
 
 import junit.framework.Assert;
 

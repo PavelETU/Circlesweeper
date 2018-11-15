@@ -1,10 +1,10 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.support.v4.util.Pair;
-import android.support.v4.util.SparseArrayCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.core.util.Pair;
+import androidx.collection.SparseArrayCompat;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;

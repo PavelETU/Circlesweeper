@@ -1,6 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 public class GameCell {
 

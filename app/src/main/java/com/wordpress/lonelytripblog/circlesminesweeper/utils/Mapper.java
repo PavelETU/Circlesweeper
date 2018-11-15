@@ -1,6 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 public class Mapper {
 
@@ -37,8 +37,8 @@ public class Mapper {
         }
         float factorForX = calculateMultipleFactorForX();
         float factorForY = calculateMultipleFactorForY();
-        xForPoint = Math.round( xForPoint * factorForX);
-        yForPoint = Math.round( yForPoint * factorForY);
+        xForPoint = Math.round(xForPoint * factorForX);
+        yForPoint = Math.round(yForPoint * factorForY);
         return new Point(xForPoint, yForPoint);
     }
 

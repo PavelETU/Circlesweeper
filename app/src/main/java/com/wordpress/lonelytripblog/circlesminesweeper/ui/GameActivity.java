@@ -1,9 +1,10 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class GameActivity extends AppCompatActivity implements
         CustomLevelDialogFragment.CustomLevelDialogCallback {
