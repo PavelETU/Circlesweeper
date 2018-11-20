@@ -84,18 +84,15 @@ public class GameCell {
         return circle.isAlive();
     }
 
-    @VisibleForTesting
-    int getTopLeftX() {
+    public int getTopLeftX() {
         return topLeftX;
     }
 
-    @VisibleForTesting
-    int getTopLeftY() {
+    public int getTopLeftY() {
         return topLeftY;
     }
 
-    @VisibleForTesting
-    int getSideLength() {
+    public int getSideLength() {
         return sideLength;
     }
 

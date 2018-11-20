@@ -1,6 +1,12 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
+import android.graphics.Bitmap;
+
+import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
+
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 public class Mapper {
 
@@ -40,6 +46,12 @@ public class Mapper {
         xForPoint = Math.round(xForPoint * factorForX);
         yForPoint = Math.round(yForPoint * factorForY);
         return new Point(xForPoint, yForPoint);
+    }
+
+    public LiveData<Bitmap> getGameImageLiveData(LiveData<GameCell[][]> gameCellsLiveData) {
+        return Transformations.map(gameCellsLiveData,
+                gameCells -> GameCellsToBitmap.gameCellsToBitmap(gameCells, initialGameWindowHeight,
+                        initialGameWindowWidth, currentHeight, currentWidth, swapXAndY()));
     }
 
     private boolean swapXAndY() {
