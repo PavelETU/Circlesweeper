@@ -7,21 +7,22 @@ public class GameCell {
     private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private static final float PERCENTAGE_FOR_BIGGER_CIRCLE = 1.15f;
     private Circle circle;
-    private int minesNear = 0;
     private boolean animated = false;
-    private boolean withMine;
+    private final boolean withMine;
     private boolean marked = false;
+    private final int minesNear;
     private final int topLeftX;
     private final int topLeftY;
     private final int sideLength;
 
-    public GameCell(Circle circle, boolean initWithMine) {
+    public GameCell(Circle circle, boolean initWithMine, int minesNear) {
         this.circle = circle;
         int radius = circle.getRadius();
         topLeftX = circle.getX() - radius;
         topLeftY = circle.getY() - radius;
         sideLength = radius * 2;
         withMine = initWithMine;
+        this.minesNear = minesNear;
     }
 
     public void moveCircleTo(int x, int y) {
@@ -76,7 +77,7 @@ public class GameCell {
     }
 
     public int getColor() {
-        return minesNear;
+        return circle.getColor();
     }
 
     public boolean isCircleInsideAlive() {
@@ -102,4 +103,9 @@ public class GameCell {
     public Circle getCircle() {
         return circle;
     }
+
+    public int getMinesNear() {
+        return minesNear;
+    }
+
 }

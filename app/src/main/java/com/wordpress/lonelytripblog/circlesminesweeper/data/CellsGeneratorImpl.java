@@ -79,7 +79,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
             for (int col = 0; col < gameCells[0].length; col++) {
                 Circle circle = new Circle(getXForCol(col), getYForRow(row), radiusForCircles,
                         colorsForCircles[row][col]);
-                gameCells[row][col] = new GameCell(circle, withMine[row][col]);
+                gameCells[row][col] = new GameCell(circle, withMine[row][col], calculateMinesNearCell(row, col));
             }
         }
     }
@@ -212,6 +212,48 @@ public class CellsGeneratorImpl implements CellsGenerator {
         if (bombsAmount > amountOnSmallerSide * amountOnBiggerSide || bombsAmount < 0) {
             throw new RuntimeException("Mines should be in range 0..cells.size");
         }
+    }
+
+    private int calculateMinesNearCell(int row, int col) {
+        return calculateMinesUp(row, col) + calculateMinesDown(row, col)
+                + calculateMinesInCurrentRow(row, col);
+    }
+
+    private int calculateMinesUp(int row, int col) {
+        if (row == 0) return 0;
+        return calculateMinesForRowAndCol(row - 1, col);
+    }
+
+    private int calculateMinesDown(int row, int col) {
+        if (row == gameCells.length - 1) return 0;
+        return calculateMinesForRowAndCol(row + 1, col);
+    }
+
+    private int calculateMinesInCurrentRow(int row, int col) {
+        return calculateMinesLeftAndRight(row, col);
+    }
+
+    private int calculateMinesForRowAndCol(int row, int col) {
+        int minesInRow = 0;
+        if (withMine[row][col]) {
+            minesInRow++;
+        }
+        return minesInRow + calculateMinesLeftAndRight(row, col);
+    }
+
+    private int calculateMinesLeftAndRight(int row, int col) {
+        int minesInRow = 0;
+        if (col != 0) {
+            if (withMine[row][col - 1]) {
+                minesInRow++;
+            }
+        }
+        if (col != gameCells[0].length - 1) {
+            if (withMine[row][col + 1]) {
+                minesInRow++;
+            }
+        }
+        return minesInRow;
     }
 
 

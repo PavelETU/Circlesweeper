@@ -23,7 +23,7 @@ public class GameCellTests {
     public void gameCellShouldContainPointInTheMiddle() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertTrue(gameCell.contains(50, 50));
     }
@@ -32,7 +32,7 @@ public class GameCellTests {
     public void gameCellShouldContainPointInLeftTop() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertTrue(gameCell.contains(26, 26));
     }
@@ -41,7 +41,7 @@ public class GameCellTests {
     public void gameCellShouldContainPointInLeftBottom() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertTrue(gameCell.contains(26, 74));
     }
@@ -50,7 +50,7 @@ public class GameCellTests {
     public void gameCellShouldContainPointInRightBottom() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertTrue(gameCell.contains(74, 74));
     }
@@ -59,7 +59,7 @@ public class GameCellTests {
     public void gameCellShouldContainPointInRightTop() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertTrue(gameCell.contains(74, 26));
     }
@@ -68,7 +68,7 @@ public class GameCellTests {
     public void gameCellDoesNotContainPointOnTopEdge() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertFalse(gameCell.contains(50, 25));
     }
@@ -77,7 +77,7 @@ public class GameCellTests {
     public void gameCellDoesNotContainPointOnLeftEdge() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertFalse(gameCell.contains(25, 50));
     }
@@ -86,7 +86,7 @@ public class GameCellTests {
     public void gameCellDoesNotContainPointOnRightEdge() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertFalse(gameCell.contains(75, 50));
     }
@@ -95,7 +95,7 @@ public class GameCellTests {
     public void gameCellDoesNotContainPointOnBottomEdge() {
         Circle circle = new Circle(50, 50, 25, 0);
 
-        GameCell gameCell = new GameCell(circle, false);
+        GameCell gameCell = new GameCell(circle, false, 0);
 
         assertFalse(gameCell.contains(50, 75));
     }
@@ -150,8 +150,8 @@ public class GameCellTests {
     public void testSwapping() {
         Circle circleForFirstCell = new Circle(50, 50, 25, 0);
         Circle circleForSecondCell = new Circle(100, 50, 25, 1);
-        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
-        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false, 0);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false, 0);
 
         gameCell1.swapCirclesWith(gameCell2);
 
@@ -163,8 +163,8 @@ public class GameCellTests {
     public void sameColorNegative() {
         Circle circleForFirstCell = new Circle(50, 50, 25, 0);
         Circle circleForSecondCell = new Circle(100, 50, 25, 1);
-        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
-        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false, 0);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false, 0);
 
         assertFalse(gameCell1.isColorTheSame(gameCell2));
     }
@@ -173,8 +173,8 @@ public class GameCellTests {
     public void sameColorPositive() {
         Circle circleForFirstCell = new Circle(50, 50, 25, 1);
         Circle circleForSecondCell = new Circle(100, 50, 25, 1);
-        GameCell gameCell1 = new GameCell(circleForFirstCell, false);
-        GameCell gameCell2 = new GameCell(circleForSecondCell, false);
+        GameCell gameCell1 = new GameCell(circleForFirstCell, false, 0);
+        GameCell gameCell2 = new GameCell(circleForSecondCell, false, 0);
 
         assertTrue(gameCell1.isColorTheSame(gameCell2));
     }
@@ -199,7 +199,7 @@ public class GameCellTests {
         when(circle.getY()).thenReturn(DEFAULT_Y);
         when(circle.getRadius()).thenReturn(DEFAULT_RADIUS);
 
-        gameCell = new GameCell(circle, false);
+        gameCell = new GameCell(circle, false, 0);
     }
 
 }

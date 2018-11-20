@@ -176,6 +176,15 @@ public class CellsGeneratorTests {
         cellsGenerator.generateCellsForField3X4(300,400, minesToGenerate);
     }
 
+    @Test
+    public void verifyAmountOfMinesClosedBy() {
+        int minesToGenerate = 12;
+
+        GameCell[][] cells = cellsGenerator.generateCellsForField3X4(300,400, minesToGenerate);
+
+        verifyThatMinesNearIsMaximumForAllCells(cells);
+    }
+
     private int countMinesInCells(GameCell[][] generatedGameCells) {
         int generatedMines = 0;
         for (int row = 0; row < generatedGameCells.length; row++) {
@@ -201,6 +210,26 @@ public class CellsGeneratorTests {
                     assertNotEquals(generatedGameCells[row][col].getCircle().getColor(),
                             generatedGameCells[row + 1][col].getCircle().getColor());
                 }
+            }
+        }
+    }
+
+    private void verifyThatMinesNearIsMaximumForAllCells(GameCell[][] generatedGameCells) {
+        int lastRow = generatedGameCells.length - 1;
+        int lastColumn = generatedGameCells[0].length - 1;
+        for (int row = 0; row < generatedGameCells.length; row++) {
+            for (int col = 0; col < generatedGameCells[0].length; col++) {
+                int minesNear = 3;
+                if (col != 0 && col != lastColumn) {
+                    minesNear += 2;
+                }
+                if (row != 0 && row != lastRow) {
+                    minesNear += 2;
+                }
+                if (minesNear == 7) {
+                    minesNear++;
+                }
+                assertEquals("row is " + row + " col is " + col, minesNear, generatedGameCells[row][col].getMinesNear());
             }
         }
     }
