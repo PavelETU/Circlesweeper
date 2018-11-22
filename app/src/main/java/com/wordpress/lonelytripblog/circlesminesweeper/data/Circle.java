@@ -4,19 +4,19 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 public class Circle {
     private int x;
     private int y;
-    private int color;
+    private int colorDrawableSrc;
     private int radius;
     private boolean isAlive;
 
-    public Circle(int x, int y, int radius, int color) {
-        this(x, y, radius, color, true);
+    public Circle(int x, int y, int radius, int colorDrawableSrc) {
+        this(x, y, radius, colorDrawableSrc, true);
     }
 
-    private Circle(int x, int y, int radius, int color, boolean isAlive) {
+    private Circle(int x, int y, int radius, int colorDrawableSrc, boolean isAlive) {
         this.x = x;
         this.y = y;
         this.radius = radius;
-        this.color = color;
+        this.colorDrawableSrc = colorDrawableSrc;
         this.isAlive = isAlive;
     }
 
@@ -36,12 +36,8 @@ public class Circle {
         this.y = y;
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
+    public int getColorDrawableSrc() {
+        return colorDrawableSrc;
     }
 
     public int getRadius() {

@@ -61,7 +61,7 @@ public class GameCell {
     public boolean isColorTheSame(GameCell gameCell) {
         // Does this violate the Law of Demeter? I don't think so:)
         if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
-        return circle.getColor() == gameCell.circle.getColor();
+        return circle.getColorDrawableSrc() == gameCell.circle.getColorDrawableSrc();
     }
 
     public boolean isWithMine() {
@@ -77,7 +77,7 @@ public class GameCell {
     }
 
     public int getColor() {
-        return circle.getColor();
+        return circle.getColorDrawableSrc();
     }
 
     public boolean isCircleInsideAlive() {

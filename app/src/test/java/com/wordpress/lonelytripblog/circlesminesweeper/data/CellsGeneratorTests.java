@@ -203,12 +203,12 @@ public class CellsGeneratorTests {
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 if (col != generatedGameCells[0].length - 1) {
-                    assertNotEquals(generatedGameCells[row][col].getCircle().getColor(),
-                            generatedGameCells[row][col + 1].getCircle().getColor());
+                    assertNotEquals(generatedGameCells[row][col].getCircle().getColorDrawableSrc(),
+                            generatedGameCells[row][col + 1].getCircle().getColorDrawableSrc());
                 }
                 if (row != generatedGameCells.length - 1) {
-                    assertNotEquals(generatedGameCells[row][col].getCircle().getColor(),
-                            generatedGameCells[row + 1][col].getCircle().getColor());
+                    assertNotEquals(generatedGameCells[row][col].getCircle().getColorDrawableSrc(),
+                            generatedGameCells[row + 1][col].getCircle().getColorDrawableSrc());
                 }
             }
         }
