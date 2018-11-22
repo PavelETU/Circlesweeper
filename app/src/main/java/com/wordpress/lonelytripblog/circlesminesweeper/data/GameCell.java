@@ -76,7 +76,7 @@ public class GameCell {
         this.marked = marked;
     }
 
-    public int getColor() {
+    public int getDrawableForCircle() {
         return circle.getColorDrawableSrc();
     }
 
@@ -105,4 +105,7 @@ public class GameCell {
         return minesNear;
     }
 
+    public boolean isAnimated() {
+        return animated;
+    }
 }

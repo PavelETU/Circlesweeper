@@ -14,6 +14,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FourthLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
 
 import junit.framework.Assert;
 
@@ -42,6 +43,7 @@ public class GameViewModelTests {
     public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
     private GameViewModel viewModel;
     private CellsGenerator cellsGenerator = mock(CellsGenerator.class);
+    private CircleSweeperApp app = mock(CircleSweeperApp.class);
     private Observer<GameCell[][]> circleObserver;
     private final int defaultWidth = 100;
     private final int defaultHeight = 150;
@@ -52,7 +54,7 @@ public class GameViewModelTests {
 
     @Before
     public void setUp() {
-        viewModel = new GameViewModel(cellsGenerator);
+        viewModel = new GameViewModel(app, cellsGenerator);
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
         viewModel.getGameCells().observeForever(circleObserver);
         Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);

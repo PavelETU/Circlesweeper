@@ -1,16 +1,17 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import androidx.core.util.Pair;
-import androidx.collection.SparseArrayCompat;
-
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
 
-public class GameViewModel extends ViewModel {
+import androidx.collection.SparseArrayCompat;
+import androidx.core.util.Pair;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+public class GameViewModel extends AndroidViewModel {
 
     public static final int GAME_IN_PROCESS = 0;
     public static final int GAME_WON = 1;
@@ -33,7 +34,8 @@ public class GameViewModel extends ViewModel {
     private boolean circleWithBombWasEliminated;
     private boolean markState;
 
-    public GameViewModel(CellsGenerator cellsGenerator) {
+    public GameViewModel(CircleSweeperApp application, CellsGenerator cellsGenerator) {
+        super(application);
         this.cellsGenerator = cellsGenerator;
     }
 
@@ -193,8 +195,8 @@ public class GameViewModel extends ViewModel {
             for (int j = 0; j < gameCells[0].length; j++) {
                 GameCell currentCell = gameCells[i][j];
                 if (!currentCell.isWithMine() && currentCell.isCircleInsideAlive()) {
-                    colorMap.put(currentCell.getColor(),
-                            getValueFromSparseArrayAtKey(colorMap, currentCell.getColor()) + 1);
+                    colorMap.put(currentCell.getDrawableForCircle(),
+                            getValueFromSparseArrayAtKey(colorMap, currentCell.getDrawableForCircle()) + 1);
                 }
             }
         }

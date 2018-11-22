@@ -16,8 +16,10 @@ public class Mapper {
     final float initialGameWindowWidth;
     private float currentHeight;
     private float currentWidth;
+    private GameCellsToBitmap gameCellsToBitmap;
 
-    public Mapper(float height, float width) {
+    public Mapper(GameCellsToBitmap gameCellsToBitmap, float height, float width) {
+        this.gameCellsToBitmap = gameCellsToBitmap;
         if (height <= width) {
             this.initialGameWindowHeight = height;
             this.initialGameWindowWidth = width;
@@ -50,7 +52,7 @@ public class Mapper {
 
     public LiveData<Bitmap> getGameImageLiveData(LiveData<GameCell[][]> gameCellsLiveData) {
         return Transformations.map(gameCellsLiveData,
-                gameCells -> GameCellsToBitmap.gameCellsToBitmap(gameCells, initialGameWindowHeight,
+                gameCells -> gameCellsToBitmap.gameCellsToBitmap(gameCells, initialGameWindowHeight,
                         initialGameWindowWidth, currentHeight, currentWidth, swapXAndY()));
     }
 

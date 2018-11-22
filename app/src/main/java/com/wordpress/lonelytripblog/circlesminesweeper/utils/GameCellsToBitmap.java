@@ -5,27 +5,33 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
 import androidx.annotation.VisibleForTesting;
 
 public class GameCellsToBitmap {
 
-    private GameCellsToBitmap() {}
+    private BitmapProvider bitmapProvider;
+    private Paint paintToUse = new Paint();
 
-    public static Bitmap gameCellsToBitmap(GameCell[][] gameCells, float initHeight, float initWidth,
-                                           float height, float width, boolean invert) {
+    public GameCellsToBitmap(BitmapProvider bitmapProvider) {
+        this.bitmapProvider = bitmapProvider;
+    }
+
+    public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float initHeight, float initWidth,
+                                    float height, float width, boolean invert) {
         Bitmap originalGameBitmap = createGameBitmapInOriginalSize(gameCells, initHeight, initWidth);
         return transformOriginalGameBitmapToCurrentSizeAndOrientation(originalGameBitmap, height, width, invert);
     }
 
-    private static Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initHeight, float initWidth) {
+    private Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initHeight, float initWidth) {
         Bitmap bitmapForGame = Bitmap.createBitmap((int) initWidth, (int) initHeight, Bitmap.Config.ARGB_8888);
         drawCellsOnCanvas(new Canvas(bitmapForGame), gameCells);
         return bitmapForGame;
     }
 
-    private static Bitmap transformOriginalGameBitmapToCurrentSizeAndOrientation(Bitmap originalBitmap,
+    private Bitmap transformOriginalGameBitmapToCurrentSizeAndOrientation(Bitmap originalBitmap,
                                                                           float height, float width,
                                                                           boolean invert) {
         Matrix matrix = new Matrix();
@@ -44,14 +50,30 @@ public class GameCellsToBitmap {
     }
 
     @VisibleForTesting
-    static void drawCellsOnCanvas(Canvas canvasToDraw, GameCell[][] gameCells) {
-        Paint paintToUse = new Paint();
+    void drawCellsOnCanvas(Canvas canvasToDraw, GameCell[][] gameCells) {
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 GameCell currentCell = gameCells[row][col];
                 if (!currentCell.isCircleInsideAlive()) {
-                    canvasToDraw.drawText(String.valueOf(currentCell.getMinesNear()),
+                    if (currentCell.isAnimated()) {
+                        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bang),
+                                currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
+                    } else {
+                        canvasToDraw.drawText(String.valueOf(currentCell.getMinesNear()),
+                                currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
+                    }
+                } else {
+                    canvasToDraw.drawBitmap(
+                            bitmapProvider.getBitmapByResourceId(currentCell.getDrawableForCircle()),
                             currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
+                    if (currentCell.isMarked()) {
+                        canvasToDraw.drawLine(currentCell.getTopLeftX(), currentCell.getTopLeftY(),
+                                currentCell.getTopLeftX() + currentCell.getSideLength(),
+                                currentCell.getTopLeftY() + currentCell.getSideLength(), paintToUse);
+                        canvasToDraw.drawLine(currentCell.getTopLeftX() + currentCell.getSideLength(),
+                                currentCell.getTopLeftY(), currentCell.getTopLeftX(),
+                                currentCell.getTopLeftY() + currentCell.getSideLength(), paintToUse);
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
@@ -12,11 +13,12 @@ public class MapperTest {
 
     @Rule
     public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
+    private GameCellsToBitmap gameCellsToBitmap = Mockito.mock(GameCellsToBitmap.class);
 
     @Test
     public void widthIsAlwaysBigger() {
-        Mapper mapper = new Mapper(600, 400);
-        Mapper mapper2 = new Mapper(400, 600);
+        Mapper mapper = new Mapper(gameCellsToBitmap, 600, 400);
+        Mapper mapper2 = new Mapper(gameCellsToBitmap, 400, 600);
 
         assertTrue(mapper.initialGameWindowWidth > mapper.initialGameWindowHeight);
         assertTrue(mapper2.initialGameWindowWidth > mapper2.initialGameWindowHeight);
@@ -26,7 +28,7 @@ public class MapperTest {
     public void heightAndWidthSwappedIfInitialHeightBiggerThenWidth() {
         int height = 600;
         int width = 400;
-        Mapper mapper = new Mapper(height, width);
+        Mapper mapper = new Mapper(gameCellsToBitmap, height, width);
 
         assertEquals(height, mapper.initialGameWindowWidth, 0.00001);
         assertEquals(width, mapper.initialGameWindowHeight, 0.00001);
@@ -34,7 +36,7 @@ public class MapperTest {
 
     @Test
     public void displayingInDefaultHasNoEffectOnCoords() {
-        Mapper mapper = new Mapper(400, 600);
+        Mapper mapper = new Mapper(gameCellsToBitmap, 400, 600);
 
         Point point = mapper.mapXYFromViewToGameWindow(10, 20);
 
@@ -46,7 +48,7 @@ public class MapperTest {
     public void rotatedFieldClickOnTopLeftCorner() {
         int height = 600;
         int width = 400;
-        Mapper mapper = new Mapper(height, width);
+        Mapper mapper = new Mapper(gameCellsToBitmap, height, width);
 
         Point point = mapper.mapXYFromViewToGameWindow(0, 0);
 
@@ -58,7 +60,7 @@ public class MapperTest {
     public void rotatedFieldClickOnTopRightCorner() {
         int height = 600;
         int width = 400;
-        Mapper mapper = new Mapper(height, width);
+        Mapper mapper = new Mapper(gameCellsToBitmap, height, width);
 
         Point point = mapper.mapXYFromViewToGameWindow(width - 1, 0);
 
@@ -70,7 +72,7 @@ public class MapperTest {
     public void rotatedFieldClickOnBottomRightCorner() {
         int height = 600;
         int width = 400;
-        Mapper mapper = new Mapper(height, width);
+        Mapper mapper = new Mapper(gameCellsToBitmap, height, width);
 
         Point point = mapper.mapXYFromViewToGameWindow(width - 1, height - 1);
 
@@ -82,7 +84,7 @@ public class MapperTest {
     public void rotatedFieldClickOnBottomLeftCorner() {
         int height = 600;
         int width = 400;
-        Mapper mapper = new Mapper(height, width);
+        Mapper mapper = new Mapper(gameCellsToBitmap, height, width);
 
         Point point = mapper.mapXYFromViewToGameWindow(0, height - 1);
 
@@ -92,7 +94,7 @@ public class MapperTest {
 
     @Test
     public void fieldMadeTwoTimesSmallerGetsProperlyMapped() {
-        Mapper mapper = new Mapper(400, 600);
+        Mapper mapper = new Mapper(gameCellsToBitmap, 400, 600);
 
         mapper.setNewSize(200, 300);
         Point point = mapper.mapXYFromViewToGameWindow(100, 150);
@@ -103,7 +105,7 @@ public class MapperTest {
 
     @Test
     public void fieldMadeTwoTimesBiggerGetsProperlyMapped() {
-        Mapper mapper = new Mapper(400, 600);
+        Mapper mapper = new Mapper(gameCellsToBitmap, 400, 600);
 
         mapper.setNewSize(800, 1200);
         Point point = mapper.mapXYFromViewToGameWindow(100, 200);
