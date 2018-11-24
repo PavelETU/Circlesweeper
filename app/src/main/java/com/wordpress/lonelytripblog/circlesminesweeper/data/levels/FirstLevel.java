@@ -7,8 +7,8 @@ public class FirstLevel implements GameLevel {
     private final int MINES_AMOUNT = 0;
 
     @Override
-    public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int width, int height) {
-        return cellsGenerator.generateCellsForField3X4(width, height, MINES_AMOUNT);
+    public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int smallerSideLength, int biggerSideLength) {
+        return cellsGenerator.generateCellsForField3X4(smallerSideLength, biggerSideLength, MINES_AMOUNT);
     }
 
     @Override

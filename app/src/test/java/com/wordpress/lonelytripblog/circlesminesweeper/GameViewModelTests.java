@@ -1,8 +1,5 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.Observer;
-
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
@@ -15,15 +12,17 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
+import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 
-import junit.framework.Assert;
-
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.Observer;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -45,104 +44,95 @@ public class GameViewModelTests {
     private CellsGenerator cellsGenerator = mock(CellsGenerator.class);
     private CircleSweeperApp app = mock(CircleSweeperApp.class);
     private Observer<GameCell[][]> circleObserver;
-    private final int defaultWidth = 100;
-    private final int defaultHeight = 150;
+    private final int defaultWidth = 250;
+    private final int defaultHeight = 200;
     private GameCell mockCell = mock(GameCell.class);
     private GameCell mockCell2 = mock(GameCell.class);
     private GameCell[][] mockCells;
     private GameCell[][] gameCells = new GameCell[1][2];
 
-    @Before
-    public void setUp() {
-        viewModel = new GameViewModel(app, cellsGenerator);
-        circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
-        viewModel.getGameCells().observeForever(circleObserver);
-        Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);
-        viewModel.getScore().observeForever(scoreObserver);
-        Observer<Integer> gameConditionObserver = (Observer<Integer>) mock(Observer.class);
-        viewModel.getGameCondition().observeForever(gameConditionObserver);
-    }
-
     @Test
     public void circleLiveDataInitiallyEmpty() {
-        Assert.assertNull(viewModel.getGameCells().getValue());
+        startGameWithLevel(new FirstLevel());
+
+        assertNull(viewModel.getGameCells().getValue());
     }
 
     @Test(expected = RuntimeException.class)
     public void ifStartGameCalledWithoutWidthAndHeightExceptionIsThrown() {
-        viewModel.startGame();
+        viewModel.getGameCells();
     }
 
     @Test
     public void firstLevelSetup() {
-        createLevelWithDefaultWindow(new FirstLevel());
+        startGameWithLevel(new FirstLevel());
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 0);
+        verify(cellsGenerator).generateCellsForField3X4(defaultHeight, defaultWidth, 0);
     }
 
     @Test
     public void secondLevelSetup() {
-        createLevelWithDefaultWindow(new SecondLevel());
+        startGameWithLevel(new SecondLevel());
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 1);
+        verify(cellsGenerator).generateCellsForField3X4(defaultHeight, defaultWidth, 1);
     }
 
     @Test
     public void thirdLevelSetup() {
-        createLevelWithDefaultWindow(new ThirdLevel());
+        startGameWithLevel(new ThirdLevel());
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField4X6(defaultWidth, defaultHeight, 3);
+        verify(cellsGenerator).generateCellsForField4X6(defaultHeight, defaultWidth, 3);
     }
 
     @Test
     public void fourthLevelSetup() {
-        createLevelWithDefaultWindow(new FourthLevel());
+        startGameWithLevel(new FourthLevel());
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 5);
+        verify(cellsGenerator).generateCellsForField6X10(defaultHeight, defaultWidth, 5);
     }
 
     @Test
     public void verifyFifthLevelSetup() {
-        createLevelWithDefaultWindow(new FifthLevel());
+        startGameWithLevel(new FifthLevel());
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 7);
+        verify(cellsGenerator).generateCellsForField6X10(defaultHeight, defaultWidth, 7);
     }
 
     @Test
     public void customLevel3X4Setup() {
-        createLevelWithDefaultWindow(new CustomLevel3X4(4));
+        startGameWithLevel(new CustomLevel3X4(4));
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 4);
+        verify(cellsGenerator).generateCellsForField3X4(defaultHeight, defaultWidth, 4);
     }
 
     @Test
     public void customLevel4X6Setup() {
-        createLevelWithDefaultWindow(new CustomLevel4X6(5));
+        startGameWithLevel(new CustomLevel4X6(5));
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField4X6(defaultWidth, defaultHeight, 5);
+        verify(cellsGenerator).generateCellsForField4X6(defaultHeight, defaultWidth, 5);
     }
 
     @Test
     public void customLevel6X10Setup() {
-        createLevelWithDefaultWindow(new CustomLevel6X10(6));
+        startGameWithLevel(new CustomLevel6X10(6));
 
-        viewModel.startGame();
+        viewModel.getGameCells();
 
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 6);
+        verify(cellsGenerator).generateCellsForField6X10(defaultHeight, defaultWidth, 6);
     }
 
     @Test
@@ -427,17 +417,24 @@ public class GameViewModelTests {
         verify(mockCell).makeCircleBigger();
     }
 
+    private void startGameWithLevel(GameLevel level) {
+        viewModel = new GameViewModel(app, cellsGenerator);
+        viewModel.setSizeOfGameWindow(defaultWidth, defaultHeight);
+        viewModel.setLevel(level);
+        circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
+        viewModel.getGameCells().observeForever(circleObserver);
+        Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);
+        viewModel.getScore().observeForever(scoreObserver);
+        Observer<Integer> gameConditionObserver = (Observer<Integer>) mock(Observer.class);
+        viewModel.getGameCondition().observeForever(gameConditionObserver);
+    }
+
     private void startGameWithMockCells2x2WithDefaultCoords() {
         startGameWithMockCells2x2();
         teachMockCellSoItWillInclude(mockCells[0][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         teachMockCellSoItWillInclude(mockCells[0][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         teachMockCellSoItWillInclude(mockCells[1][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
         teachMockCellSoItWillInclude(mockCells[1][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
-    }
-
-    private void createLevelWithDefaultWindow(GameLevel level) {
-        viewModel.setLevel(level);
-        viewModel.setSizeOfGameWindow(defaultWidth, defaultHeight);
     }
 
     private void startGameWithMockCell1x1() {
@@ -449,10 +446,7 @@ public class GameViewModelTests {
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
-        GameLevel level = new FirstLevel();
-        viewModel.setLevel(level);
-        viewModel.setSizeOfGameWindow(200, 200);
-        viewModel.startGame();
+        startGameWithLevel(new FirstLevel());
     }
 
     private void startGameWithMockCells1x2WithNoBombs() {
@@ -473,9 +467,7 @@ public class GameViewModelTests {
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
-        viewModel.setLevel(level);
-        viewModel.setSizeOfGameWindow(200, 200);
-        viewModel.startGame();
+        startGameWithLevel(level);
     }
 
     private void startGameWithMockCells2x2() {
@@ -491,10 +483,7 @@ public class GameViewModelTests {
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(mockCells);
 
-        GameLevel level = new FirstLevel();
-        viewModel.setLevel(level);
-        viewModel.setSizeOfGameWindow(200, 200);
-        viewModel.startGame();
+        startGameWithLevel(new FirstLevel());
     }
 
     private void startGameWithGameCells() {
@@ -503,10 +492,7 @@ public class GameViewModelTests {
         when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
-        GameLevel level = new FirstLevel();
-        viewModel.setLevel(level);
-        viewModel.setSizeOfGameWindow(200, 200);
-        viewModel.startGame();
+        startGameWithLevel(new FirstLevel());
     }
 
     private void teachMockCellSoItWillExclude(GameCell mockCellToTeach, int x, int y) {

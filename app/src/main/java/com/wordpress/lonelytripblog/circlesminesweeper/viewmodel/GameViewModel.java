@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper;
+package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
@@ -22,7 +22,7 @@ public class GameViewModel extends AndroidViewModel {
     private GameCell[][] gameCells;
     private int gameWindowWidth;
     private int gameWindowHeight;
-    private MutableLiveData<GameCell[][]> cellsLiveData = new MutableLiveData<>();
+    private MutableLiveData<GameCell[][]> cellsLiveData;
     private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
     private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
@@ -45,6 +45,10 @@ public class GameViewModel extends AndroidViewModel {
     // so array with size 3X4 returned even in portrait orientation,
     // while technically it should be 4x3
     public LiveData<GameCell[][]> getGameCells() {
+        if (cellsLiveData == null) {
+            cellsLiveData = new MutableLiveData<>();
+            startGame();
+        }
         return cellsLiveData;
     }
 
@@ -69,7 +73,7 @@ public class GameViewModel extends AndroidViewModel {
         gameWindowHeight = height;
     }
 
-    public void startGame() {
+    private void startGame() {
         throwExceptionIfSizeNotSet();
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
@@ -280,12 +284,19 @@ public class GameViewModel extends AndroidViewModel {
     }
 
     private GameCell[][] getCirclesForLevel() {
-        return level.generateCircles(cellsGenerator, gameWindowWidth, gameWindowHeight);
+        throwExceptionIfHeightBiggerThanWidth();
+        return level.generateCircles(cellsGenerator, gameWindowHeight, gameWindowWidth);
     }
 
     private void throwExceptionIfSizeNotSet() {
         if (gameWindowWidth <= 0 || gameWindowHeight <= 0) {
             throw new RuntimeException("Specify width and height for game window");
+        }
+    }
+
+    private void throwExceptionIfHeightBiggerThanWidth() {
+        if (gameWindowWidth < gameWindowHeight) {
+            throw new RuntimeException("Height cannot be bigger than width in the game window");
         }
     }
 

@@ -9,11 +9,13 @@ import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.SparseArrayCompat;
 
 public class GameCellsToBitmap {
 
     private BitmapProvider bitmapProvider;
     private Paint paintToUse = new Paint();
+    private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
 
     public GameCellsToBitmap(BitmapProvider bitmapProvider) {
         this.bitmapProvider = bitmapProvider;
@@ -27,7 +29,8 @@ public class GameCellsToBitmap {
 
     private Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initHeight, float initWidth) {
         Bitmap bitmapForGame = Bitmap.createBitmap((int) initWidth, (int) initHeight, Bitmap.Config.ARGB_8888);
-        drawCellsOnCanvas(new Canvas(bitmapForGame), gameCells);
+        Canvas canvas = new Canvas(bitmapForGame);
+        drawCellsOnCanvas(canvas, gameCells);
         return bitmapForGame;
     }
 
@@ -56,15 +59,15 @@ public class GameCellsToBitmap {
                 GameCell currentCell = gameCells[row][col];
                 if (!currentCell.isCircleInsideAlive()) {
                     if (currentCell.isAnimated()) {
-                        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bang),
+                        canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bang, currentCell.getSideLength()),
                                 currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
                     } else {
                         canvasToDraw.drawText(String.valueOf(currentCell.getMinesNear()),
                                 currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
                     }
                 } else {
-                    canvasToDraw.drawBitmap(
-                            bitmapProvider.getBitmapByResourceId(currentCell.getDrawableForCircle()),
+                    canvasToDraw.drawBitmap(getBitmapByResource(currentCell.getDrawableForCircle(),
+                            currentCell.getSideLength()),
                             currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
                     if (currentCell.isMarked()) {
                         canvasToDraw.drawLine(currentCell.getTopLeftX(), currentCell.getTopLeftY(),
@@ -77,6 +80,15 @@ public class GameCellsToBitmap {
                 }
             }
         }
+    }
+
+    private Bitmap getBitmapByResource(int resourceId, int sizeOfSide) {
+        Bitmap bitmap = bitmapCache.get(resourceId);
+        if (bitmap == null) {
+            bitmap = bitmapProvider.getBitmapByResourceId(resourceId, sizeOfSide);
+            bitmapCache.put(resourceId, bitmap);
+        }
+        return bitmap;
     }
 
 }

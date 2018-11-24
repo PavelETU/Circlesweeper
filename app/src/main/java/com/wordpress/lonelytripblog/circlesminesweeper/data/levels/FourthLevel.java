@@ -8,8 +8,8 @@ public class FourthLevel implements GameLevel {
     private final int MINES_AMOUNT = 5;
 
     @Override
-    public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int width, int height) {
-        return cellsGenerator.generateCellsForField6X10(width, height, MINES_AMOUNT);
+    public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int smallerSideLength, int biggerSideLength) {
+        return cellsGenerator.generateCellsForField6X10(smallerSideLength, biggerSideLength, MINES_AMOUNT);
     }
 
     @Override

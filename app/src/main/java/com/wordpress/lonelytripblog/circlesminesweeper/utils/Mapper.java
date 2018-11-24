@@ -76,4 +76,11 @@ public class Mapper {
         }
     }
 
+    public float getInitialGameWindowHeight() {
+        return initialGameWindowHeight;
+    }
+
+    public float getInitialGameWindowWidth() {
+        return initialGameWindowWidth;
+    }
 }

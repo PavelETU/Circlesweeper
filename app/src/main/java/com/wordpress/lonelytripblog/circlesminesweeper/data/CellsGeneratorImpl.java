@@ -55,16 +55,16 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     private GameCell[][] generateCells() {
         gameCells = new GameCell[amountOnSmallerSide][amountOnBiggerSide];
-        radiusForCircles = lengthOfCellSide / 2;
-        calculateLengthForCellSide();
+        calculateLengthForCellSideAndRadius();
         calculateShiftForCells();
         populateGameCells();
         return gameCells;
     }
 
-    private void calculateLengthForCellSide() {
+    private void calculateLengthForCellSideAndRadius() {
         lengthOfCellSide = Math.min(smallerSideLength / amountOnSmallerSide,
                 biggerSideLength / amountOnBiggerSide);
+        radiusForCircles = lengthOfCellSide / 2;
     }
 
     private void calculateShiftForCells() {
@@ -201,11 +201,11 @@ public class CellsGeneratorImpl implements CellsGenerator {
     }
 
     private int getXForCol(final int col) {
-        return radiusForCircles + lengthOfCellSide * col + shiftForSmallerSide;
+        return radiusForCircles + lengthOfCellSide * col + shiftForBiggerSide;
     }
 
     private int getYForRow(final int row) {
-        return radiusForCircles + lengthOfCellSide * row + shiftForBiggerSide;
+        return radiusForCircles + lengthOfCellSide * row + shiftForSmallerSide;
     }
 
     private void throwExceptionIfMinesOfLimit() {
