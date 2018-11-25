@@ -67,8 +67,8 @@ public class GameCellsToBitmap {
                     }
                 } else {
                     canvasToDraw.drawBitmap(getBitmapByResource(currentCell.getDrawableForCircle(),
-                            currentCell.getSideLength()),
-                            currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
+                            currentCell.getCircleSideLength()),
+                            currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY(), paintToUse);
                     if (currentCell.isMarked()) {
                         canvasToDraw.drawLine(currentCell.getTopLeftX(), currentCell.getTopLeftY(),
                                 currentCell.getTopLeftX() + currentCell.getSideLength(),

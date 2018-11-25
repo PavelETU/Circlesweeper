@@ -4,8 +4,6 @@ import androidx.annotation.VisibleForTesting;
 
 public class GameCell {
 
-    private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
-    private static final float PERCENTAGE_FOR_BIGGER_CIRCLE = 1.15f;
     private Circle circle;
     private boolean animated = false;
     private final boolean withMine;
@@ -35,11 +33,11 @@ public class GameCell {
     }
 
     public void makeCircleSmaller() {
-        circle.setRadius((int) (circle.getRadius() * PERCENTAGE_FOR_SMALLER_CIRCLE));
+        circle.makeCircleSmall();
     }
 
     public void makeCircleBigger() {
-        circle.setRadius((int) (circle.getRadius() * PERCENTAGE_FOR_BIGGER_CIRCLE));
+        circle.makeCircleBig();
     }
 
     public void eliminateCircle() {
@@ -90,6 +88,18 @@ public class GameCell {
 
     public int getTopLeftY() {
         return topLeftY;
+    }
+
+    public int getCircleTopLeftX() {
+        return circle.getX() - circle.getRadius();
+    }
+
+    public int getCircleSideLength() {
+        return circle.getRadius() * 2;
+    }
+
+    public int getCircleTopLeftY() {
+        return circle.getY() - circle.getRadius();
     }
 
     public int getSideLength() {

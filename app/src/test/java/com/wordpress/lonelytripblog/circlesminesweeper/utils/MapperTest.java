@@ -40,8 +40,8 @@ public class MapperTest {
 
         Point point = mapper.mapXYFromViewToGameWindow(10, 20);
 
-        assertEquals(10, point.x, 0.00001);
-        assertEquals(20, point.y, 0.00001);
+        assertEquals(10, point.getX(), 0.00001);
+        assertEquals(20, point.getY(), 0.00001);
     }
 
     @Test
@@ -52,8 +52,8 @@ public class MapperTest {
 
         Point point = mapper.mapXYFromViewToGameWindow(0, 0);
 
-        assertEquals(0, point.x, 0.00001);
-        assertEquals(width - 1, point.y, 0.00001);
+        assertEquals(0, point.getX(), 0.00001);
+        assertEquals(width - 1, point.getY(), 0.00001);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class MapperTest {
 
         Point point = mapper.mapXYFromViewToGameWindow(width - 1, 0);
 
-        assertEquals(0, point.x, 0.00001);
-        assertEquals(0, point.y, 0.00001);
+        assertEquals(0, point.getX(), 0.00001);
+        assertEquals(0, point.getY(), 0.00001);
     }
 
     @Test
@@ -76,8 +76,8 @@ public class MapperTest {
 
         Point point = mapper.mapXYFromViewToGameWindow(width - 1, height - 1);
 
-        assertEquals(height - 1, point.x, 0.00001);
-        assertEquals(0, point.y, 0.00001);
+        assertEquals(height - 1, point.getX(), 0.00001);
+        assertEquals(0, point.getY(), 0.00001);
     }
 
     @Test
@@ -88,8 +88,8 @@ public class MapperTest {
 
         Point point = mapper.mapXYFromViewToGameWindow(0, height - 1);
 
-        assertEquals(height - 1, point.x, 0.00001);
-        assertEquals(width - 1, point.y, 0.00001);
+        assertEquals(height - 1, point.getX(), 0.00001);
+        assertEquals(width - 1, point.getY(), 0.00001);
     }
 
     @Test
@@ -99,8 +99,8 @@ public class MapperTest {
         mapper.setNewSize(200, 300);
         Point point = mapper.mapXYFromViewToGameWindow(100, 150);
 
-        assertEquals(200, point.x, 0.00001);
-        assertEquals(300, point.y, 0.00001);
+        assertEquals(200, point.getX(), 0.00001);
+        assertEquals(300, point.getY(), 0.00001);
     }
 
     @Test
@@ -110,8 +110,8 @@ public class MapperTest {
         mapper.setNewSize(800, 1200);
         Point point = mapper.mapXYFromViewToGameWindow(100, 200);
 
-        assertEquals(50, point.x, 0.00001);
-        assertEquals(100, point.y, 0.00001);
+        assertEquals(50, point.getX(), 0.00001);
+        assertEquals(100, point.getY(), 0.00001);
     }
 
 }

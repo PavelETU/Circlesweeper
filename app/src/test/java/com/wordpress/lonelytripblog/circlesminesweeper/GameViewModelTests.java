@@ -12,6 +12,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
+import com.wordpress.lonelytripblog.circlesminesweeper.utils.Point;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 
 import org.junit.Rule;
@@ -147,7 +148,7 @@ public class GameViewModelTests {
         startGameWithMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 60, 90);
 
-        viewModel.actionDown(60, 90);
+        viewModel.actionDown(new Point(60, 90));
 
         verify(mockCell).makeCircleSmaller();
         verify(mockCell).moveCircleTo(60, 90);
@@ -159,7 +160,7 @@ public class GameViewModelTests {
         startGameWithMockCell1x1();
         teachMockCellSoItWillExclude(mockCell, 60, 90);
 
-        viewModel.actionDown(60, 90);
+        viewModel.actionDown(new Point(60, 90));
 
         verify(mockCell, times(0)).moveCircleTo(anyInt(), anyInt());
         verify(mockCell, times(0)).makeCircleBigger();
@@ -171,7 +172,7 @@ public class GameViewModelTests {
         startGameWithMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 60, 120);
 
-        viewModel.actionDown(60, 120);
+        viewModel.actionDown(new Point(60, 120));
         viewModel.actionUp();
 
         mockCell.makeCircleBigger();
@@ -186,8 +187,8 @@ public class GameViewModelTests {
         startGameWithMockCells1x2WithOneBomb();
         teachMockCellSoItWillInclude(mockCell, 60, 120);
 
-        viewModel.actionDown(60, 120);
-        viewModel.actionMove(65, 130);
+        viewModel.actionDown(new Point(60, 120));
+        viewModel.actionMove(new Point(65, 130));
 
         verify(mockCell).moveCircleTo(60, 120);
         verify(mockCell).moveCircleTo(65, 130);
@@ -200,8 +201,8 @@ public class GameViewModelTests {
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         teachMockCellSoItWillInclude(mockCell2, 150, 100);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(150, 100);
+        viewModel.actionDown(new Point(100, 100));
+        viewModel.actionMove(new Point(150, 100));
 
         verify(mockCell).swapCirclesWith(mockCell2);
     }
@@ -211,8 +212,8 @@ public class GameViewModelTests {
         startGameWithMockCells2x2WithDefaultCoords();
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
 
-        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
-        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionDown(new Point(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
+        viewModel.actionMove(new Point(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
 
         verify(mockCells[0][1]).eliminateCircle();
         verify(mockCells[1][1]).eliminateCircle();
@@ -223,8 +224,8 @@ public class GameViewModelTests {
         startGameWithMockCells2x2WithDefaultCoords();
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
 
-        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
-        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionDown(new Point(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
+        viewModel.actionMove(new Point(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
 
         assertEquals(20, (int) viewModel.getScore().getValue());
     }
@@ -235,8 +236,8 @@ public class GameViewModelTests {
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
         when(mockCells[0][0].isColorTheSame(mockCells[1][0])).thenReturn(true);
 
-        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
-        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionDown(new Point(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
+        viewModel.actionMove(new Point(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
 
         assertEquals(80, (int) viewModel.getScore().getValue());
     }
@@ -256,8 +257,8 @@ public class GameViewModelTests {
         when(mockCell.isWithMine()).thenReturn(false);
         when(mockCell2.isWithMine()).thenReturn(false);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(101, 100);
+        viewModel.actionDown(new Point(100, 100));
+        viewModel.actionMove(new Point(101, 100));
 
         assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
     }
@@ -268,7 +269,7 @@ public class GameViewModelTests {
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         when(mockCell.isWithMine()).thenReturn(true);
 
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
     }
@@ -279,8 +280,8 @@ public class GameViewModelTests {
         when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
         when(mockCells[1][1].isWithMine()).thenReturn(true);
 
-        viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
-        viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
+        viewModel.actionDown(new Point(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
+        viewModel.actionMove(new Point(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW));
 
         assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
     }
@@ -298,7 +299,7 @@ public class GameViewModelTests {
         teachMockCellSoItWillInclude(mockCell, 100, 100);
 
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         verify(mockCell).setMarked(true);
     }
@@ -310,7 +311,7 @@ public class GameViewModelTests {
 
         viewModel.markClicked();
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         verify(mockCell, Mockito.never()).setMarked(true);
     }
@@ -322,9 +323,9 @@ public class GameViewModelTests {
         when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
 
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         verify(mockCell).setMarked(true);
         verify(mockCell).setMarked(false);
@@ -345,7 +346,7 @@ public class GameViewModelTests {
         when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
 
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         assertEquals(0, (int) viewModel.getMinesToDisplay().getValue());
     }
@@ -357,7 +358,7 @@ public class GameViewModelTests {
         when(mockCell.isMarked()).thenReturn(true).thenReturn(false);
 
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         assertEquals(2, (int) viewModel.getMinesToDisplay().getValue());
     }
@@ -368,8 +369,8 @@ public class GameViewModelTests {
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         when(mockCell.isMarked()).thenReturn(true);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(101, 100);
+        viewModel.actionDown(new Point(100, 100));
+        viewModel.actionMove(new Point(101, 100));
 
         verify(mockCell, never()).makeCircleSmaller();
         verify(mockCell, never()).moveCircleTo(anyInt(), anyInt());
@@ -384,8 +385,8 @@ public class GameViewModelTests {
         when(mockCell.isWithMine()).thenReturn(false);
         when(mockCell2.isWithMine()).thenReturn(true);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(101, 100);
+        viewModel.actionDown(new Point(100, 100));
+        viewModel.actionMove(new Point(101, 100));
 
         assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
     }
@@ -400,7 +401,7 @@ public class GameViewModelTests {
         when(mockCell2.isWithMine()).thenReturn(false);
 
         viewModel.markClicked();
-        viewModel.actionDown(100, 100);
+        viewModel.actionDown(new Point(100, 100));
 
         assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
     }
@@ -410,8 +411,8 @@ public class GameViewModelTests {
         startGameWithMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
 
-        viewModel.actionDown(100, 100);
-        viewModel.actionMove(1, 1);
+        viewModel.actionDown(new Point(100, 100));
+        viewModel.actionMove(new Point(1, 1));
 
         verify(mockCell).moveCircleToDefaultPosition();
         verify(mockCell).makeCircleBigger();

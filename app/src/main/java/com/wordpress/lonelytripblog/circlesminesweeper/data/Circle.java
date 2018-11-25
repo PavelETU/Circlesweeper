@@ -2,9 +2,13 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 // Circle DATA STRUCTURE. I could go with public fields, but stick to the Beans convention
 public class Circle {
+
+    private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private int x;
     private int y;
-    private int colorDrawableSrc;
+    private final int colorDrawableSrc;
+    private final int defaultRadius;
+    private final int smallRadius;
     private int radius;
     private boolean isAlive;
 
@@ -16,6 +20,8 @@ public class Circle {
         this.x = x;
         this.y = y;
         this.radius = radius;
+        defaultRadius = radius;
+        smallRadius = (int) (radius * PERCENTAGE_FOR_SMALLER_CIRCLE);
         this.colorDrawableSrc = colorDrawableSrc;
         this.isAlive = isAlive;
     }
@@ -34,6 +40,14 @@ public class Circle {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public void makeCircleSmall() {
+        radius = smallRadius;
+    }
+
+    public void makeCircleBig() {
+        radius = defaultRadius;
     }
 
     public int getColorDrawableSrc() {

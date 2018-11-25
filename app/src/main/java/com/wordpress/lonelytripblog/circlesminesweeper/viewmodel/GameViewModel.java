@@ -4,6 +4,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
+import com.wordpress.lonelytripblog.circlesminesweeper.utils.Point;
 
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pair;
@@ -88,7 +89,9 @@ public class GameViewModel extends AndroidViewModel {
         markState = !markState;
     }
 
-    public void actionDown(int x, int y) {
+    public void actionDown(Point point) {
+        int x = (int) point.getX();
+        int y = (int) point.getY();
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
         GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
@@ -107,7 +110,9 @@ public class GameViewModel extends AndroidViewModel {
         moveCircleAndUpdateLiveData(x, y);
     }
 
-    public void actionMove(int x, int y) {
+    public void actionMove(Point point) {
+        int x = (int) point.getX();
+        int y = (int) point.getY();
         if (takenGameCell == null) return;
         if (positionOutsideGameMetrics(x, y)) {
             returnTakenCircleToDefaultPositionAndZeroingIt();

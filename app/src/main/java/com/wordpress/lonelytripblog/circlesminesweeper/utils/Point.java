@@ -1,13 +1,20 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
-class Point {
+public class Point {
 
-    final float x;
-    final float y;
+    private final float x;
+    private final float y;
 
-    Point(float x, float y) {
+    public Point(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
 }

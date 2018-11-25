@@ -130,8 +130,8 @@ public class GameCellTests {
 
         gameCell.makeCircleSmaller();
 
-        verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int) (DEFAULT_RADIUS * 0.85));
+        verifyCirclesFieldsRequested(1);
+        verify(circle).makeCircleSmall();
         verifyNoMoreInteractions(circle);
     }
 
@@ -141,8 +141,8 @@ public class GameCellTests {
 
         gameCell.makeCircleBigger();
 
-        verifyCirclesFieldsRequested(2);
-        verify(circle).setRadius((int) (DEFAULT_RADIUS * 1.15f));
+        verifyCirclesFieldsRequested(1);
+        verify(circle).makeCircleBig();
         verifyNoMoreInteractions(circle);
     }
 
