@@ -1,10 +1,15 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
+import android.os.Handler;
+
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.Point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pair;
@@ -19,6 +24,7 @@ public class GameViewModel extends AndroidViewModel {
     public static final int GAME_LOST = 2;
 
     private final CellsGenerator cellsGenerator;
+    private final Handler mainHandler;
     private GameLevel level;
     private GameCell[][] gameCells;
     private int gameWindowWidth;
@@ -34,10 +40,12 @@ public class GameViewModel extends AndroidViewModel {
     private int notMarkedCellsWithMines;
     private boolean circleWithBombWasEliminated;
     private boolean markState;
+    private List<GameCell> eliminatedCells = new ArrayList<>();
 
-    public GameViewModel(CircleSweeperApp application, CellsGenerator cellsGenerator) {
+    public GameViewModel(CircleSweeperApp application, CellsGenerator cellsGenerator, Handler mainHandler) {
         super(application);
         this.cellsGenerator = cellsGenerator;
+        this.mainHandler = mainHandler;
     }
 
     // For convenience get circles as array[row][col],
@@ -102,7 +110,7 @@ public class GameViewModel extends AndroidViewModel {
             endGameIfWon();
             return;
         }
-        if (gameCell.isMarked()) return;
+        if (gameCell.isMarked() || !gameCell.isCircleInsideAlive()) return;
         takenGameCell = gameCell;
         if (takenGameCell.isWithMine()) {
             endGameWithLoosing();
@@ -126,7 +134,9 @@ public class GameViewModel extends AndroidViewModel {
             endGameWithLoosing();
             return;
         }
-        takenGameCell.moveCircleTo(x, y);
+        if (takenGameCell.isCircleInsideAlive()) {
+            takenGameCell.moveCircleTo(x, y);
+        }
         updateCellsLiveData();
         endGameIfWon();
     }
@@ -160,11 +170,11 @@ public class GameViewModel extends AndroidViewModel {
             Pair<Integer, Integer> gameCellPosition = findPositionForCellThatContainsPosition(x, y);
             if (gameCellPosition != null) {
                 GameCell cellToSwapBy = gameCells[gameCellPosition.first][gameCellPosition.second];
-                takenGameCell.makeCircleBigger();
-                takenGameCell.moveCircleToDefaultPosition();
                 swappedCirclePosition = takenGameCellPosition;
                 takenGameCell.swapCirclesWith(cellToSwapBy);
+                takenGameCell.moveCircleToDefaultPosition();
                 takenGameCell = cellToSwapBy;
+                takenGameCell.moveCircleToDefaultPosition();
                 takenGameCellPosition = gameCellPosition;
             }
         }
@@ -177,6 +187,7 @@ public class GameViewModel extends AndroidViewModel {
             int countForSecond = eliminateCirclesAndReturnEliminatedAmount(
                     takenGameCellPosition.first, takenGameCellPosition.second);
             updateScoreBasedOnGoneCircles(countForFirst, countForSecond);
+            setUpAnimationIfCirclesWereEliminated();
             swappedCirclePosition = null;
         }
     }
@@ -188,6 +199,18 @@ public class GameViewModel extends AndroidViewModel {
             scoreToAdd *= 2;
         }
         addToScoreLiveData(scoreToAdd);
+    }
+
+    private void setUpAnimationIfCirclesWereEliminated() {
+        if (eliminatedCells.size() != 0) {
+            mainHandler.postDelayed(() -> {
+                for (GameCell gameCell : eliminatedCells) {
+                    gameCell.setAnimated(false);
+                }
+                eliminatedCells.clear();
+                updateCellsLiveData();
+            }, 1000);
+        }
     }
 
     private void addToScoreLiveData(int scoreToAdd) {
@@ -285,6 +308,7 @@ public class GameViewModel extends AndroidViewModel {
         if (cellToEliminate.isWithMine()) {
             circleWithBombWasEliminated = true;
         }
+        eliminatedCells.add(cellToEliminate);
         cellToEliminate.eliminateCircle();
     }
 

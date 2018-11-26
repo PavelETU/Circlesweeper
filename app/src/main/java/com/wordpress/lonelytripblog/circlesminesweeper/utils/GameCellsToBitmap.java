@@ -14,11 +14,12 @@ import androidx.collection.SparseArrayCompat;
 public class GameCellsToBitmap {
 
     private BitmapProvider bitmapProvider;
-    private Paint paintToUse = new Paint();
+    private Paint paintToUse;
     private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
 
-    public GameCellsToBitmap(BitmapProvider bitmapProvider) {
+    public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint) {
         this.bitmapProvider = bitmapProvider;
+        paintToUse = paint;
     }
 
     public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float initHeight, float initWidth,
@@ -63,7 +64,8 @@ public class GameCellsToBitmap {
                                 currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
                     } else {
                         canvasToDraw.drawText(String.valueOf(currentCell.getMinesNear()),
-                                currentCell.getTopLeftX(), currentCell.getTopLeftY(), paintToUse);
+                                currentCell.getTopLeftX() + currentCell.getSideLength() / 2,
+                                currentCell.getTopLeftY() + currentCell.getSideLength() / 2, paintToUse);
                     }
                 } else {
                     canvasToDraw.drawBitmap(getBitmapByResource(currentCell.getDrawableForCircle(),

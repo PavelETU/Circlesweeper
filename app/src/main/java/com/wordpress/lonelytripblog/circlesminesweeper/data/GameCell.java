@@ -118,4 +118,8 @@ public class GameCell {
     public boolean isAnimated() {
         return animated;
     }
+
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
+    }
 }

@@ -1,6 +1,7 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
@@ -24,7 +25,7 @@ public class GameCellsToBitmapTest {
     @Before
     public void setUp() {
         BitmapProvider bitmapProvider = mock(BitmapProvider.class);
-        gameCellsToBitmap = new GameCellsToBitmap(bitmapProvider);
+        gameCellsToBitmap = new GameCellsToBitmap(bitmapProvider, mock(Paint.class));
     }
 
     @Test

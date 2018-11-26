@@ -1,6 +1,8 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
@@ -28,7 +30,7 @@ public class GameActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_game);
         FullWindowUtils.enterFullScreenMode(getWindow());
         GameViewModelFactory factory = new GameViewModelFactory((CircleSweeperApp) getApplication(),
-                new CellsGeneratorImpl());
+                new CellsGeneratorImpl(), new Handler(Looper.getMainLooper()));
         GameViewModel viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameImage = findViewById(R.id.game_image);
         gameImage.post(() -> {

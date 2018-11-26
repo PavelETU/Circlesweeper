@@ -1,5 +1,7 @@
 package com.wordpress.lonelytripblog.circlesminesweeper;
 
+import android.os.Handler;
+
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
@@ -145,19 +147,18 @@ public class GameViewModelTests {
 
     @Test
     public void singleCircleMovesOnActionDown() {
-        startGameWithMockCell1x1();
+        startGameWithAliveMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 60, 90);
 
         viewModel.actionDown(new Point(60, 90));
 
-        verify(mockCell).makeCircleSmaller();
         verify(mockCell).moveCircleTo(60, 90);
         verify(circleObserver, times(2)).onChanged(any());
     }
 
     @Test
     public void clickOutOfCirclesBounds() {
-        startGameWithMockCell1x1();
+        startGameWithAliveMockCell1x1();
         teachMockCellSoItWillExclude(mockCell, 60, 90);
 
         viewModel.actionDown(new Point(60, 90));
@@ -169,7 +170,7 @@ public class GameViewModelTests {
 
     @Test
     public void singleCircleMovesToDefaultOnActionUp() {
-        startGameWithMockCell1x1();
+        startGameWithAliveMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 60, 120);
 
         viewModel.actionDown(new Point(60, 120));
@@ -254,6 +255,8 @@ public class GameViewModelTests {
         startGameWithMockCells1x2WithNoBombs();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.getDrawableForCircle()).thenReturn(1);
+        when(mockCell2.getDrawableForCircle()).thenReturn(0);
         when(mockCell.isWithMine()).thenReturn(false);
         when(mockCell2.isWithMine()).thenReturn(false);
 
@@ -408,7 +411,7 @@ public class GameViewModelTests {
 
     @Test
     public void movingToOutsideOfWindowReturnsToDefaultPosition() {
-        startGameWithMockCell1x1();
+        startGameWithAliveMockCell1x1();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
 
         viewModel.actionDown(new Point(100, 100));
@@ -419,7 +422,8 @@ public class GameViewModelTests {
     }
 
     private void startGameWithLevel(GameLevel level) {
-        viewModel = new GameViewModel(app, cellsGenerator);
+        Handler mockHandler = mock(Handler.class);
+        viewModel = new GameViewModel(app, cellsGenerator, mockHandler);
         viewModel.setSizeOfGameWindow(defaultWidth, defaultHeight);
         viewModel.setLevel(level);
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
@@ -431,15 +435,16 @@ public class GameViewModelTests {
     }
 
     private void startGameWithMockCells2x2WithDefaultCoords() {
-        startGameWithMockCells2x2();
+        startGameWithAliveMockCells2x2();
         teachMockCellSoItWillInclude(mockCells[0][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         teachMockCellSoItWillInclude(mockCells[0][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         teachMockCellSoItWillInclude(mockCells[1][0], DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
         teachMockCellSoItWillInclude(mockCells[1][1], DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_SECOND_ROW);
     }
 
-    private void startGameWithMockCell1x1() {
+    private void startGameWithAliveMockCell1x1() {
         GameCell[][] gameCells = new GameCell[1][1];
+        when(mockCell.isCircleInsideAlive()).thenReturn(true);
         gameCells[0][0] = mockCell;
 
         // This method is generic and not restricting the size of returned gameCells,
@@ -451,15 +456,17 @@ public class GameViewModelTests {
     }
 
     private void startGameWithMockCells1x2WithNoBombs() {
-        startGameWithMockCells1X2WithLevel(new FirstLevel());
+        startGameWithAliveMockCells1X2WithLevel(new FirstLevel());
     }
 
     private void startGameWithMockCells1x2WithOneBomb() {
-        startGameWithMockCells1X2WithLevel(new SecondLevel());
+        startGameWithAliveMockCells1X2WithLevel(new SecondLevel());
     }
 
-    private void startGameWithMockCells1X2WithLevel(GameLevel level) {
+    private void startGameWithAliveMockCells1X2WithLevel(GameLevel level) {
         GameCell[][] gameCells = new GameCell[1][2];
+        when(mockCell.isCircleInsideAlive()).thenReturn(true);
+        when(mockCell2.isCircleInsideAlive()).thenReturn(true);
         gameCells[0][0] = mockCell;
         gameCells[0][1] = mockCell2;
 
@@ -471,11 +478,12 @@ public class GameViewModelTests {
         startGameWithLevel(level);
     }
 
-    private void startGameWithMockCells2x2() {
+    private void startGameWithAliveMockCells2x2() {
         mockCells = new GameCell[2][2];
         for (int i = 0; i < mockCells.length; i++) {
             for (int j = 0; j < mockCells[0].length; j++) {
                 mockCells[i][j] = mock(GameCell.class);
+                when(mockCells[i][j].isCircleInsideAlive()).thenReturn(true);
             }
         }
 
