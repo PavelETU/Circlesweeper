@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProvider;
@@ -26,6 +27,14 @@ public class CircleSweeperApp extends Application implements BitmapProvider {
         shape.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         shape.draw(canvas);
         return bitmap;
+    }
+
+    @Override
+    public Bitmap getInvertedBitmapByResourceId(int resourceId, int sizeOfBitmap) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(-90);
+        return Bitmap.createBitmap(getBitmapByResourceId(resourceId, sizeOfBitmap), 0, 0,
+                sizeOfBitmap, sizeOfBitmap, matrix, false);
     }
 
 }
