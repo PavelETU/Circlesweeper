@@ -7,8 +7,8 @@ public class Circle {
     private int x;
     private int y;
     private final int colorDrawableSrc;
-    private final int defaultRadius;
-    private final int smallRadius;
+    private int defaultRadius;
+    private int smallRadius;
     private int radius;
     private boolean isAlive;
 
@@ -58,8 +58,10 @@ public class Circle {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    public void setNewRadius(int radius) {
         this.radius = radius;
+        defaultRadius = radius;
+        smallRadius = (int) (radius * PERCENTAGE_FOR_SMALLER_CIRCLE);
     }
 
     public boolean isAlive() {

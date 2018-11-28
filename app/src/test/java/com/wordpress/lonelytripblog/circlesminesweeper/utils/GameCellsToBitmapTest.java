@@ -34,7 +34,7 @@ public class GameCellsToBitmapTest {
 
         gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells);
 
-        verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
+        verify(canvas, times(4)).drawText(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
     }
 

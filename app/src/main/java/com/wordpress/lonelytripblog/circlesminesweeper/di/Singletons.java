@@ -10,15 +10,13 @@ public class Singletons {
 
     private static Mapper mapper;
 
-    public static Mapper getMapperWithForSize(CircleSweeperApp app, int width, int height) {
+    public static Mapper getMapperWithForSize(CircleSweeperApp app) {
         if (mapper == null) {
             Paint paintToUse = new Paint();
             paintToUse.setColor(Color.BLACK);
             paintToUse.setTextSize(100);
             paintToUse.setTextAlign(Paint.Align.CENTER);
-            mapper = new Mapper(new GameCellsToBitmap(app, paintToUse), height, width);
-        } else {
-            mapper.setNewSize(height, width);
+            mapper = new Mapper(new GameCellsToBitmap(app, paintToUse));
         }
         return mapper;
     }

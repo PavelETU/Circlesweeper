@@ -6,7 +6,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +52,17 @@ public class GameViewModel extends AndroidViewModel {
     // For example for the first level field is 3X4,
     // so array with size 3X4 returned even in portrait orientation,
     // while technically it should be 4x3
-    public LiveData<GameCell[][]> getGameCells() {
+    public LiveData<GameCell[][]> getGameCells(int width, int height) {
         if (cellsLiveData == null) {
+            gameWindowWidth = width;
+            gameWindowHeight = height;
             cellsLiveData = new MutableLiveData<>();
             startGame();
+        }
+        if (width != gameWindowWidth || height != gameWindowHeight) {
+            recreateCellsWithNewSize(width, height);
+            gameWindowWidth = width;
+            gameWindowHeight = height;
         }
         return cellsLiveData;
     }
@@ -77,13 +83,7 @@ public class GameViewModel extends AndroidViewModel {
         this.level = level;
     }
 
-    public void setSizeOfGameWindow(int width, int height) {
-        gameWindowWidth = width;
-        gameWindowHeight = height;
-    }
-
     private void startGame() {
-        throwExceptionIfSizeNotSet();
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
         gameCondition.setValue(GAME_IN_PROCESS);
@@ -93,13 +93,16 @@ public class GameViewModel extends AndroidViewModel {
         updateCellsLiveData();
     }
 
+    private void recreateCellsWithNewSize(int newWidth, int newHeight) {
+        gameCells = cellsGenerator.regenerateCellsForNewSize(gameCells, newWidth, newHeight);
+        updateCellsLiveData();
+    }
+
     public void markClicked() {
         markState = !markState;
     }
 
-    public void actionDown(Point point) {
-        int x = (int) point.getX();
-        int y = (int) point.getY();
+    public void actionDown(int x, int y) {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
         GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
@@ -118,9 +121,7 @@ public class GameViewModel extends AndroidViewModel {
         moveCircleAndUpdateLiveData(x, y);
     }
 
-    public void actionMove(Point point) {
-        int x = (int) point.getX();
-        int y = (int) point.getY();
+    public void actionMove(int x, int y) {
         if (takenGameCell == null) return;
         if (positionOutsideGameMetrics(x, y)) {
             returnTakenCircleToDefaultPositionAndZeroingIt();
@@ -313,20 +314,7 @@ public class GameViewModel extends AndroidViewModel {
     }
 
     private GameCell[][] getCirclesForLevel() {
-        throwExceptionIfHeightBiggerThanWidth();
-        return level.generateCircles(cellsGenerator, gameWindowHeight, gameWindowWidth);
-    }
-
-    private void throwExceptionIfSizeNotSet() {
-        if (gameWindowWidth <= 0 || gameWindowHeight <= 0) {
-            throw new RuntimeException("Specify width and height for game window");
-        }
-    }
-
-    private void throwExceptionIfHeightBiggerThanWidth() {
-        if (gameWindowWidth < gameWindowHeight) {
-            throw new RuntimeException("Height cannot be bigger than width in the game window");
-        }
+        return level.generateCircles(cellsGenerator, gameWindowWidth, gameWindowHeight);
     }
 
     private boolean positionOutsideGameMetrics(int x, int y) {

@@ -14,7 +14,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int amountOnBiggerSide;
     private int smallerSideLength;
     private int biggerSideLength;
-    private int lengthOfCellSide;
+    private int cellSideLength;
     private int shiftForSmallerSide;
     private int shiftForBiggerSide;
     private int bombsAmount;
@@ -25,27 +25,45 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int[] actualColors;
     private Random random;
     private List<Integer> amountOfCellsWithSameColorForIndex;
-
+    private boolean invertCells;
 
     @Override
-    public GameCell[][] generateCellsForField3X4(int smallerSide, int biggerSide, int bombsAmount) {
-        return saveParametersAndGenerateCells(smallerSide, biggerSide, bombsAmount, 3, 4);
+    public GameCell[][] regenerateCellsForNewSize(GameCell[][] gameCells, int newWidth, int newHeight) {
+        setSizeLenghtsAndInvertVariables(newWidth, newHeight);
+        amountOnSmallerSide = gameCells.length;
+        amountOnBiggerSide = gameCells[0].length;
+
+        calculateLengthForCellSideAndRadius();
+        calculateShiftForCells();
+
+        for (int row = 0; row < gameCells.length; row++) {
+            for (int col = 0; col < gameCells[0].length; col++) {
+                gameCells[row][col].setNewCenterPositionAndRadius(getXForCol(row, col),
+                        getYForRow(row, col), radiusForCircles);
+            }
+        }
+
+        return gameCells;
     }
 
     @Override
-    public GameCell[][] generateCellsForField4X6(int smallerSide, int biggerSide, int bombsAmount) {
-        return saveParametersAndGenerateCells(smallerSide, biggerSide, bombsAmount, 4, 6);
+    public GameCell[][] generateCellsForField3X4(int width, int height, int bombsAmount) {
+        return saveParametersAndGenerateCells(width, height, bombsAmount, 3, 4);
     }
 
     @Override
-    public GameCell[][] generateCellsForField6X10(int smallerSide, int biggerSide, int bombsAmount) {
-        return saveParametersAndGenerateCells(smallerSide, biggerSide, bombsAmount, 6, 10);
+    public GameCell[][] generateCellsForField4X6(int width, int height, int bombsAmount) {
+        return saveParametersAndGenerateCells(width, height, bombsAmount, 4, 6);
     }
 
-    private GameCell[][] saveParametersAndGenerateCells(int smallerSide, int biggerSide, int bombsAmount,
+    @Override
+    public GameCell[][] generateCellsForField6X10(int width, int height, int bombsAmount) {
+        return saveParametersAndGenerateCells(width, height, bombsAmount, 6, 10);
+    }
+
+    private GameCell[][] saveParametersAndGenerateCells(int width, int height, int bombsAmount,
                                                         int amountOnSmallerSide, int amountOnBiggerSide) {
-        smallerSideLength = smallerSide;
-        biggerSideLength = biggerSide;
+        setSizeLenghtsAndInvertVariables(width, height);
         this.amountOnSmallerSide = amountOnSmallerSide;
         this.amountOnBiggerSide = amountOnBiggerSide;
         this.bombsAmount = bombsAmount;
@@ -61,15 +79,27 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return gameCells;
     }
 
+    private void setSizeLenghtsAndInvertVariables(int width, int height) {
+        if (height > width) {
+            invertCells = true;
+            smallerSideLength = width;
+            biggerSideLength = height;
+        } else {
+            invertCells = false;
+            smallerSideLength = height;
+            biggerSideLength = width;
+        }
+    }
+
     private void calculateLengthForCellSideAndRadius() {
-        lengthOfCellSide = Math.min(smallerSideLength / amountOnSmallerSide,
+        cellSideLength = Math.min(smallerSideLength / amountOnSmallerSide,
                 biggerSideLength / amountOnBiggerSide);
-        radiusForCircles = lengthOfCellSide / 2;
+        radiusForCircles = cellSideLength / 2;
     }
 
     private void calculateShiftForCells() {
-        shiftForSmallerSide = (smallerSideLength - lengthOfCellSide * amountOnSmallerSide) / 2;
-        shiftForBiggerSide = (biggerSideLength - lengthOfCellSide * amountOnBiggerSide) / 2;
+        shiftForSmallerSide = (smallerSideLength - cellSideLength * amountOnSmallerSide) / 2;
+        shiftForBiggerSide = (biggerSideLength - cellSideLength * amountOnBiggerSide) / 2;
     }
 
     private void populateGameCells() {
@@ -77,7 +107,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
         generateMines();
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
-                Circle circle = new Circle(getXForCol(col), getYForRow(row), radiusForCircles,
+                Circle circle = new Circle(getXForCol(row, col), getYForRow(row, col), radiusForCircles,
                         colorsForCircles[row][col]);
                 gameCells[row][col] = new GameCell(circle, withMine[row][col], calculateMinesNearCell(row, col));
             }
@@ -200,12 +230,18 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return true;
     }
 
-    private int getXForCol(final int col) {
-        return radiusForCircles + lengthOfCellSide * col + shiftForBiggerSide;
+    private int getXForCol(int row, int col) {
+        if (invertCells) {
+            return radiusForCircles + cellSideLength * (amountOnSmallerSide - row - 1) + shiftForSmallerSide;
+        }
+        return radiusForCircles + cellSideLength * col + shiftForBiggerSide;
     }
 
-    private int getYForRow(final int row) {
-        return radiusForCircles + lengthOfCellSide * row + shiftForSmallerSide;
+    private int getYForRow(int row, int col) {
+        if (invertCells) {
+            return radiusForCircles + cellSideLength * col + shiftForBiggerSide;
+        }
+        return radiusForCircles + cellSideLength * row + shiftForSmallerSide;
     }
 
     private void throwExceptionIfMinesOfLimit() {

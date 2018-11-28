@@ -2,7 +2,6 @@ package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
@@ -13,49 +12,25 @@ import androidx.collection.SparseArrayCompat;
 
 public class GameCellsToBitmap {
 
-    private static final int paddingForMinesNumberImage = 20;
-
     private BitmapProvider bitmapProvider;
-    private Paint paintToUse;
     private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
-    private SparseArrayCompat<Bitmap> invertedBitmapCache = new SparseArrayCompat<>();
-    private boolean invert;
+    private int bitmapSideLength;
+    private Paint paintToUse;
 
     public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint) {
         this.bitmapProvider = bitmapProvider;
         paintToUse = paint;
     }
 
-    public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float initHeight, float initWidth,
-                                    float height, float width, boolean invert) {
-        this.invert = invert;
-        Bitmap originalGameBitmap = createGameBitmapInOriginalSize(gameCells, initHeight, initWidth);
-        return transformOriginalGameBitmapToCurrentSizeAndOrientation(originalGameBitmap, height, width);
+    public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float width, float height) {
+        return createGameBitmapInOriginalSize(gameCells, width, height);
     }
 
-    private Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initHeight, float initWidth) {
+    private Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initWidth, float initHeight) {
         Bitmap bitmapForGame = Bitmap.createBitmap((int) initWidth, (int) initHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmapForGame);
         drawCellsOnCanvas(canvas, gameCells);
         return bitmapForGame;
-    }
-
-    private Bitmap transformOriginalGameBitmapToCurrentSizeAndOrientation(Bitmap originalBitmap,
-                                                                          float height, float width) {
-        Matrix matrix = new Matrix();
-        int originalWidth = originalBitmap.getWidth();
-        int originalHeight = originalBitmap.getHeight();
-        if (originalWidth != width || originalHeight != height) {
-            float sx = width / (float) originalWidth;
-            float sy = height / (float) originalHeight;
-            float maxScale = Math.max(sx, sy);
-            matrix.setScale(maxScale, maxScale);
-        }
-        if (invert) {
-            matrix.postRotate(90);
-        }
-
-        return Bitmap.createBitmap(originalBitmap, 0, 0, originalWidth, originalHeight, matrix, false);
     }
 
     @VisibleForTesting
@@ -81,26 +56,11 @@ public class GameCellsToBitmap {
     }
 
     private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
-        Bitmap bitmap;
-        if (invert) {
-            bitmap = getInvertedBitmapByResource(R.drawable.bang, length);
-        } else {
-            bitmap = getBitmapByResource(R.drawable.bang, length);
-        }
-        canvasToDraw.drawBitmap(bitmap, x, y, paintToUse);
+        canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bang, length), x, y, paintToUse);
     }
 
     private void drawMinesNumber(Canvas canvasToDraw, int length, int x, int y, int minesNumber) {
-        Bitmap bitmap;
-        if (invert) {
-            bitmap = getInvertedBitmapByResource(getNumberDrawableByNumber(minesNumber),
-                    length - paddingForMinesNumberImage);
-        } else {
-            bitmap = getBitmapByResource(getNumberDrawableByNumber(minesNumber),
-                    length - paddingForMinesNumberImage);
-        }
-        canvasToDraw.drawBitmap(bitmap, x + paddingForMinesNumberImage / 2,
-                y + paddingForMinesNumberImage / 2, paintToUse);
+        canvasToDraw.drawText(String.valueOf(minesNumber), x + length / 2, y + length / 2, paintToUse);
     }
 
     private void drawCircleThatCouldBeMarked(Canvas canvasToDraw, int drawableSrc, int length, int x, int y,
@@ -112,32 +72,8 @@ public class GameCellsToBitmap {
         }
     }
 
-    private int getNumberDrawableByNumber(int number) {
-        switch (number) {
-            case 0:
-                return R.drawable.zero;
-            case 1:
-                return R.drawable.one;
-            case 2:
-                return R.drawable.two;
-            case 3:
-                return R.drawable.three;
-            case 4:
-                return R.drawable.four;
-            case 5:
-                return R.drawable.five;
-            case 6:
-                return R.drawable.six;
-            case 7:
-                return R.drawable.seven;
-            case 8:
-                return R.drawable.eight;
-            default:
-                return 0;
-        }
-    }
-
     private Bitmap getBitmapByResource(int resourceId, int sizeOfSide) {
+        clearCacheIfSizeUpdated(sizeOfSide);
         Bitmap bitmap = bitmapCache.get(resourceId);
         if (bitmap == null) {
             bitmap = bitmapProvider.getBitmapByResourceId(resourceId, sizeOfSide);
@@ -146,13 +82,11 @@ public class GameCellsToBitmap {
         return bitmap;
     }
 
-    private Bitmap getInvertedBitmapByResource(int resourceId, int sizeOfSide) {
-        Bitmap bitmap = invertedBitmapCache.get(resourceId);
-        if (bitmap == null) {
-            bitmap = bitmapProvider.getInvertedBitmapByResourceId(resourceId, sizeOfSide);
-            invertedBitmapCache.put(resourceId, bitmap);
+    private void clearCacheIfSizeUpdated(int sizeOfSide) {
+        if (sizeOfSide != bitmapSideLength) {
+            bitmapCache.clear();
+            bitmapSideLength = sizeOfSide;
         }
-        return bitmap;
     }
 
 }

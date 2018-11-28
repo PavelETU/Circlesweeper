@@ -36,21 +36,18 @@ public class GameActivity extends AppCompatActivity implements
         gameImage.post(() -> {
             int width = gameImage.getWidth();
             int height = gameImage.getHeight();
-            mapper = Singletons.getMapperWithForSize((CircleSweeperApp) getApplication(),
-                    width, height);
-            viewModel.setSizeOfGameWindow((int) mapper.getInitialGameWindowWidth(),
-                    (int) mapper.getInitialGameWindowHeight());
+            mapper = Singletons.getMapperWithForSize((CircleSweeperApp) getApplication());
             viewModel.setLevel(new FirstLevel());
-            mapper.getGameImageLiveData(viewModel.getGameCells()).observe(GameActivity.this,
+            mapper.getGameImageLiveData(viewModel.getGameCells(width, height), width, height).observe(GameActivity.this,
                     gameImage::setImageBitmap);
         });
         gameImage.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    viewModel.actionDown(mapper.mapXYFromViewToGameWindow(event.getX(), event.getY()));
+                    viewModel.actionDown((int) event.getX(), (int) event.getY());
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    viewModel.actionMove(mapper.mapXYFromViewToGameWindow(event.getX(), event.getY()));
+                    viewModel.actionMove((int) event.getX(), (int) event.getY());
                     break;
                 case MotionEvent.ACTION_UP:
                     viewModel.actionUp();

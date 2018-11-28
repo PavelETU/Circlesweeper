@@ -9,9 +9,9 @@ public class GameCell {
     private final boolean withMine;
     private boolean marked = false;
     private final int minesNear;
-    private final int topLeftX;
-    private final int topLeftY;
-    private final int sideLength;
+    private int topLeftX;
+    private int topLeftY;
+    private int sideLength;
 
     public GameCell(Circle circle, boolean initWithMine, int minesNear) {
         this.circle = circle;
@@ -60,6 +60,15 @@ public class GameCell {
         // Does this violate the Law of Demeter? I don't think so:)
         if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
         return circle.getColorDrawableSrc() == gameCell.circle.getColorDrawableSrc();
+    }
+
+    public void setNewCenterPositionAndRadius(int x, int y, int radius) {
+        circle.setX(x);
+        circle.setY(y);
+        circle.setNewRadius(radius);
+        sideLength = radius * 2;
+        topLeftX = x - radius;
+        topLeftY = y - radius;
     }
 
     public boolean isWithMine() {
