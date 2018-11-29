@@ -56,10 +56,10 @@ public class GameCell {
         gameCellToSwapBy.circle = circleToSwap;
     }
 
-    public boolean isColorTheSame(GameCell gameCell) {
+    public boolean isColorTheSameAndCellsNotMarked(GameCell gameCell) {
         // Does this violate the Law of Demeter? I don't think so:)
         if (!circle.isAlive() || !gameCell.circle.isAlive()) return false;
-        return circle.getColorDrawableSrc() == gameCell.circle.getColorDrawableSrc();
+        return circle.getColorDrawableSrc() == gameCell.circle.getColorDrawableSrc() && !marked && !gameCell.marked;
     }
 
     public void setNewCenterPositionAndRadius(int x, int y, int radius) {

@@ -2,6 +2,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
 import android.os.Handler;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
@@ -32,6 +33,7 @@ public class GameViewModel extends AndroidViewModel {
     private MutableLiveData<Integer> gameScore = new MutableLiveData<>();
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
     private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> checkButtonSrc;
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -79,6 +81,14 @@ public class GameViewModel extends AndroidViewModel {
         return minesToDisplayLiveData;
     }
 
+    public LiveData<Integer> getCheckButtonSrc() {
+        if (checkButtonSrc == null) {
+            checkButtonSrc = new MutableLiveData<>();
+            checkButtonSrc.setValue(markState ? R.drawable.bomb_check_pressed : R.drawable.bomb_check);
+        }
+        return checkButtonSrc;
+    }
+
     public void setLevel(GameLevel level) {
         this.level = level;
     }
@@ -99,7 +109,7 @@ public class GameViewModel extends AndroidViewModel {
     }
 
     public void markClicked() {
-        markState = !markState;
+        moveToMarkUnmarkState();
     }
 
     public void actionDown(int x, int y) {
@@ -107,10 +117,18 @@ public class GameViewModel extends AndroidViewModel {
         if (takenGameCellPosition == null) return;
         GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
         if (markState) {
-            gameCell.setMarked(!gameCell.isMarked());
+            boolean marked = !gameCell.isMarked();
+            gameCell.setMarked(marked);
             updateMinesCount(gameCell);
-            markState = false;
+            if (!marked) {
+                int countForFirst = eliminateCirclesAndReturnEliminatedAmount(
+                        takenGameCellPosition.first, takenGameCellPosition.second);
+                updateScoreBasedOnGoneCircles(countForFirst, 0);
+                setUpAnimationIfCirclesWereEliminated();
+            }
             endGameIfWon();
+            updateCellsLiveData();
+            moveToMarkUnmarkState();
             return;
         }
         if (gameCell.isMarked() || !gameCell.isCircleInsideAlive()) return;
@@ -123,7 +141,7 @@ public class GameViewModel extends AndroidViewModel {
 
     public void actionMove(int x, int y) {
         if (takenGameCell == null) return;
-        if (positionOutsideGameMetrics(x, y)) {
+        if (positionOutsideGameMetrics(x, y) || positionOnMarkedCircle(x, y)) {
             returnTakenCircleToDefaultPositionAndZeroingIt();
             updateCellsLiveData();
             return;
@@ -142,16 +160,21 @@ public class GameViewModel extends AndroidViewModel {
         endGameIfWon();
     }
 
-    private void endGameIfWon() {
-        if (gameWon()) {
-            endGameWithWinning();
-        }
-    }
-
     public void actionUp() {
         if (takenGameCell == null) return;
         returnTakenCircleToDefaultPositionAndZeroingIt();
         updateCellsLiveData();
+    }
+
+    private void moveToMarkUnmarkState() {
+        markState = !markState;
+        checkButtonSrc.setValue(markState ? R.drawable.bomb_check_pressed : R.drawable.bomb_check);
+    }
+
+    private void endGameIfWon() {
+        if (gameWon()) {
+            endGameWithWinning();
+        }
     }
 
     private Pair<Integer, Integer> findPositionForCellThatContainsPosition(int x, int y) {
@@ -164,6 +187,16 @@ public class GameViewModel extends AndroidViewModel {
             }
         }
         return null;
+    }
+
+    private boolean positionOnMarkedCircle(int x, int y) {
+        if (!takenGameCell.contains(x, y)) {
+            Pair<Integer, Integer> gameCellPosition = findPositionForCellThatContainsPosition(x, y);
+            if (gameCellPosition != null) {
+                return gameCells[gameCellPosition.first][gameCellPosition.second].isMarked();
+            }
+        }
+        return false;
     }
 
     private void swapCirclesIfTheyOverlappedAndCachedItsLocations(int x, int y) {
@@ -286,22 +319,22 @@ public class GameViewModel extends AndroidViewModel {
 
     private boolean cellToTheLeftIsSameColor(int row, int column) {
         if (column == 0) return false;
-        return gameCells[row][column].isColorTheSame(gameCells[row][column - 1]);
+        return gameCells[row][column].isColorTheSameAndCellsNotMarked(gameCells[row][column - 1]);
     }
 
     private boolean cellToTheRightIsSameColor(int row, int column) {
         if (column + 1 == gameCells[0].length) return false;
-        return gameCells[row][column].isColorTheSame(gameCells[row][column + 1]);
+        return gameCells[row][column].isColorTheSameAndCellsNotMarked(gameCells[row][column + 1]);
     }
 
     private boolean cellToTheBottomIsSameColor(int row, int column) {
         if (row + 1 == gameCells.length) return false;
-        return gameCells[row][column].isColorTheSame(gameCells[row + 1][column]);
+        return gameCells[row][column].isColorTheSameAndCellsNotMarked(gameCells[row + 1][column]);
     }
 
     private boolean cellToTheTopIsSameColor(int row, int column) {
         if (row == 0) return false;
-        return gameCells[row][column].isColorTheSame(gameCells[row - 1][column]);
+        return gameCells[row][column].isColorTheSameAndCellsNotMarked(gameCells[row - 1][column]);
     }
 
     private void eliminateCircleAtPosition(int row, int col) {

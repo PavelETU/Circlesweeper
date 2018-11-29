@@ -16,6 +16,7 @@ public class Singletons {
             paintToUse.setColor(Color.BLACK);
             paintToUse.setTextSize(100);
             paintToUse.setTextAlign(Paint.Align.CENTER);
+            paintToUse.setStrokeWidth(20);
             mapper = new Mapper(new GameCellsToBitmap(app, paintToUse));
         }
         return mapper;

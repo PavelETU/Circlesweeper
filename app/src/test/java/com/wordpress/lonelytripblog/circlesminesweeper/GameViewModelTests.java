@@ -14,7 +14,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.Point;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 
 import org.junit.Rule;
@@ -211,7 +210,7 @@ public class GameViewModelTests {
     @Test
     public void circlesWithTheSameColorWillBeEliminated() {
         startGameWithMockCells2x2WithDefaultCoords();
-        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+        when(mockCells[0][1].isColorTheSameAndCellsNotMarked(mockCells[1][1])).thenReturn(true);
 
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
@@ -223,7 +222,7 @@ public class GameViewModelTests {
     @Test
     public void scoreCorrectForTwoCircles() {
         startGameWithMockCells2x2WithDefaultCoords();
-        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+        when(mockCells[0][1].isColorTheSameAndCellsNotMarked(mockCells[1][1])).thenReturn(true);
 
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
@@ -234,8 +233,8 @@ public class GameViewModelTests {
     @Test
     public void scoreDoublesIfBothSwappedCirclesGone() {
         startGameWithMockCells2x2WithDefaultCoords();
-        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
-        when(mockCells[0][0].isColorTheSame(mockCells[1][0])).thenReturn(true);
+        when(mockCells[0][1].isColorTheSameAndCellsNotMarked(mockCells[1][1])).thenReturn(true);
+        when(mockCells[0][0].isColorTheSameAndCellsNotMarked(mockCells[1][0])).thenReturn(true);
 
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
@@ -254,7 +253,7 @@ public class GameViewModelTests {
     public void gameWonAfterMoveIfNoMoreSameCircleAndMines() {
         startGameWithMockCells1x2WithNoBombs();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
-        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isColorTheSameAndCellsNotMarked(mockCell2)).thenReturn(false);
         when(mockCell.getDrawableForCircle()).thenReturn(1);
         when(mockCell2.getDrawableForCircle()).thenReturn(0);
         when(mockCell.isWithMine()).thenReturn(false);
@@ -280,7 +279,7 @@ public class GameViewModelTests {
     @Test
     public void gameOverIfCircleWithBombEliminated() {
         startGameWithMockCells2x2WithDefaultCoords();
-        when(mockCells[0][1].isColorTheSame(mockCells[1][1])).thenReturn(true);
+        when(mockCells[0][1].isColorTheSameAndCellsNotMarked(mockCells[1][1])).thenReturn(true);
         when(mockCells[1][1].isWithMine()).thenReturn(true);
 
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
@@ -384,7 +383,7 @@ public class GameViewModelTests {
         startGameWithMockCells1x2WithOneBomb();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         when(mockCell.isMarked()).thenReturn(true);
-        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isColorTheSameAndCellsNotMarked(mockCell2)).thenReturn(false);
         when(mockCell.isWithMine()).thenReturn(false);
         when(mockCell2.isWithMine()).thenReturn(true);
 
@@ -399,7 +398,7 @@ public class GameViewModelTests {
         startGameWithMockCells1x2WithOneBomb();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
         when(mockCell.isMarked()).thenReturn(false).thenReturn(true);
-        when(mockCell.isColorTheSame(mockCell2)).thenReturn(false);
+        when(mockCell.isColorTheSameAndCellsNotMarked(mockCell2)).thenReturn(false);
         when(mockCell.isWithMine()).thenReturn(true);
         when(mockCell2.isWithMine()).thenReturn(false);
 
@@ -424,6 +423,7 @@ public class GameViewModelTests {
     private void startGameWithLevel(GameLevel level) {
         Handler mockHandler = mock(Handler.class);
         viewModel = new GameViewModel(app, cellsGenerator, mockHandler);
+        viewModel.getCheckButtonSrc();
         viewModel.setLevel(level);
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
         viewModel.getGameCells(defaultWidth, defaultHeight).observeForever(circleObserver);

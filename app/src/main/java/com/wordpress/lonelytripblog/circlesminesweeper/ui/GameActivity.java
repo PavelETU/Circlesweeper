@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MotionEvent;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
@@ -55,6 +56,9 @@ public class GameActivity extends AppCompatActivity implements
             }
             return true;
         });
+        ImageButton checkButton = findViewById(R.id.checking_btn);
+        checkButton.setOnClickListener(v -> viewModel.markClicked());
+        viewModel.getCheckButtonSrc().observe(this, checkButton::setImageResource);
     }
 
     @Override

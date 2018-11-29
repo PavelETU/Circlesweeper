@@ -63,14 +63,24 @@ public class GameCellsToBitmap {
         canvasToDraw.drawText(String.valueOf(minesNumber), x + length / 2, y + length / 2, paintToUse);
     }
 
-    private void drawCircleThatCouldBeMarked(Canvas canvasToDraw, int drawableSrc, int length, int x, int y,
+    private void drawCircleThatCouldBeMarked(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY,
                                              boolean drawLinesAbove) {
-        canvasToDraw.drawBitmap(getBitmapByResource(drawableSrc, length), x, y, paintToUse);
+        canvasToDraw.drawBitmap(getBitmapByResource(drawableSrc, length), topX, topY, paintToUse);
         if (drawLinesAbove) {
-            canvasToDraw.drawLine(x, y, x + length, y + length, paintToUse);
-            canvasToDraw.drawLine(x + length, y, x, y + length, paintToUse);
+            int radius = length / 2;
+            int x = topX + radius;
+            int y = topY + radius;
+            canvasToDraw.drawLine(x + radius * (float) Math.cos(Math.PI / 4),
+                    y + radius * (float) Math.sin(Math.PI / 4),
+                    x + radius * (float) Math.cos(5 * Math.PI / 4),
+                    y + radius * (float) Math.sin(5 * Math.PI / 4), paintToUse);
+            canvasToDraw.drawLine(x + radius * (float) Math.cos(7 * Math.PI / 4),
+                    y + radius * (float) Math.sin(7 * Math.PI / 4),
+                    x + radius * (float) Math.cos(3 * Math.PI / 4),
+                    y + radius * (float) Math.sin(3 * Math.PI / 4), paintToUse);
         }
     }
+
 
     private Bitmap getBitmapByResource(int resourceId, int sizeOfSide) {
         clearCacheIfSizeUpdated(sizeOfSide);
