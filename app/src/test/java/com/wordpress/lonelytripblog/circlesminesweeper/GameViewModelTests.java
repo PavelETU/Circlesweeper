@@ -215,8 +215,8 @@ public class GameViewModelTests {
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
-        verify(mockCells[0][1]).eliminateCircle();
-        verify(mockCells[1][1]).eliminateCircle();
+        verify(mockCells[0][1]).eliminateCircleWithAnimation();
+        verify(mockCells[1][1]).eliminateCircleWithAnimation();
     }
 
     @Test
@@ -251,13 +251,7 @@ public class GameViewModelTests {
 
     @Test
     public void gameWonAfterMoveIfNoMoreSameCircleAndMines() {
-        startGameWithMockCells1x2WithNoBombs();
-        teachMockCellSoItWillInclude(mockCell, 100, 100);
-        when(mockCell.isColorTheSameAndCellsNotMarked(mockCell2)).thenReturn(false);
-        when(mockCell.getDrawableForCircle()).thenReturn(1);
-        when(mockCell2.getDrawableForCircle()).thenReturn(0);
-        when(mockCell.isWithMine()).thenReturn(false);
-        when(mockCell2.isWithMine()).thenReturn(false);
+        start1X2GameWithNoBombsAndDifferentColors();
 
         viewModel.actionDown(100, 100);
         viewModel.actionMove(101, 100);
@@ -418,6 +412,41 @@ public class GameViewModelTests {
 
         verify(mockCell).moveCircleToDefaultPosition();
         verify(mockCell).makeCircleBigger();
+    }
+
+    @Test
+    public void leftCirclesEliminatedAfterGameIsLost() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isWithMine()).thenReturn(true);
+        when(mockCell.isCircleInsideAlive()).thenReturn(true);
+        when(mockCell2.isCircleInsideAlive()).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+
+        verify(mockCell).eliminateCircle();
+        verify(mockCell2).eliminateCircle();
+    }
+
+    @Test
+    public void leftCirclesEliminatedAfterGameIsWon() {
+        start1X2GameWithNoBombsAndDifferentColors();
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(101, 100);
+
+        verify(mockCell).eliminateCircle();
+        verify(mockCell2).eliminateCircle();
+    }
+
+    private void start1X2GameWithNoBombsAndDifferentColors() {
+        startGameWithMockCells1x2WithNoBombs();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell.isColorTheSameAndCellsNotMarked(mockCell2)).thenReturn(false);
+        when(mockCell.getDrawableForCircle()).thenReturn(1);
+        when(mockCell2.getDrawableForCircle()).thenReturn(0);
+        when(mockCell.isWithMine()).thenReturn(false);
+        when(mockCell2.isWithMine()).thenReturn(false);
     }
 
     private void startGameWithLevel(GameLevel level) {

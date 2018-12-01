@@ -23,6 +23,9 @@ import java.util.Locale;
 
 public class CustomLevelDialogFragment extends DialogFragment {
 
+    public final static int FIELD_3_4 = 1;
+    public final static int FIELD_4_6 = 2;
+    public final static int FIELD_6_10 = 3;
     private CustomLevelDialogCallback eventCallback;
     private EditText numberOfMinesInput;
     private RadioGroup fieldSizeGroup;
@@ -113,16 +116,16 @@ public class CustomLevelDialogFragment extends DialogFragment {
         });
     }
 
-    private void validateMinesInputForNewFieldSize(final int newFieldSize) {
+    private void validateMinesInputForNewFieldSize(int newFieldSize) {
         if (!numberOfMinesInput.getText().toString().isEmpty()) {
             final int minesAmount = Integer.parseInt(numberOfMinesInput.getText().toString());
             verifyInputAndCorrectItAsNeededDisplayingToast(numberOfMinesInput, newFieldSize, minesAmount);
         }
     }
 
-    private void verifyInputAndCorrectItAsNeededDisplayingToast(@NonNull final EditText number,
-                                                                final int checkedId,
-                                                                final int amountOfMines) {
+    private void verifyInputAndCorrectItAsNeededDisplayingToast(@NonNull EditText number,
+                                                                int checkedId,
+                                                                int amountOfMines) {
         SizeOfTheFieldHelper helper = new SizeOfTheFieldHelper(checkedId);
         if (amountOfMines > helper.minesLimit) {
             displayToast(helper.stringResourceToBeDisplayed);
@@ -141,11 +144,11 @@ public class CustomLevelDialogFragment extends DialogFragment {
     }
 
     private int extractFieldSize() {
-        int field_size = 1;
+        int field_size = FIELD_3_4;
         if (fieldSizeGroup.getCheckedRadioButtonId() == R.id.radioButton2) {
-            field_size = 2;
+            field_size = FIELD_4_6;
         } else if (fieldSizeGroup.getCheckedRadioButtonId() == R.id.radioButton3) {
-            field_size = 3;
+            field_size = FIELD_6_10;
         }
         return field_size;
     }
@@ -168,7 +171,7 @@ public class CustomLevelDialogFragment extends DialogFragment {
         private int stringResourceToBeDisplayed;
         private int minesLimit;
 
-        SizeOfTheFieldHelper(final int radioButtonId) {
+        SizeOfTheFieldHelper(int radioButtonId) {
             switch (radioButtonId) {
                 case R.id.radioButton:
                     minesLimit = 4;

@@ -42,6 +42,10 @@ public class GameCell {
 
     public void eliminateCircle() {
         circle.setAlive(false);
+    }
+
+    public void eliminateCircleWithAnimation() {
+        circle.setAlive(false);
         animated = true;
     }
 

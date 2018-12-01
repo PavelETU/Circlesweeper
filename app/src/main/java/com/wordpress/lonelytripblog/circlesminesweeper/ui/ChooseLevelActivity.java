@@ -52,9 +52,9 @@ public class ChooseLevelActivity extends AppCompatActivity
         }
     }
 
-    private void openGameActivityWithLevel(final int level) {
+    private void openGameActivityWithLevel(int level) {
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", level);
+        intent.putExtra(GameActivity.EXTRA_LEVEL, level);
         startActivity(intent);
     }
 
@@ -128,7 +128,7 @@ public class ChooseLevelActivity extends AppCompatActivity
         }
     }
 
-    private int getBackgroundDependingOnPosition(final int i) {
+    private int getBackgroundDependingOnPosition(int i) {
         switch (i) {
             case 1:
                 return R.drawable.purple_ball;
@@ -147,11 +147,11 @@ public class ChooseLevelActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLevelParamsChosen(final int fieldSize, final int amountOfMines) {
+    public void onLevelParamsChosen(int fieldSize, int amountOfMines) {
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", LAST_LEVEL);
-        intent.putExtra("field_size", fieldSize);
-        intent.putExtra("number_of_mines", amountOfMines);
+        intent.putExtra(GameActivity.EXTRA_LEVEL, LAST_LEVEL);
+        intent.putExtra(GameActivity.EXTRA_CUSTOM_FIELD_SIZE, fieldSize);
+        intent.putExtra(GameActivity.EXTRA_CUSTOM_MINES, amountOfMines);
         startActivity(intent);
     }
 

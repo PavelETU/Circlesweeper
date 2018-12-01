@@ -284,11 +284,17 @@ public class GameViewModel extends AndroidViewModel {
     }
 
     private void endGameWithWinning() {
-        gameCondition.setValue(GAME_WON);
+        endGameWithStatus(GAME_WON);
     }
 
     private void endGameWithLoosing() {
-        gameCondition.setValue(GAME_LOST);
+        endGameWithStatus(GAME_LOST);
+    }
+
+    private void endGameWithStatus(int status) {
+        eliminateAllCircles();
+        updateCellsLiveData();
+        gameCondition.setValue(status);
     }
 
     // Breaks Command-Query separation
@@ -317,6 +323,17 @@ public class GameViewModel extends AndroidViewModel {
         return eliminatedCirclesCount;
     }
 
+    private void eliminateAllCircles() {
+        for (int i = 0; i < gameCells.length; i++) {
+            for (int j = 0; j < gameCells[0].length; j++) {
+                GameCell currentCell = gameCells[i][j];
+                if (currentCell.isCircleInsideAlive()) {
+                    currentCell.eliminateCircle();
+                }
+            }
+        }
+    }
+
     private boolean cellToTheLeftIsSameColor(int row, int column) {
         if (column == 0) return false;
         return gameCells[row][column].isColorTheSameAndCellsNotMarked(gameCells[row][column - 1]);
@@ -343,7 +360,7 @@ public class GameViewModel extends AndroidViewModel {
             circleWithBombWasEliminated = true;
         }
         eliminatedCells.add(cellToEliminate);
-        cellToEliminate.eliminateCircle();
+        cellToEliminate.eliminateCircleWithAnimation();
     }
 
     private GameCell[][] getCirclesForLevel() {
