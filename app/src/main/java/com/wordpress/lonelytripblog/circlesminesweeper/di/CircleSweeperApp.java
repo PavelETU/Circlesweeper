@@ -1,40 +1,34 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.di;
 
+import android.app.Activity;
 import android.app.Application;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProvider;
+import javax.inject.Inject;
 
-public class CircleSweeperApp extends Application implements BitmapProvider {
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 
-    private static Resources resources;
+public class CircleSweeperApp extends Application implements HasActivityInjector {
+
+    private GameComponent gameComponent;
+
+    @Inject
+    DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        resources = getResources();
+        if (gameComponent == null) {
+            gameComponent = DaggerGameComponent.builder()
+                    .gameModule(new GameModule(getResources())).build();
+        }
+        gameComponent.injectApp(this);
     }
 
     @Override
-    public Bitmap getBitmapByResourceId(int resourceId, int sizeOfBitmap) {
-        Drawable shape = resources.getDrawable(resourceId);
-        Bitmap bitmap = Bitmap.createBitmap(sizeOfBitmap, sizeOfBitmap, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        shape.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        shape.draw(canvas);
-        return bitmap;
-    }
-
-    @Override
-    public Bitmap getInvertedBitmapByResourceId(int resourceId, int sizeOfBitmap) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(-90);
-        return Bitmap.createBitmap(getBitmapByResourceId(resourceId, sizeOfBitmap), 0, 0,
-                sizeOfBitmap, sizeOfBitmap, matrix, false);
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingActivityInjector;
     }
 
 }

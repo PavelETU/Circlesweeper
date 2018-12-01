@@ -1,8 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -10,28 +8,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGeneratorImpl;
-import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
-import com.wordpress.lonelytripblog.circlesminesweeper.di.Singletons;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.Mapper;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
-import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModelFactory;
 
-import androidx.appcompat.app.AppCompatActivity;
+import javax.inject.Inject;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class GameActivity extends AppCompatActivity implements
-        CustomLevelDialogFragment.CustomLevelDialogCallback {
+public class GameActivity extends DaggerAppCompatActivity
+        implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
     static String EXTRA_LEVEL = "level";
     static String EXTRA_CUSTOM_FIELD_SIZE = "field_size";
     static String EXTRA_CUSTOM_MINES = "number_of_mines";
     private ImageView gameImage;
-    private Mapper mapper;
-    private LevelFactory levelFactory = new DefaultLevelFactory();
+    @Inject
+    LevelFactory levelFactory;
+    @Inject
+    ViewModelProvider.Factory factory;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,16 +37,13 @@ public class GameActivity extends AppCompatActivity implements
         int level = getIntent().getIntExtra(EXTRA_LEVEL, -1);
         int fieldSizeCustom = getIntent().getIntExtra(EXTRA_CUSTOM_FIELD_SIZE, -1);
         int minesCustom = getIntent().getIntExtra(EXTRA_CUSTOM_MINES, -1);
-        GameViewModelFactory factory = new GameViewModelFactory((CircleSweeperApp) getApplication(),
-                new CellsGeneratorImpl(), new Handler(Looper.getMainLooper()));
         GameViewModel viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameImage = findViewById(R.id.game_image);
         gameImage.post(() -> {
             int width = gameImage.getWidth();
             int height = gameImage.getHeight();
-            mapper = Singletons.getMapperWithForSize((CircleSweeperApp) getApplication());
             viewModel.setLevel(levelFactory.makeLevel(level, fieldSizeCustom, minesCustom));
-            mapper.getGameImageLiveData(viewModel.getGameCells(width, height), width, height).observe(GameActivity.this,
+            viewModel.getGameImageLiveData(width, height).observe(GameActivity.this,
                     gameImage::setImageBitmap);
         });
         gameImage.setOnTouchListener((v, event) -> {

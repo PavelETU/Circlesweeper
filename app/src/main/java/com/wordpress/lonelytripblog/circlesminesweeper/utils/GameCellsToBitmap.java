@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
+import javax.inject.Inject;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 
@@ -17,6 +19,7 @@ public class GameCellsToBitmap {
     private int bitmapSideLength;
     private Paint paintToUse;
 
+    @Inject
     public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint) {
         this.bitmapProvider = bitmapProvider;
         paintToUse = paint;

@@ -1,23 +1,28 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
+import android.graphics.Bitmap;
 import android.os.Handler;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
+import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pair;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
-public class GameViewModel extends AndroidViewModel {
+public class GameViewModel extends ViewModel {
 
     public static final int GAME_IN_PROCESS = 0;
     public static final int GAME_WON = 1;
@@ -42,11 +47,18 @@ public class GameViewModel extends AndroidViewModel {
     private boolean circleWithBombWasEliminated;
     private boolean markState;
     private List<GameCell> eliminatedCells = new ArrayList<>();
+    private GameCellsToBitmap gameCellsToBitmap;
 
-    public GameViewModel(CircleSweeperApp application, CellsGenerator cellsGenerator, Handler mainHandler) {
-        super(application);
+    @Inject
+    GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap) {
         this.cellsGenerator = cellsGenerator;
         this.mainHandler = mainHandler;
+        this.gameCellsToBitmap = gameCellsToBitmap;
+    }
+
+    public LiveData<Bitmap> getGameImageLiveData(int width, int height) {
+        return Transformations.map(getGameCells(width, height),
+                gameCells -> gameCellsToBitmap.gameCellsToBitmap(gameCells, width, height));
     }
 
     // For convenience get circles as array[row][col],
@@ -54,7 +66,8 @@ public class GameViewModel extends AndroidViewModel {
     // For example for the first level field is 3X4,
     // so array with size 3X4 returned even in portrait orientation,
     // while technically it should be 4x3
-    public LiveData<GameCell[][]> getGameCells(int width, int height) {
+    @VisibleForTesting
+    LiveData<GameCell[][]> getGameCells(int width, int height) {
         if (cellsLiveData == null) {
             gameWindowWidth = width;
             gameWindowHeight = height;
