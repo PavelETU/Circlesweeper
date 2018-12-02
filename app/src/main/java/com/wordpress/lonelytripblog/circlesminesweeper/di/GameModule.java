@@ -13,11 +13,9 @@ import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProviderImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModelFactory;
 
 import javax.inject.Singleton;
 
-import androidx.lifecycle.ViewModelProvider;
 import dagger.Module;
 import dagger.Provides;
 
@@ -70,13 +68,5 @@ public class GameModule {
     Handler getMainHandler() {
         return new Handler(Looper.getMainLooper());
     }
-
-    @Provides
-    @Singleton
-    ViewModelProvider.Factory getViewModelFactory(CellsGenerator cellsGenerator, Handler mainHandler,
-                                                  GameCellsToBitmap gameCellsToBitmap) {
-        return new GameViewModelFactory(cellsGenerator, mainHandler, gameCellsToBitmap);
-    }
-
 
 }
