@@ -21,7 +21,7 @@ public class CircleSweeperApp extends Application implements HasActivityInjector
         super.onCreate();
         if (gameComponent == null) {
             gameComponent = DaggerGameComponent.builder()
-                    .gameModule(new GameModule(getResources())).build();
+                    .gameModule(new GameModule(this)).build();
         }
         gameComponent.injectApp(this);
     }

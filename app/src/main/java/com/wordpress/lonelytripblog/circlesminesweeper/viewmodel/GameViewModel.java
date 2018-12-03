@@ -6,6 +6,7 @@ import android.os.Handler;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 
@@ -48,12 +49,15 @@ public class GameViewModel extends ViewModel {
     private boolean markState;
     private List<GameCell> eliminatedCells = new ArrayList<>();
     private GameCellsToBitmap gameCellsToBitmap;
+    private GameRepository gameRepository;
 
     @Inject
-    GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap) {
+    GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap,
+                  GameRepository gameRepository) {
         this.cellsGenerator = cellsGenerator;
         this.mainHandler = mainHandler;
         this.gameCellsToBitmap = gameCellsToBitmap;
+        this.gameRepository = gameRepository;
     }
 
     public LiveData<Bitmap> getGameImageLiveData(int width, int height) {
@@ -102,11 +106,8 @@ public class GameViewModel extends ViewModel {
         return checkButtonSrc;
     }
 
-    public void setLevel(GameLevel level) {
-        this.level = level;
-    }
-
     private void startGame() {
+        setLevel(gameRepository.getLevelToPlay());
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
         gameCondition.setValue(GAME_IN_PROCESS);
@@ -114,6 +115,10 @@ public class GameViewModel extends ViewModel {
         notMarkedCellsWithMines = level.getMinesAmount();
         updateMinesLiveData();
         updateCellsLiveData();
+    }
+
+    private void setLevel(GameLevel level) {
+        this.level = level;
     }
 
     private void recreateCellsWithNewSize(int newWidth, int newHeight) {

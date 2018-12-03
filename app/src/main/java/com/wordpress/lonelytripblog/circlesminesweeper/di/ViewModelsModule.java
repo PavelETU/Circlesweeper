@@ -1,5 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.di;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.ChooseLevelViewModel;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModelFactory;
 
@@ -16,6 +17,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GameViewModel.class)
     abstract ViewModel bindGameViewModel(GameViewModel gameViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChooseLevelViewModel.class)
+    abstract ViewModel bindChooseLevelViewModel(ChooseLevelViewModel chooseLevelViewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(GameViewModelFactory viewModelFactory);

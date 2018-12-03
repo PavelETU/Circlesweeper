@@ -1,24 +1,31 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
+import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.ChooseLevelViewModel;
 
-public class ChooseLevelActivity extends AppCompatActivity
+import javax.inject.Inject;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class ChooseLevelActivity extends DaggerAppCompatActivity
         implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
     private static final int SAVED_GAME_LEVEL = -1;
     private static final int LAST_LEVEL = 6;
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
-    private SharedPreferences cachedSharedPref = null;
     private final Button[] levelButtons = new Button[6];
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    private ChooseLevelViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +38,7 @@ public class ChooseLevelActivity extends AppCompatActivity
         levelButtons[3] = findViewById(R.id.fourth);
         levelButtons[4] = findViewById(R.id.fifth);
         levelButtons[5] = findViewById(R.id.sixth);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ChooseLevelViewModel.class);
     }
 
     @Override
@@ -53,8 +61,8 @@ public class ChooseLevelActivity extends AppCompatActivity
     }
 
     private void openGameActivityWithLevel(int level) {
+        viewModel.setLevel(level);
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(GameActivity.EXTRA_LEVEL, level);
         startActivity(intent);
     }
 
@@ -81,7 +89,7 @@ public class ChooseLevelActivity extends AppCompatActivity
     }
 
     private boolean gameWasSaved() {
-        return getSharedPreferences().getInt("game_saved", 0) == 1;
+        return viewModel.gameWasSaved();
     }
 
     private void syncLevelButtonsWithPastLevels() {
@@ -100,14 +108,7 @@ public class ChooseLevelActivity extends AppCompatActivity
     }
 
     private int getAmountOfOpenedLevels() {
-        return getSharedPreferences().getInt("opened_levels", 1);
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        if (cachedSharedPref == null) {
-            cachedSharedPref = getSharedPreferences("levels", MODE_PRIVATE);
-        }
-        return cachedSharedPref;
+        return viewModel.getLastLevelNumber();
     }
 
     private int getBackgroundWithLockDependingOnPosition(final int i) {
@@ -148,10 +149,8 @@ public class ChooseLevelActivity extends AppCompatActivity
 
     @Override
     public void onLevelParamsChosen(int fieldSize, int amountOfMines) {
+        viewModel.setCustomLevel(LAST_LEVEL, fieldSize, amountOfMines);
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(GameActivity.EXTRA_LEVEL, LAST_LEVEL);
-        intent.putExtra(GameActivity.EXTRA_CUSTOM_FIELD_SIZE, fieldSize);
-        intent.putExtra(GameActivity.EXTRA_CUSTOM_MINES, amountOfMines);
         startActivity(intent);
     }
 

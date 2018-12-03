@@ -21,12 +21,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 public class GameActivity extends DaggerAppCompatActivity
         implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
-    static String EXTRA_LEVEL = "level";
-    static String EXTRA_CUSTOM_FIELD_SIZE = "field_size";
-    static String EXTRA_CUSTOM_MINES = "number_of_mines";
     private ImageView gameImage;
-    @Inject
-    LevelFactory levelFactory;
     @Inject
     ViewModelProvider.Factory factory;
 
@@ -34,15 +29,11 @@ public class GameActivity extends DaggerAppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         FullWindowUtils.enterFullScreenMode(getWindow());
-        int level = getIntent().getIntExtra(EXTRA_LEVEL, -1);
-        int fieldSizeCustom = getIntent().getIntExtra(EXTRA_CUSTOM_FIELD_SIZE, -1);
-        int minesCustom = getIntent().getIntExtra(EXTRA_CUSTOM_MINES, -1);
         GameViewModel viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameImage = findViewById(R.id.game_image);
         gameImage.post(() -> {
             int width = gameImage.getWidth();
             int height = gameImage.getHeight();
-            viewModel.setLevel(levelFactory.makeLevel(level, fieldSizeCustom, minesCustom));
             viewModel.getGameImageLiveData(width, height).observe(GameActivity.this,
                     gameImage::setImageBitmap);
         });
