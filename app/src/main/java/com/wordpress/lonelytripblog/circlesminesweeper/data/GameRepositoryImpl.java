@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 public class GameRepositoryImpl implements GameRepository {
 
+    public static final int LAST_LEVEL = 6;
     private LevelFactory levelFactory;
     private SharedPreferences sharedPreferences;
     private int level;
@@ -45,7 +46,12 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public void incrementLastOpenedLevel() {
-        throw new RuntimeException("Not implemented");
+        if (level != LAST_LEVEL) {
+            level = level + 1;
+            if (getLastOpenedLevel() < level) {
+                sharedPreferences.edit().putInt("opened_levels", level).apply();
+            }
+        }
     }
 
     @Override

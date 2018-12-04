@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel4X6;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel6X10;
@@ -451,9 +452,10 @@ public class GameViewModelTests {
     private void startGameWithLevel(GameLevel level) {
         Handler mockHandler = mock(Handler.class);
         GameCellsToBitmap gameCellsToBitmap = mock(GameCellsToBitmap.class);
-        viewModel = new GameViewModel(cellsGenerator, mockHandler, gameCellsToBitmap);
+        GameRepository mockRepo = mock(GameRepository.class);
+        when(mockRepo.getLevelToPlay()).thenReturn(level);
+        viewModel = new GameViewModel(cellsGenerator, mockHandler, gameCellsToBitmap, mockRepo);
         viewModel.getCheckButtonSrc();
-        viewModel.setLevel(level);
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
         viewModel.getGameCells(defaultWidth, defaultHeight).observeForever(circleObserver);
         Observer<Integer> scoreObserver = (Observer<Integer>) mock(Observer.class);

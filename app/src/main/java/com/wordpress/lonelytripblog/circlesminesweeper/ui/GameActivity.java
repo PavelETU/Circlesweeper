@@ -90,6 +90,7 @@ public class GameActivity extends DaggerAppCompatActivity
                     throw new RuntimeException("Unknown game condition");
             }
         });
+        nextRepeatBtn.setOnClickListener(v -> viewModel.nextRepeatClicked());
     }
 
     @Override

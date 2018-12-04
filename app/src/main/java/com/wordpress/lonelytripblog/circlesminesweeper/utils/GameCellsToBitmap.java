@@ -46,8 +46,14 @@ public class GameCellsToBitmap {
                         drawBangBitmap(canvasToDraw, currentCell.getSideLength(),
                                 currentCell.getTopLeftX(), currentCell.getTopLeftY());
                     } else {
-                        drawMinesNumber(canvasToDraw, currentCell.getSideLength(),
-                                currentCell.getTopLeftX(), currentCell.getTopLeftY(), currentCell.getMinesNear());
+                        if (currentCell.isWithMine()) {
+                            drawBombBitmap(canvasToDraw, currentCell.getSideLength(),
+                                    currentCell.getTopLeftX(), currentCell.getTopLeftY());
+                        } else {
+                            drawMinesNumber(canvasToDraw, currentCell.getSideLength(),
+                                    currentCell.getTopLeftX(), currentCell.getTopLeftY(),
+                                    currentCell.getMinesNear());
+                        }
                     }
                 } else {
                     drawCircleThatCouldBeMarked(canvasToDraw, currentCell.getDrawableForCircle(),
@@ -60,6 +66,10 @@ public class GameCellsToBitmap {
 
     private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
         canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bang, length), x, y, paintToUse);
+    }
+
+    private void drawBombBitmap(Canvas canvasToDraw, int length, int x, int y) {
+        canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bomb, length), x, y, paintToUse);
     }
 
     private void drawMinesNumber(Canvas canvasToDraw, int length, int x, int y, int minesNumber) {

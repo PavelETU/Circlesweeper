@@ -106,28 +106,12 @@ public class GameViewModel extends ViewModel {
         return checkButtonSrc;
     }
 
-    private void startGame() {
-        setLevel(gameRepository.getLevelToPlay());
-        gameCells = getCirclesForLevel();
-        gameScore.setValue(0);
-        gameCondition.setValue(GAME_IN_PROCESS);
-        minesCountToDisplayToTheUser = level.getMinesAmount();
-        notMarkedCellsWithMines = level.getMinesAmount();
-        updateMinesLiveData();
-        updateCellsLiveData();
-    }
-
-    private void setLevel(GameLevel level) {
-        this.level = level;
-    }
-
-    private void recreateCellsWithNewSize(int newWidth, int newHeight) {
-        gameCells = cellsGenerator.regenerateCellsForNewSize(gameCells, newWidth, newHeight);
-        updateCellsLiveData();
-    }
-
     public void markClicked() {
         moveToMarkUnmarkState();
+    }
+
+    public void nextRepeatClicked() {
+        startGame();
     }
 
     public void actionDown(int x, int y) {
@@ -153,6 +137,7 @@ public class GameViewModel extends ViewModel {
         takenGameCell = gameCell;
         if (takenGameCell.isWithMine()) {
             endGameWithLoosing();
+            return;
         }
         moveCircleAndUpdateLiveData(x, y);
     }
@@ -181,6 +166,26 @@ public class GameViewModel extends ViewModel {
     public void actionUp() {
         if (takenGameCell == null) return;
         returnTakenCircleToDefaultPositionAndZeroingIt();
+        updateCellsLiveData();
+    }
+
+    private void startGame() {
+        setLevel(gameRepository.getLevelToPlay());
+        gameCells = getCirclesForLevel();
+        gameScore.setValue(0);
+        gameCondition.setValue(GAME_IN_PROCESS);
+        minesCountToDisplayToTheUser = level.getMinesAmount();
+        notMarkedCellsWithMines = level.getMinesAmount();
+        updateMinesLiveData();
+        updateCellsLiveData();
+    }
+
+    private void setLevel(GameLevel level) {
+        this.level = level;
+    }
+
+    private void recreateCellsWithNewSize(int newWidth, int newHeight) {
+        gameCells = cellsGenerator.regenerateCellsForNewSize(gameCells, newWidth, newHeight);
         updateCellsLiveData();
     }
 
@@ -302,6 +307,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void endGameWithWinning() {
+        gameRepository.incrementLastOpenedLevel();
         endGameWithStatus(GAME_WON);
     }
 
@@ -310,6 +316,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void endGameWithStatus(int status) {
+        takenGameCell = null;
         eliminateAllCircles();
         updateCellsLiveData();
         gameCondition.setValue(status);
