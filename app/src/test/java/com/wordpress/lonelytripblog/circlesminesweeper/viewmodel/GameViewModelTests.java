@@ -439,6 +439,19 @@ public class GameViewModelTests {
         verify(mockCell2).eliminateCircle();
     }
 
+    @Test
+    public void swappingCircleByCircleWithMineEndsGame() {
+        startGameWithMockCells1x2WithOneBomb();
+        teachMockCellSoItWillInclude(mockCell, 100, 100);
+        when(mockCell2.isWithMine()).thenReturn(true);
+        when(mockCell2.contains(150, 100)).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(150, 100);
+
+        Assert.assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+    }
+
     private void start1X2GameWithNoBombsAndDifferentColors() {
         startGameWithMockCells1x2WithNoBombs();
         teachMockCellSoItWillInclude(mockCell, 100, 100);

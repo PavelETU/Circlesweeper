@@ -51,6 +51,7 @@ public class GameViewModel extends ViewModel {
     private GameCellsToBitmap gameCellsToBitmap;
     private GameRepository gameRepository;
     private boolean minesGenerated;
+    private boolean gameOver;
 
     @Inject
     GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap,
@@ -151,6 +152,9 @@ public class GameViewModel extends ViewModel {
             return;
         }
         swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
+        if (gameOver) {
+            return;
+        }
         eliminateNeighborsWithSameColorAndUpdateScore();
         if (circleWithBombWasEliminated) {
             circleWithBombWasEliminated = false;
@@ -172,6 +176,7 @@ public class GameViewModel extends ViewModel {
 
     private void startGame() {
         minesGenerated = false;
+        gameOver = false;
         setLevel(gameRepository.getLevelToPlay());
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
@@ -229,6 +234,10 @@ public class GameViewModel extends ViewModel {
             Pair<Integer, Integer> gameCellPosition = findPositionForCellThatContainsPosition(x, y);
             if (gameCellPosition != null) {
                 GameCell cellToSwapBy = gameCells[gameCellPosition.first][gameCellPosition.second];
+                if (cellToSwapBy.isWithMine()) {
+                    endGameWithLoosing();
+                    return;
+                }
                 swappedCirclePosition = takenGameCellPosition;
                 takenGameCell.swapCirclesWith(cellToSwapBy);
                 takenGameCell.moveCircleToDefaultPosition();
@@ -323,6 +332,7 @@ public class GameViewModel extends ViewModel {
 
     private void endGameWithStatus(int status) {
         takenGameCell = null;
+        gameOver = true;
         eliminateAllCircles();
         updateCellsLiveData();
         gameCondition.setValue(status);
