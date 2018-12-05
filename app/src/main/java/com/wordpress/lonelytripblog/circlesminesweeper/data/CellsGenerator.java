@@ -11,4 +11,6 @@ public interface CellsGenerator {
 
     GameCell[][] generateCellsForField6X10(int width, int height, int bombsAmount);
 
+    GameCell[][] generateMines(GameCell[][] gameCells);
+
 }

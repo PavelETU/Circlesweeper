@@ -6,9 +6,9 @@ public class GameCell {
 
     private Circle circle;
     private boolean animated = false;
-    private final boolean withMine;
+    private boolean withMine;
     private boolean marked = false;
-    private final int minesNear;
+    private int minesNear;
     private int topLeftX;
     private int topLeftY;
     private int sideLength;
@@ -134,5 +134,13 @@ public class GameCell {
 
     public void setAnimated(boolean animated) {
         this.animated = animated;
+    }
+
+    public void setWithMine(boolean withMine) {
+        this.withMine = withMine;
+    }
+
+    public void setMinesNear(int minesNear) {
+        this.minesNear = minesNear;
     }
 }

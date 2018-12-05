@@ -139,6 +139,7 @@ public class CellsGeneratorTests {
         int minesToGenerate = 10;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400,
                 300, minesToGenerate);
+        cellsGenerator.generateMines(generatedGameCells);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -161,6 +162,7 @@ public class CellsGeneratorTests {
         int minesToGenerate = 60;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000,
                 600, minesToGenerate);
+        cellsGenerator.generateMines(generatedGameCells);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -172,6 +174,7 @@ public class CellsGeneratorTests {
         int minesToGenerate = 20;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600,
                 400, minesToGenerate);
+        cellsGenerator.generateMines(generatedGameCells);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -181,13 +184,15 @@ public class CellsGeneratorTests {
     @Test(expected = RuntimeException.class)
     public void verifyOfLimitAmountsThrowsExceptionsTopLimit() {
         int minesToGenerate = 3 * 4 + 1;
-        cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
+        cellsGenerator.generateMines(generatedGameCells);
     }
 
     @Test(expected = RuntimeException.class)
     public void verifyOfLimitAmountsThrowsExceptionsBottomLimit() {
         int minesToGenerate = -1;
-        cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
+        cellsGenerator.generateMines(generatedGameCells);
     }
 
     @Test
@@ -195,6 +200,7 @@ public class CellsGeneratorTests {
         int minesToGenerate = 12;
 
         GameCell[][] cells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
+        cellsGenerator.generateMines(cells);
 
         verifyThatMinesNearIsMaximumForAllCells(cells);
     }

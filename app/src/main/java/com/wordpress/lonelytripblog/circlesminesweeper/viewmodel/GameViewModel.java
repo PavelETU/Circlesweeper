@@ -50,6 +50,7 @@ public class GameViewModel extends ViewModel {
     private List<GameCell> eliminatedCells = new ArrayList<>();
     private GameCellsToBitmap gameCellsToBitmap;
     private GameRepository gameRepository;
+    private boolean minesGenerated;
 
     @Inject
     GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap,
@@ -170,6 +171,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void startGame() {
+        minesGenerated = false;
         setLevel(gameRepository.getLevelToPlay());
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
@@ -271,6 +273,10 @@ public class GameViewModel extends ViewModel {
     }
 
     private void addToScoreLiveData(int scoreToAdd) {
+        if (scoreToAdd != 0 && !minesGenerated) {
+            cellsGenerator.generateMines(gameCells);
+            minesGenerated = true;
+        }
         gameScore.setValue(gameScore.getValue() + scoreToAdd);
     }
 

@@ -61,6 +61,17 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return saveParametersAndGenerateCells(width, height, bombsAmount, 6, 10);
     }
 
+    @Override
+    public GameCell[][] generateMines(GameCell[][] gameCells) {
+        generateMinesForCells(gameCells);
+        for (int row = 0; row < gameCells.length; row++) {
+            for (int col = 0; col < gameCells[0].length; col++) {
+                gameCells[row][col].setMinesNear(calculateMinesNearCell(row, col));
+            }
+        }
+        return gameCells;
+    }
+
     private GameCell[][] saveParametersAndGenerateCells(int width, int height, int bombsAmount,
                                                         int amountOnSmallerSide, int amountOnBiggerSide) {
         setSizeLenghtsAndInvertVariables(width, height);
@@ -104,12 +115,11 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     private void populateGameCells() {
         generateColors();
-        generateMines();
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 Circle circle = new Circle(getXForCol(row, col), getYForRow(row, col), radiusForCircles,
                         colorsForCircles[row][col]);
-                gameCells[row][col] = new GameCell(circle, withMine[row][col], calculateMinesNearCell(row, col));
+                gameCells[row][col] = new GameCell(circle, false, 0);
             }
         }
     }
@@ -146,13 +156,15 @@ public class CellsGeneratorImpl implements CellsGenerator {
         }
     }
 
-    private void generateMines() {
+    private void generateMinesForCells(GameCell[][] gameCell) {
         withMine = new boolean[gameCells.length][gameCells[0].length];
         // TODO optimize algorithm
         while (bombsAmount != 0) {
             int row = getRandom().nextInt(gameCells.length);
             int col = getRandom().nextInt(gameCells[0].length);
-            if (!withMine[row][col]) {
+            GameCell randomGameCell = gameCell[row][col];
+            if (!randomGameCell.isWithMine() && randomGameCell.isCircleInsideAlive()) {
+                randomGameCell.setWithMine(true);
                 withMine[row][col] = true;
                 bombsAmount--;
             }
