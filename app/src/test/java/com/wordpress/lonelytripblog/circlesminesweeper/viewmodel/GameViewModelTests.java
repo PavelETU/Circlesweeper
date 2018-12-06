@@ -25,6 +25,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -44,7 +45,6 @@ public class GameViewModelTests {
     public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
     private GameViewModel viewModel;
     private CellsGenerator cellsGenerator = mock(CellsGenerator.class);
-    private CircleSweeperApp app = mock(CircleSweeperApp.class);
     private Observer<GameCell[][]> circleObserver;
     private final int defaultWidth = 250;
     private final int defaultHeight = 200;
@@ -52,6 +52,7 @@ public class GameViewModelTests {
     private GameCell mockCell2 = mock(GameCell.class);
     private GameCell[][] mockCells;
     private GameCell[][] gameCells = new GameCell[1][2];
+    private GameRepository mockRepo = mock(GameRepository.class);
 
     @Test
     public void circleLiveDataInitiallyEmpty() {
@@ -227,7 +228,7 @@ public class GameViewModelTests {
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
-        Assert.assertEquals(20, (int) viewModel.getScore().getValue());
+        assertEquals(20, (int) viewModel.getScore().getValue());
     }
 
     @Test
@@ -239,14 +240,14 @@ public class GameViewModelTests {
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
-        Assert.assertEquals(80, (int) viewModel.getScore().getValue());
+        assertEquals(80, (int) viewModel.getScore().getValue());
     }
 
     @Test
     public void defaultGameConditionIsGameInProcess() {
         startGameWithGameCells();
 
-        Assert.assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
@@ -256,7 +257,7 @@ public class GameViewModelTests {
         viewModel.actionDown(100, 100);
         viewModel.actionMove(101, 100);
 
-        Assert.assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
@@ -267,7 +268,7 @@ public class GameViewModelTests {
 
         viewModel.actionDown(100, 100);
 
-        Assert.assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
@@ -279,14 +280,14 @@ public class GameViewModelTests {
         viewModel.actionDown(DEFAULT_X_FOR_FIRST_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
         viewModel.actionMove(DEFAULT_X_FOR_SECOND_COLUMN, DEFAULT_Y_FOR_FIRST_ROW);
 
-        Assert.assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
     public void verifyDefaultMines() {
         startGameWithMockCells1x2WithOneBomb();
 
-        Assert.assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
+        assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
     }
 
     @Test
@@ -332,7 +333,7 @@ public class GameViewModelTests {
         startGameWithMockCells1x2WithOneBomb();
         teachMockCellSoItWillInclude(mockCell, 100, 100);
 
-        Assert.assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
+        assertEquals(1, (int) viewModel.getMinesToDisplay().getValue());
     }
 
     @Test
@@ -344,7 +345,7 @@ public class GameViewModelTests {
         viewModel.markClicked();
         viewModel.actionDown(100, 100);
 
-        Assert.assertEquals(0, (int) viewModel.getMinesToDisplay().getValue());
+        assertEquals(0, (int) viewModel.getMinesToDisplay().getValue());
     }
 
     @Test
@@ -356,7 +357,7 @@ public class GameViewModelTests {
         viewModel.markClicked();
         viewModel.actionDown(100, 100);
 
-        Assert.assertEquals(2, (int) viewModel.getMinesToDisplay().getValue());
+        assertEquals(2, (int) viewModel.getMinesToDisplay().getValue());
     }
 
     @Test
@@ -384,7 +385,7 @@ public class GameViewModelTests {
         viewModel.actionDown(100, 100);
         viewModel.actionMove(101, 100);
 
-        Assert.assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_IN_PROCESS, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
@@ -399,7 +400,7 @@ public class GameViewModelTests {
         viewModel.markClicked();
         viewModel.actionDown(100, 100);
 
-        Assert.assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_WON, (int) viewModel.getGameCondition().getValue());
     }
 
     @Test
@@ -449,7 +450,16 @@ public class GameViewModelTests {
         viewModel.actionDown(100, 100);
         viewModel.actionMove(150, 100);
 
-        Assert.assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+        assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void startLevelThatRequiresDialog() {
+        when(mockRepo.isCurrentLevelRequiresDialog()).thenReturn(true);
+
+        startGameWithAliveMockCell1x1();
+
+        assertEquals(GameViewModel.SHOW_CUSTOM_LEVEL_DIALOG, (int) viewModel.getGameCondition().getValue());
     }
 
     private void start1X2GameWithNoBombsAndDifferentColors() {
@@ -465,7 +475,6 @@ public class GameViewModelTests {
     private void startGameWithLevel(GameLevel level) {
         Handler mockHandler = mock(Handler.class);
         GameCellsToBitmap gameCellsToBitmap = mock(GameCellsToBitmap.class);
-        GameRepository mockRepo = mock(GameRepository.class);
         when(mockRepo.getLevelToPlay()).thenReturn(level);
         viewModel = new GameViewModel(cellsGenerator, mockHandler, gameCellsToBitmap, mockRepo);
         viewModel.getCheckButtonSrc();

@@ -11,15 +11,11 @@ import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.ChooseLevelView
 
 import javax.inject.Inject;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerAppCompatActivity;
 
-import static com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepositoryImpl.LAST_LEVEL;
-
-public class ChooseLevelActivity extends DaggerAppCompatActivity
-        implements CustomLevelDialogFragment.CustomLevelDialogCallback {
+public class ChooseLevelActivity extends DaggerAppCompatActivity {
 
     private static final int SAVED_GAME_LEVEL = -1;
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
@@ -53,11 +49,7 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity
     private void setListenersForLevelButtons() {
         for (int i = 0; i < levelButtons.length; i++) {
             final int level = i + 1;
-            if (!isThisLevelOpensDialog(level)) {
-                levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
-            } else {
-                levelButtons[i].setOnClickListener(view -> openDialogForCustomLevel());
-            }
+            levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
         }
     }
 
@@ -65,15 +57,6 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity
         viewModel.setLevel(level);
         Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
-    }
-
-    private boolean isThisLevelOpensDialog(int level) {
-        return level == LAST_LEVEL;
-    }
-
-    public void openDialogForCustomLevel() {
-        DialogFragment choose_dialog = new CustomLevelDialogFragment();
-        choose_dialog.show(getSupportFragmentManager(), "choose");
     }
 
     public void continueLastGame(View view) {
@@ -146,17 +129,6 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity
                 throw new UnsupportedOperationException("Not defined level");
 
         }
-    }
-
-    @Override
-    public void onLevelParamsChosen(int fieldSize, int amountOfMines) {
-        viewModel.setCustomLevel(LAST_LEVEL, fieldSize, amountOfMines);
-        Intent intent = new Intent(this, GameActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onDismiss() {
     }
 
 }

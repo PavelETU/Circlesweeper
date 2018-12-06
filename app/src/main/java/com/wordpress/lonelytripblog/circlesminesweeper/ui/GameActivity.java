@@ -9,19 +9,22 @@ import android.widget.TextView;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 
 import javax.inject.Inject;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerAppCompatActivity;
+
+import static com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDialogFragment.TAG_IN_BACKSTACK;
 
 public class GameActivity extends DaggerAppCompatActivity
         implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
     private ImageView gameImage;
+    private GameViewModel viewModel;
     @Inject
     ViewModelProvider.Factory factory;
 
@@ -29,7 +32,7 @@ public class GameActivity extends DaggerAppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         FullWindowUtils.enterFullScreenMode(getWindow());
-        GameViewModel viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
+        viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameImage = findViewById(R.id.game_image);
         gameImage.post(() -> {
             int width = gameImage.getWidth();
@@ -86,6 +89,9 @@ public class GameActivity extends DaggerAppCompatActivity
                     nextRepeatBtn.setVisibility(View.VISIBLE);
                     smileOut.setImageResource(R.drawable.smile_lost);
                     break;
+                case GameViewModel.SHOW_CUSTOM_LEVEL_DIALOG:
+                    showDialogIfNeede();
+                    break;
                 default:
                     throw new RuntimeException("Unknown game condition");
             }
@@ -93,9 +99,17 @@ public class GameActivity extends DaggerAppCompatActivity
         nextRepeatBtn.setOnClickListener(v -> viewModel.nextRepeatClicked());
     }
 
+    private void showDialogIfNeede() {
+        if (getSupportFragmentManager().findFragmentByTag(TAG_IN_BACKSTACK) == null) {
+            DialogFragment chooseDialog = new CustomLevelDialogFragment();
+            chooseDialog.show(getSupportFragmentManager(), TAG_IN_BACKSTACK);
+            chooseDialog.setCancelable(false);
+        }
+    }
+
     @Override
     public void onLevelParamsChosen(int fieldSize, int amountOfMines) {
-
+        viewModel.onCustomLevelParamsChosen(fieldSize, amountOfMines);
     }
 
     @Override

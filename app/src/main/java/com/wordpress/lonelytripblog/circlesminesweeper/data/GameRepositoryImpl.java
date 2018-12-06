@@ -33,8 +33,7 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public void setLevelWithParams(int levelNumber, int fieldSize, int amountOfMines) {
-        level = levelNumber;
+    public void setLevelWithParams(int fieldSize, int amountOfMines) {
         fieldSizeCustom = fieldSize;
         minesCustom = amountOfMines;
     }
@@ -52,6 +51,11 @@ public class GameRepositoryImpl implements GameRepository {
                 sharedPreferences.edit().putInt("opened_levels", level).apply();
             }
         }
+    }
+
+    @Override
+    public boolean isCurrentLevelRequiresDialog() {
+        return level == LAST_LEVEL;
     }
 
     @Override

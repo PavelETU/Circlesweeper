@@ -28,6 +28,7 @@ public class GameViewModel extends ViewModel {
     public static final int GAME_IN_PROCESS = 0;
     public static final int GAME_WON = 1;
     public static final int GAME_LOST = 2;
+    public static final int SHOW_CUSTOM_LEVEL_DIALOG = 3;
 
     private final CellsGenerator cellsGenerator;
     private final Handler mainHandler;
@@ -51,7 +52,6 @@ public class GameViewModel extends ViewModel {
     private GameCellsToBitmap gameCellsToBitmap;
     private GameRepository gameRepository;
     private boolean minesGenerated;
-    private boolean gameOver;
 
     @Inject
     GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap,
@@ -81,7 +81,9 @@ public class GameViewModel extends ViewModel {
             startGame();
         }
         if (width != gameWindowWidth || height != gameWindowHeight) {
-            recreateCellsWithNewSize(width, height);
+            if (gameCondition.getValue() == GAME_IN_PROCESS) {
+                recreateCellsWithNewSize(width, height);
+            }
             gameWindowWidth = width;
             gameWindowHeight = height;
         }
@@ -152,7 +154,7 @@ public class GameViewModel extends ViewModel {
             return;
         }
         swapCirclesIfTheyOverlappedAndCachedItsLocations(x, y);
-        if (gameOver) {
+        if (gameCondition.getValue() != GAME_IN_PROCESS) {
             return;
         }
         eliminateNeighborsWithSameColorAndUpdateScore();
@@ -174,9 +176,21 @@ public class GameViewModel extends ViewModel {
         updateCellsLiveData();
     }
 
+    public void onCustomLevelParamsChosen(int fieldSize, int minesAmount) {
+        gameRepository.setLevelWithParams(fieldSize, minesAmount);
+        startGameWithoutDialog();
+    }
+
     private void startGame() {
+        if (gameRepository.isCurrentLevelRequiresDialog()) {
+            showDialog();
+        } else {
+            startGameWithoutDialog();
+        }
+    }
+
+    private void startGameWithoutDialog() {
         minesGenerated = false;
-        gameOver = false;
         setLevel(gameRepository.getLevelToPlay());
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
@@ -185,6 +199,10 @@ public class GameViewModel extends ViewModel {
         notMarkedCellsWithMines = level.getMinesAmount();
         updateMinesLiveData();
         updateCellsLiveData();
+    }
+
+    private void showDialog() {
+        gameCondition.setValue(SHOW_CUSTOM_LEVEL_DIALOG);
     }
 
     private void setLevel(GameLevel level) {
@@ -332,7 +350,6 @@ public class GameViewModel extends ViewModel {
 
     private void endGameWithStatus(int status) {
         takenGameCell = null;
-        gameOver = true;
         eliminateAllCircles();
         updateCellsLiveData();
         gameCondition.setValue(status);

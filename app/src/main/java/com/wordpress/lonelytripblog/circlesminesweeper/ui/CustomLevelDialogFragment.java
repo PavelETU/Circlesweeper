@@ -2,9 +2,6 @@ package com.wordpress.lonelytripblog.circlesminesweeper.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -21,8 +18,13 @@ import com.wordpress.lonelytripblog.circlesminesweeper.R;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
 public class CustomLevelDialogFragment extends DialogFragment {
 
+    final static String TAG_IN_BACKSTACK = "choose";
     public final static int FIELD_3_4 = 1;
     public final static int FIELD_4_6 = 2;
     public final static int FIELD_6_10 = 3;
@@ -167,7 +169,7 @@ public class CustomLevelDialogFragment extends DialogFragment {
         Toast.makeText(getContext(), messageResId, Toast.LENGTH_SHORT).show();
     }
 
-    private class SizeOfTheFieldHelper {
+    private static class SizeOfTheFieldHelper {
         private int stringResourceToBeDisplayed;
         private int minesLimit;
 

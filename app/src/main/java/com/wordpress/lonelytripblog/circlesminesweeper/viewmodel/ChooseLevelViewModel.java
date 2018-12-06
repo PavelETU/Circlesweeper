@@ -18,10 +18,6 @@ public class ChooseLevelViewModel extends ViewModel {
         gameRepository.setLevelNumber(levelNumber);
     }
 
-    public void setCustomLevel(int levelNumber, int fieldSize, int mines) {
-        gameRepository.setLevelWithParams(levelNumber, fieldSize, mines);
-    }
-
     public int getLastLevelNumber() {
         return gameRepository.getLastOpenedLevel();
     }
