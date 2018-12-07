@@ -1,5 +1,6 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.di;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.BestScoreActivity;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.ChooseLevelActivity;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.GameActivity;
 
@@ -13,4 +14,7 @@ abstract class ActivityContributorModule {
 
     @ContributesAndroidInjector
     abstract ChooseLevelActivity getChooseLevelActivity();
+
+    @ContributesAndroidInjector
+    abstract BestScoreActivity getBestScoreActivity();
 }

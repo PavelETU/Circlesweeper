@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
@@ -90,21 +91,31 @@ public class GameActivity extends DaggerAppCompatActivity
                     smileOut.setImageResource(R.drawable.smile_lost);
                     break;
                 case GameViewModel.SHOW_CUSTOM_LEVEL_DIALOG:
-                    showDialogIfNeede();
+                    showDialogIfNeeded();
                     break;
                 default:
                     throw new RuntimeException("Unknown game condition");
             }
         });
         nextRepeatBtn.setOnClickListener(v -> viewModel.nextRepeatClicked());
+        viewModel.getToastEvent().observe(this, integerLiveEvent -> {
+            Integer stringResourceForToast = integerLiveEvent.getValueOrNull();
+            if (stringResourceForToast != null) {
+                showToastWithResource(stringResourceForToast);
+            }
+        });
     }
 
-    private void showDialogIfNeede() {
+    private void showDialogIfNeeded() {
         if (getSupportFragmentManager().findFragmentByTag(TAG_IN_BACKSTACK) == null) {
             DialogFragment chooseDialog = new CustomLevelDialogFragment();
             chooseDialog.show(getSupportFragmentManager(), TAG_IN_BACKSTACK);
             chooseDialog.setCancelable(false);
         }
+    }
+
+    private void showToastWithResource(int stringRes) {
+        Toast.makeText(this, stringRes, Toast.LENGTH_LONG).show();
     }
 
     @Override

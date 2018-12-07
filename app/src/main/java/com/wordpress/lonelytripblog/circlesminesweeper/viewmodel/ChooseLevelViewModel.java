@@ -10,7 +10,7 @@ public class ChooseLevelViewModel extends ViewModel {
     private GameRepository gameRepository;
 
     @Inject
-    public ChooseLevelViewModel(GameRepository gameRepository) {
+    ChooseLevelViewModel(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
     }
 

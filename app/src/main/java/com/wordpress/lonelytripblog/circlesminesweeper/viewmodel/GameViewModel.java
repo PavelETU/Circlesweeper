@@ -9,6 +9,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
+import com.wordpress.lonelytripblog.circlesminesweeper.utils.LiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
     private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> checkButtonSrc;
+    private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<LiveEvent<Integer>>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -179,6 +181,10 @@ public class GameViewModel extends ViewModel {
     public void onCustomLevelParamsChosen(int fieldSize, int minesAmount) {
         gameRepository.setLevelWithParams(fieldSize, minesAmount);
         startGameWithoutDialog();
+    }
+
+    public LiveData<LiveEvent<Integer>> getToastEvent() {
+        return toastEvent;
     }
 
     private void startGame() {
@@ -340,6 +346,10 @@ public class GameViewModel extends ViewModel {
     }
 
     private void endGameWithWinning() {
+        if (gameRepository.thisScoreBeatsRecord(gameScore.getValue())) {
+            gameRepository.updateScore(gameScore.getValue());
+            toastEvent.setValue(new LiveEvent<>(R.string.new_record_set));
+        }
         gameRepository.incrementLastOpenedLevel();
         endGameWithStatus(GAME_WON);
     }

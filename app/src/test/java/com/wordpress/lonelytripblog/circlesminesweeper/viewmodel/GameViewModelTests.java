@@ -2,6 +2,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
 import android.os.Handler;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
@@ -14,7 +15,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FourthLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.di.CircleSweeperApp;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 
 import org.junit.Assert;
@@ -460,6 +460,18 @@ public class GameViewModelTests {
         startGameWithAliveMockCell1x1();
 
         assertEquals(GameViewModel.SHOW_CUSTOM_LEVEL_DIALOG, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void showMessageIfNewRecordSet() {
+        start1X2GameWithNoBombsAndDifferentColors();
+        when(mockRepo.thisScoreBeatsRecord(0)).thenReturn(true);
+
+        viewModel.actionDown(100, 100);
+        viewModel.actionMove(101, 100);
+
+        verify(mockRepo).updateScore(0);
+        assertEquals(R.string.new_record_set, (int) viewModel.getToastEvent().getValue().getValueOrNull());
     }
 
     private void start1X2GameWithNoBombsAndDifferentColors() {
