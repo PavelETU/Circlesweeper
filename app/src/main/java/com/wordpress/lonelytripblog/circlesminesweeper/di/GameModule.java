@@ -12,6 +12,8 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGeneratorImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepositoryImpl;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.database.GameCellsDao;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.database.GameDatabase;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProvider;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProviderImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
@@ -20,6 +22,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
 
 import javax.inject.Singleton;
 
+import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,8 +31,10 @@ public class GameModule {
 
     private Resources resources;
     private SharedPreferences sharedPreferences;
+    private Context context;
 
     public GameModule(Context appContext) {
+        context = appContext;
         resources = appContext.getResources();
         sharedPreferences = appContext.getSharedPreferences("gamePreference", Context.MODE_PRIVATE);
     }
@@ -42,8 +47,8 @@ public class GameModule {
 
     @Provides
     @Singleton
-    GameRepository getGameRepo(LevelFactory levelFactory) {
-        return new GameRepositoryImpl(levelFactory, sharedPreferences);
+    GameRepository getGameRepo(LevelFactory levelFactory, GameCellsDao dao) {
+        return new GameRepositoryImpl(levelFactory, sharedPreferences, dao);
     }
 
     @Provides
@@ -79,6 +84,12 @@ public class GameModule {
     @Singleton
     Handler getMainHandler() {
         return new Handler(Looper.getMainLooper());
+    }
+
+    @Provides
+    @Singleton
+    GameCellsDao getGameCellsDao() {
+        return Room.databaseBuilder(context, GameDatabase.class, "GameDatabase").build().gameCellsDao();
     }
 
 }

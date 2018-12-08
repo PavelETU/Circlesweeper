@@ -2,6 +2,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 import android.content.SharedPreferences;
 
+import com.wordpress.lonelytripblog.circlesminesweeper.data.database.GameCellsDao;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
 
@@ -27,11 +28,14 @@ public class GameRepositoryImpl implements GameRepository {
     private int fieldSizeCustom;
     private int minesCustom;
     private MutableLiveData<List<Score>> scoreLiveData = new MutableLiveData<>();
+    private GameCellsDao gameCellsDao;
 
     @Inject
-    public GameRepositoryImpl(LevelFactory levelFactory, SharedPreferences sharedPreferences) {
+    public GameRepositoryImpl(LevelFactory levelFactory, SharedPreferences sharedPreferences,
+                              GameCellsDao gameCellsDao) {
         this.levelFactory = levelFactory;
         this.sharedPreferences = sharedPreferences;
+        this.gameCellsDao = gameCellsDao;
     }
 
     @Override
@@ -103,12 +107,12 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public void saveGame(GameCell[][] gameCells) {
+    public void saveGame(GameCell[][] gameCells, int width, int height, int score, int leftMines, boolean markState) {
         throw new RuntimeException("Not implemented");
     }
 
     @Override
-    public void loadGame() {
+    public GameCell[][] loadGame() {
         throw new RuntimeException("Not implemented");
     }
 }

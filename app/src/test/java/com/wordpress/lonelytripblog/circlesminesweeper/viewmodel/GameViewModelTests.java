@@ -474,6 +474,15 @@ public class GameViewModelTests {
         assertEquals(R.string.new_record_set, (int) viewModel.getToastEvent().getValue().getValueOrNull());
     }
 
+    @Test
+    public void onClearedSavesGame() {
+        startGameWithGameCells();
+
+        viewModel.onCleared();
+
+        verify(mockRepo).saveGame(gameCells, defaultWidth, defaultHeight, 0, 0, false);
+    }
+
     private void start1X2GameWithNoBombsAndDifferentColors() {
         startGameWithMockCells1x2WithNoBombs();
         teachMockCellSoItWillInclude(mockCell, 100, 100);

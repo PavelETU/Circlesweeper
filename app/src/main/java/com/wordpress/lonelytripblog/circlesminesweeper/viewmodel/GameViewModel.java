@@ -474,4 +474,11 @@ public class GameViewModel extends ViewModel {
         minesToDisplayLiveData.setValue(minesCountToDisplayToTheUser);
     }
 
+    @Override
+    protected void onCleared() {
+        if (gameCondition.getValue() == GAME_IN_PROCESS) {
+            gameRepository.saveGame(gameCells, gameWindowWidth, gameWindowHeight, 
+                    gameScore.getValue(), minesToDisplayLiveData.getValue(), markState);
+        }
+    }
 }
