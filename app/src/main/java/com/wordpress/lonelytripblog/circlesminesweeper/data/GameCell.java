@@ -23,6 +23,17 @@ public class GameCell {
         this.minesNear = minesNear;
     }
 
+    public GameCell(Circle circle, boolean initWithMine, int minesNear, boolean marked) {
+        this.circle = circle;
+        int radius = circle.getRadius();
+        topLeftX = circle.getX() - radius;
+        topLeftY = circle.getY() - radius;
+        sideLength = radius * 2;
+        withMine = initWithMine;
+        this.minesNear = minesNear;
+        this.marked = marked;
+    }
+
     public void moveCircleTo(int x, int y) {
         circle.setX(x);
         circle.setY(y);

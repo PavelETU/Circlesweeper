@@ -1,6 +1,7 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.data;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameToSaveObject;
 
 import java.util.List;
 
@@ -16,6 +17,11 @@ public interface GameRepository {
     LiveData<List<Score>> getScores();
     boolean thisScoreBeatsRecord(int score);
     void updateScore(int newScore);
-    void saveGame(GameCell[][] gameCells, int width, int height, int score, int leftMines, boolean markState);
-    GameCell[][] loadGame();
+    int getMinesForCurrentLevel();
+    void saveGame(GameToSaveObject gameToSaveObject);
+    LiveData<GameToSaveObject> loadGame();
+    boolean lastGameWasSaved();
+    boolean shouldLoadGame();
+    void openSavedGame();
+    void nothingToLoadNextTime();
 }

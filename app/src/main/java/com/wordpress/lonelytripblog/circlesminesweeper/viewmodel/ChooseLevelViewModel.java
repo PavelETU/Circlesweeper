@@ -23,6 +23,10 @@ public class ChooseLevelViewModel extends ViewModel {
     }
 
     public boolean gameWasSaved() {
-        return false;
+        return gameRepository.lastGameWasSaved();
+    }
+
+    public void openSavedLevel() {
+        gameRepository.openSavedGame();
     }
 }

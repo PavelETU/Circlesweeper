@@ -67,78 +67,6 @@ public class GameViewModelTests {
     }
 
     @Test
-    public void firstLevelSetup() {
-        startGameWithLevel(new FirstLevel());
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 0);
-    }
-
-    @Test
-    public void secondLevelSetup() {
-        startGameWithLevel(new SecondLevel());
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 1);
-    }
-
-    @Test
-    public void thirdLevelSetup() {
-        startGameWithLevel(new ThirdLevel());
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField4X6(defaultWidth, defaultHeight, 3);
-    }
-
-    @Test
-    public void fourthLevelSetup() {
-        startGameWithLevel(new FourthLevel());
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 5);
-    }
-
-    @Test
-    public void verifyFifthLevelSetup() {
-        startGameWithLevel(new FifthLevel());
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 7);
-    }
-
-    @Test
-    public void customLevel3X4Setup() {
-        startGameWithLevel(new CustomLevel3X4(4));
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField3X4(defaultWidth, defaultHeight, 4);
-    }
-
-    @Test
-    public void customLevel4X6Setup() {
-        startGameWithLevel(new CustomLevel4X6(5));
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField4X6(defaultWidth, defaultHeight, 5);
-    }
-
-    @Test
-    public void customLevel6X10Setup() {
-        startGameWithLevel(new CustomLevel6X10(6));
-
-        viewModel.getGameCells(defaultWidth, defaultHeight);
-
-        verify(cellsGenerator).generateCellsForField6X10(defaultWidth, defaultHeight, 6);
-    }
-
-    @Test
     public void initialValueOfLiveDataIsCorrect() {
         startGameWithGameCells();
 
@@ -478,9 +406,9 @@ public class GameViewModelTests {
     public void onClearedSavesGame() {
         startGameWithGameCells();
 
-        viewModel.onCleared();
+        viewModel.beforeGameGoAway();
 
-        verify(mockRepo).saveGame(gameCells, defaultWidth, defaultHeight, 0, 0, false);
+        verify(mockRepo).saveGame(any());
     }
 
     private void start1X2GameWithNoBombsAndDifferentColors() {
@@ -522,7 +450,7 @@ public class GameViewModelTests {
 
         // This method is generic and not restricting the size of returned gameCells,
         // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
-        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
+        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
         startGameWithLevel(new FirstLevel());
@@ -545,7 +473,7 @@ public class GameViewModelTests {
 
         // This method is generic and not restricting the size of returned gameCells,
         // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
-        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
+        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
         startGameWithLevel(level);
@@ -562,7 +490,7 @@ public class GameViewModelTests {
 
         // This method is generic and not restricting the size of returned gameCells,
         // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
-        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
+        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt()))
                 .thenReturn(mockCells);
 
         startGameWithLevel(new FirstLevel());
@@ -571,7 +499,7 @@ public class GameViewModelTests {
     private void startGameWithGameCells() {
         // This method is generic and not restricting the size of returned gameCells,
         // so don't be fool by 3X4 at the end, it's just for readability of CellsGenerator
-        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt(), anyInt()))
+        when(cellsGenerator.generateCellsForField3X4(anyInt(), anyInt()))
                 .thenReturn(gameCells);
 
         startGameWithLevel(new FirstLevel());

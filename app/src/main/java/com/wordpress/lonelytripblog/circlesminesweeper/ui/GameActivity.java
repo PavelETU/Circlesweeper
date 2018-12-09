@@ -106,6 +106,12 @@ public class GameActivity extends DaggerAppCompatActivity
         });
     }
 
+    @Override
+    protected void onPause() {
+        viewModel.beforeGameGoAway();
+        super.onPause();
+    }
+
     private void showDialogIfNeeded() {
         if (getSupportFragmentManager().findFragmentByTag(TAG_IN_BACKSTACK) == null) {
             DialogFragment chooseDialog = new CustomLevelDialogFragment();

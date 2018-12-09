@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.data.database;
+package com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

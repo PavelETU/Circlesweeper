@@ -12,11 +12,11 @@ public class Circle {
     private int radius;
     private boolean isAlive;
 
-    public Circle(int x, int y, int radius, int colorDrawableSrc) {
+    Circle(int x, int y, int radius, int colorDrawableSrc) {
         this(x, y, radius, colorDrawableSrc, true);
     }
 
-    private Circle(int x, int y, int radius, int colorDrawableSrc, boolean isAlive) {
+    public Circle(int x, int y, int radius, int colorDrawableSrc, boolean isAlive) {
         this.x = x;
         this.y = y;
         this.radius = radius;

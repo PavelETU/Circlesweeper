@@ -20,7 +20,6 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int bombsAmount;
     private GameCell[][] gameCells;
     private int[][] colorsForCircles;
-    private boolean[][] withMine;
     private int radiusForCircles;
     private int[] actualColors;
     private Random random;
@@ -47,23 +46,28 @@ public class CellsGeneratorImpl implements CellsGenerator {
     }
 
     @Override
-    public GameCell[][] generateCellsForField3X4(int width, int height, int bombsAmount) {
-        return saveParametersAndGenerateCells(width, height, bombsAmount, 3, 4);
+    public GameCell[][] generateCellsForField3X4(int width, int height) {
+        return saveParametersAndGenerateCells(width, height, 3, 4);
     }
 
     @Override
-    public GameCell[][] generateCellsForField4X6(int width, int height, int bombsAmount) {
-        return saveParametersAndGenerateCells(width, height, bombsAmount, 4, 6);
+    public GameCell[][] generateCellsForField4X6(int width, int height) {
+        return saveParametersAndGenerateCells(width, height, 4, 6);
     }
 
     @Override
-    public GameCell[][] generateCellsForField6X10(int width, int height, int bombsAmount) {
-        return saveParametersAndGenerateCells(width, height, bombsAmount, 6, 10);
+    public GameCell[][] generateCellsForField6X10(int width, int height) {
+        return saveParametersAndGenerateCells(width, height, 6, 10);
     }
 
     @Override
-    public GameCell[][] generateMines(GameCell[][] gameCells) {
+    public GameCell[][] generateMines(GameCell[][] gameCells, int mines) {
+        bombsAmount = mines;
+        amountOnSmallerSide = gameCells.length;
+        amountOnBiggerSide = gameCells[0].length;
+        throwExceptionIfMinesOfLimit();
         generateMinesForCells(gameCells);
+        this.gameCells = gameCells;
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 gameCells[row][col].setMinesNear(calculateMinesNearCell(row, col));
@@ -72,13 +76,11 @@ public class CellsGeneratorImpl implements CellsGenerator {
         return gameCells;
     }
 
-    private GameCell[][] saveParametersAndGenerateCells(int width, int height, int bombsAmount,
+    private GameCell[][] saveParametersAndGenerateCells(int width, int height,
                                                         int amountOnSmallerSide, int amountOnBiggerSide) {
         setSizeLenghtsAndInvertVariables(width, height);
         this.amountOnSmallerSide = amountOnSmallerSide;
         this.amountOnBiggerSide = amountOnBiggerSide;
-        this.bombsAmount = bombsAmount;
-        throwExceptionIfMinesOfLimit();
         return generateCells();
     }
 
@@ -156,16 +158,14 @@ public class CellsGeneratorImpl implements CellsGenerator {
         }
     }
 
-    private void generateMinesForCells(GameCell[][] gameCell) {
-        withMine = new boolean[gameCells.length][gameCells[0].length];
+    private void generateMinesForCells(GameCell[][] gameCellsToAddMinesTo) {
         // TODO optimize algorithm
         while (bombsAmount != 0) {
-            int row = getRandom().nextInt(gameCells.length);
-            int col = getRandom().nextInt(gameCells[0].length);
-            GameCell randomGameCell = gameCell[row][col];
+            int row = getRandom().nextInt(gameCellsToAddMinesTo.length);
+            int col = getRandom().nextInt(gameCellsToAddMinesTo[0].length);
+            GameCell randomGameCell = gameCellsToAddMinesTo[row][col];
             if (!randomGameCell.isWithMine() && randomGameCell.isCircleInsideAlive()) {
                 randomGameCell.setWithMine(true);
-                withMine[row][col] = true;
                 bombsAmount--;
             }
         }
@@ -283,7 +283,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     private int calculateMinesForRowAndCol(int row, int col) {
         int minesInRow = 0;
-        if (withMine[row][col]) {
+        if (gameCells[row][col].isWithMine()) {
             minesInRow++;
         }
         return minesInRow + calculateMinesLeftAndRight(row, col);
@@ -292,12 +292,12 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private int calculateMinesLeftAndRight(int row, int col) {
         int minesInRow = 0;
         if (col != 0) {
-            if (withMine[row][col - 1]) {
+            if (gameCells[row][col - 1].isWithMine()) {
                 minesInRow++;
             }
         }
         if (col != gameCells[0].length - 1) {
-            if (withMine[row][col + 1]) {
+            if (gameCells[row][col + 1].isWithMine()) {
                 minesInRow++;
             }
         }

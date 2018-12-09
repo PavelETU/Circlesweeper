@@ -12,13 +12,15 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGeneratorImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepositoryImpl;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.database.GameCellsDao;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.database.GameDatabase;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database.GameDatabase;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProvider;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.BitmapProviderImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -47,8 +49,8 @@ public class GameModule {
 
     @Provides
     @Singleton
-    GameRepository getGameRepo(LevelFactory levelFactory, GameCellsDao dao) {
-        return new GameRepositoryImpl(levelFactory, sharedPreferences, dao);
+    GameRepository getGameRepo(LevelFactory levelFactory, GameDatabase db, Executor executor) {
+        return new GameRepositoryImpl(levelFactory, sharedPreferences, db, executor);
     }
 
     @Provides
@@ -88,8 +90,14 @@ public class GameModule {
 
     @Provides
     @Singleton
-    GameCellsDao getGameCellsDao() {
-        return Room.databaseBuilder(context, GameDatabase.class, "GameDatabase").build().gameCellsDao();
+    GameDatabase getGameDatabase() {
+        return Room.databaseBuilder(context, GameDatabase.class, "GameDatabase").build();
+    }
+
+    @Provides
+    @Singleton
+    Executor getExecutor() {
+        return Executors.newSingleThreadExecutor();
     }
 
 }

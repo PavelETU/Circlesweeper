@@ -17,7 +17,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void lengthFor3X4IsCorrect() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(100, 200, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(100, 200);
 
         assertEquals(3, generatedGameCells.length);
         assertEquals(4, generatedGameCells[0].length);
@@ -25,7 +25,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void lengthFor4X6IsCorrect() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(100, 200, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(100, 200);
 
         assertEquals(4, generatedGameCells.length);
         assertEquals(6, generatedGameCells[0].length);
@@ -33,7 +33,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void lengthFor6X10IsCorrect() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(100, 200, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(100, 200);
 
         assertEquals(6, generatedGameCells.length);
         assertEquals(10, generatedGameCells[0].length);
@@ -41,7 +41,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellProperPositionsFor3X4() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300);
 
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
@@ -53,7 +53,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellProperPositionsFor3X4WithShiftDown() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300);
 
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
@@ -65,7 +65,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellProperPositionsFor3X4WithShiftRight() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300);
 
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
@@ -77,7 +77,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellProperPositionsFor4X6() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600, 400, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600, 400);
 
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
@@ -89,7 +89,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellProperPositionsFor6X10() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600);
 
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
@@ -101,7 +101,7 @@ public class CellsGeneratorTests {
 
     @Test
     public void verifyCellRotatedProperlyFor6X10Field() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600);
 
         GameCell[][] regeneratedGameCells = cellsGenerator.regenerateCellsForNewSize(generatedGameCells, 600, 1000);
 
@@ -115,21 +115,21 @@ public class CellsGeneratorTests {
 
     @Test
     public void noNeighborsWithSameColorFor3X4Field() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300);
 
         assertNoNeighborsWithSameColorForCells(generatedGameCells);
     }
 
     @Test
     public void noNeighborsWithSameColorFor4X6Field() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600, 400, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600, 400);
 
         assertNoNeighborsWithSameColorForCells(generatedGameCells);
     }
 
     @Test
     public void noNeighborsWithSameColorFor6X10Field() {
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600, 0);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600);
 
         assertNoNeighborsWithSameColorForCells(generatedGameCells);
     }
@@ -138,8 +138,8 @@ public class CellsGeneratorTests {
     public void verifyAmountOfMines() {
         int minesToGenerate = 10;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400,
-                300, minesToGenerate);
-        cellsGenerator.generateMines(generatedGameCells);
+                300);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -150,7 +150,8 @@ public class CellsGeneratorTests {
     public void verifyZeroMines() {
         int minesToGenerate = 0;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600,
-                400, minesToGenerate);
+                400);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -161,8 +162,8 @@ public class CellsGeneratorTests {
     public void verifyMaxAmountOfMines() {
         int minesToGenerate = 60;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000,
-                600, minesToGenerate);
-        cellsGenerator.generateMines(generatedGameCells);
+                600);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -173,8 +174,8 @@ public class CellsGeneratorTests {
     public void verifyMinesAmountFor4X6Field() {
         int minesToGenerate = 20;
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600,
-                400, minesToGenerate);
-        cellsGenerator.generateMines(generatedGameCells);
+                400);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
 
         int generatedMines = countMinesInCells(generatedGameCells);
 
@@ -184,23 +185,23 @@ public class CellsGeneratorTests {
     @Test(expected = RuntimeException.class)
     public void verifyOfLimitAmountsThrowsExceptionsTopLimit() {
         int minesToGenerate = 3 * 4 + 1;
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
-        cellsGenerator.generateMines(generatedGameCells);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
     }
 
     @Test(expected = RuntimeException.class)
     public void verifyOfLimitAmountsThrowsExceptionsBottomLimit() {
         int minesToGenerate = -1;
-        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
-        cellsGenerator.generateMines(generatedGameCells);
+        GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300);
+        cellsGenerator.generateMines(generatedGameCells, minesToGenerate);
     }
 
     @Test
     public void verifyAmountOfMinesClosedBy() {
         int minesToGenerate = 12;
 
-        GameCell[][] cells = cellsGenerator.generateCellsForField3X4(400, 300, minesToGenerate);
-        cellsGenerator.generateMines(cells);
+        GameCell[][] cells = cellsGenerator.generateCellsForField3X4(400, 300);
+        cellsGenerator.generateMines(cells, minesToGenerate);
 
         verifyThatMinesNearIsMaximumForAllCells(cells);
     }

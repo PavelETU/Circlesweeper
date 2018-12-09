@@ -13,7 +13,7 @@ public class CustomLevel6X10 implements GameLevel {
 
     @Override
     public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int smallerSideLength, int biggerSideLength) {
-        return cellsGenerator.generateCellsForField6X10(smallerSideLength, biggerSideLength, minesAmount);
+        return cellsGenerator.generateCellsForField6X10(smallerSideLength, biggerSideLength);
     }
 
     @Override

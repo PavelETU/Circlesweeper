@@ -9,7 +9,7 @@ public class ThirdLevel implements GameLevel {
 
     @Override
     public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int smallerSideLength, int biggerSideLength) {
-        return cellsGenerator.generateCellsForField4X6(smallerSideLength, biggerSideLength, MINES_AMOUNT);
+        return cellsGenerator.generateCellsForField4X6(smallerSideLength, biggerSideLength);
     }
 
     @Override

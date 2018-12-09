@@ -8,6 +8,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameToSaveObject;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LiveEvent;
 
@@ -21,6 +22,7 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
@@ -83,9 +85,7 @@ public class GameViewModel extends ViewModel {
             startGame();
         }
         if (width != gameWindowWidth || height != gameWindowHeight) {
-            if (gameCondition.getValue() == GAME_IN_PROCESS) {
                 recreateCellsWithNewSize(width, height);
-            }
             gameWindowWidth = width;
             gameWindowHeight = height;
         }
@@ -124,7 +124,7 @@ public class GameViewModel extends ViewModel {
         takenGameCellPosition = findPositionForCellThatContainsPosition(x, y);
         if (takenGameCellPosition == null) return;
         GameCell gameCell = gameCells[takenGameCellPosition.first][takenGameCellPosition.second];
-        if (markState) {
+        if (markState && gameCell.isCircleInsideAlive()) {
             boolean marked = !gameCell.isMarked();
             gameCell.setMarked(marked);
             updateMinesCount(gameCell);
@@ -188,6 +188,14 @@ public class GameViewModel extends ViewModel {
     }
 
     private void startGame() {
+        if (gameRepository.shouldLoadGame()) {
+            loadLastGame();
+        } else {
+            startGameForCurrentLevel();
+        }
+    }
+
+    private void startGameForCurrentLevel() {
         if (gameRepository.isCurrentLevelRequiresDialog()) {
             showDialog();
         } else {
@@ -216,12 +224,17 @@ public class GameViewModel extends ViewModel {
     }
 
     private void recreateCellsWithNewSize(int newWidth, int newHeight) {
+        if (gameCells == null) return;
         gameCells = cellsGenerator.regenerateCellsForNewSize(gameCells, newWidth, newHeight);
         updateCellsLiveData();
     }
 
     private void moveToMarkUnmarkState() {
         markState = !markState;
+        updateCheckButton();
+    }
+
+    private void updateCheckButton() {
         checkButtonSrc.setValue(markState ? R.drawable.bomb_check_pressed : R.drawable.bomb_check);
     }
 
@@ -307,7 +320,7 @@ public class GameViewModel extends ViewModel {
 
     private void addToScoreLiveData(int scoreToAdd) {
         if (scoreToAdd != 0 && !minesGenerated) {
-            cellsGenerator.generateMines(gameCells);
+            cellsGenerator.generateMines(gameCells, gameRepository.getMinesForCurrentLevel());
             minesGenerated = true;
         }
         gameScore.setValue(gameScore.getValue() + scoreToAdd);
@@ -474,11 +487,38 @@ public class GameViewModel extends ViewModel {
         minesToDisplayLiveData.setValue(minesCountToDisplayToTheUser);
     }
 
-    @Override
-    protected void onCleared() {
+    private void loadLastGame() {
+        final LiveData<GameToSaveObject> liveData = gameRepository.loadGame();
+        Observer<GameToSaveObject> observer = new Observer<GameToSaveObject>() {
+            @Override
+            public void onChanged(GameToSaveObject gameToSaveObject) {
+                liveData.removeObserver(this);
+                gameScore.setValue(gameToSaveObject.getScore());
+                minesCountToDisplayToTheUser = gameToSaveObject.getLeftMines();
+                updateMinesLiveData();
+                notMarkedCellsWithMines = gameToSaveObject.getUncoveredMinesAmount();
+                minesGenerated = gameToSaveObject.isMinesGenerated();
+                markState = gameToSaveObject.isMarkState();
+                updateCheckButton();
+                gameCells = gameToSaveObject.getGameCells();
+                gameCondition.setValue(GAME_IN_PROCESS);
+                if (gameWindowWidth != gameToSaveObject.getWidth() || gameWindowHeight != gameToSaveObject.getHeight()) {
+                    recreateCellsWithNewSize(gameWindowWidth, gameWindowHeight);
+                } else {
+                    updateCellsLiveData();
+                }
+            }
+        };
+        liveData.observeForever(observer);
+    }
+
+    public void beforeGameGoAway() {
         if (gameCondition.getValue() == GAME_IN_PROCESS) {
-            gameRepository.saveGame(gameCells, gameWindowWidth, gameWindowHeight, 
-                    gameScore.getValue(), minesToDisplayLiveData.getValue(), markState);
+            gameRepository.saveGame(new GameToSaveObject(gameCells, gameWindowWidth, gameWindowHeight,
+                    gameScore.getValue(), minesToDisplayLiveData.getValue(), markState,
+                    minesGenerated, notMarkedCellsWithMines));
+        } else {
+            gameRepository.nothingToLoadNextTime();
         }
     }
 }

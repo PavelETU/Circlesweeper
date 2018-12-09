@@ -17,7 +17,6 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 public class ChooseLevelActivity extends DaggerAppCompatActivity {
 
-    private static final int SAVED_GAME_LEVEL = -1;
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
     private final Button[] levelButtons = new Button[6];
     @Inject
@@ -55,12 +54,17 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity {
 
     private void openGameActivityWithLevel(int level) {
         viewModel.setLevel(level);
-        Intent intent = new Intent(this, GameActivity.class);
-        startActivity(intent);
+        goToGameActivity();
     }
 
     public void continueLastGame(View view) {
-        openGameActivityWithLevel(SAVED_GAME_LEVEL);
+        viewModel.openSavedLevel();
+        goToGameActivity();
+    }
+
+    private void goToGameActivity() {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 
     private void syncContinueButtonVisibility() {
