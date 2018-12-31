@@ -3,6 +3,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
@@ -18,11 +19,13 @@ public class GameCellsToBitmap {
     private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
     private int bitmapSideLength;
     private Paint paintToUse;
+    private Rect rectForTextMeasurement;
 
     @Inject
-    public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint) {
+    public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint, Rect rectForTextMeasurement) {
         this.bitmapProvider = bitmapProvider;
         paintToUse = paint;
+        this.rectForTextMeasurement = rectForTextMeasurement;
     }
 
     public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float width, float height) {
@@ -38,10 +41,21 @@ public class GameCellsToBitmap {
 
     @VisibleForTesting
     void drawCellsOnCanvas(Canvas canvasToDraw, GameCell[][] gameCells) {
+        adjustPaintTextSizeToGameCells(gameCells);
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 GameCell currentCell = gameCells[row][col];
-                if (!currentCell.isCircleInsideAlive()) {
+                if (currentCell.isCircleInsideAlive()) {
+                    if (currentCell.isMarked()) {
+                        drawMarkedCircle(canvasToDraw, currentCell.getDrawableForCircle(),
+                                currentCell.getCircleSideLength(),
+                                currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY());
+                    } else {
+                        drawCircle(canvasToDraw, currentCell.getDrawableForCircle(),
+                                currentCell.getCircleSideLength(),
+                                currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY());
+                    }
+                } else {
                     if (currentCell.isAnimated()) {
                         drawBangBitmap(canvasToDraw, currentCell.getSideLength(),
                                 currentCell.getTopLeftX(), currentCell.getTopLeftY());
@@ -55,13 +69,13 @@ public class GameCellsToBitmap {
                                     currentCell.getMinesNear());
                         }
                     }
-                } else {
-                    drawCircleThatCouldBeMarked(canvasToDraw, currentCell.getDrawableForCircle(),
-                            currentCell.getCircleSideLength(),
-                            currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY(), currentCell.isMarked());
                 }
             }
         }
+    }
+
+    private void adjustPaintTextSizeToGameCells(GameCell[][] gameCells) {
+        paintToUse.setTextSize(gameCells[0][0].getSideLength() / 2);
     }
 
     private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
@@ -73,27 +87,35 @@ public class GameCellsToBitmap {
     }
 
     private void drawMinesNumber(Canvas canvasToDraw, int length, int x, int y, int minesNumber) {
-        canvasToDraw.drawText(String.valueOf(minesNumber), x + length / 2, y + length / 2, paintToUse);
+        String textToDisplay = String.valueOf(minesNumber);
+        paintToUse.getTextBounds(textToDisplay, 0, textToDisplay.length(), rectForTextMeasurement);
+        float xPosition = (x + length / 2) - rectForTextMeasurement.width() / 2 - rectForTextMeasurement.left;
+        float yPosition = (y + length / 2) + rectForTextMeasurement.height() / 2 - rectForTextMeasurement.bottom;
+        canvasToDraw.drawText(textToDisplay, xPosition, yPosition, paintToUse);
     }
 
-    private void drawCircleThatCouldBeMarked(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY,
-                                             boolean drawLinesAbove) {
+    private void drawMarkedCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
+        drawCircle(canvasToDraw, drawableSrc, length, topX, topY);
+        drawLinesAboveCircle(canvasToDraw, length, topX, topX);
+    }
+
+    private void drawCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
         canvasToDraw.drawBitmap(getBitmapByResource(drawableSrc, length), topX, topY, paintToUse);
-        if (drawLinesAbove) {
-            int radius = length / 2;
-            int x = topX + radius;
-            int y = topY + radius;
-            canvasToDraw.drawLine(x + radius * (float) Math.cos(Math.PI / 4),
-                    y + radius * (float) Math.sin(Math.PI / 4),
-                    x + radius * (float) Math.cos(5 * Math.PI / 4),
-                    y + radius * (float) Math.sin(5 * Math.PI / 4), paintToUse);
-            canvasToDraw.drawLine(x + radius * (float) Math.cos(7 * Math.PI / 4),
-                    y + radius * (float) Math.sin(7 * Math.PI / 4),
-                    x + radius * (float) Math.cos(3 * Math.PI / 4),
-                    y + radius * (float) Math.sin(3 * Math.PI / 4), paintToUse);
-        }
     }
 
+    private void drawLinesAboveCircle(Canvas canvasToDraw, int length, int topX, int topY) {
+        int radius = length / 2;
+        int x = topX + radius;
+        int y = topY + radius;
+        canvasToDraw.drawLine(x + radius * (float) Math.cos(Math.PI / 4),
+                y + radius * (float) Math.sin(Math.PI / 4),
+                x + radius * (float) Math.cos(5 * Math.PI / 4),
+                y + radius * (float) Math.sin(5 * Math.PI / 4), paintToUse);
+        canvasToDraw.drawLine(x + radius * (float) Math.cos(7 * Math.PI / 4),
+                y + radius * (float) Math.sin(7 * Math.PI / 4),
+                x + radius * (float) Math.cos(3 * Math.PI / 4),
+                y + radius * (float) Math.sin(3 * Math.PI / 4), paintToUse);
+    }
 
     private Bitmap getBitmapByResource(int resourceId, int sizeOfSide) {
         clearCacheIfSizeUpdated(sizeOfSide);

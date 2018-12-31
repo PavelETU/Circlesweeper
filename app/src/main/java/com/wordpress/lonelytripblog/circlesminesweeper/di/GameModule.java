@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -64,8 +65,7 @@ public class GameModule {
     Paint getPaintToUseInDrawing() {
         Paint paintToUse = new Paint();
         paintToUse.setColor(Color.BLACK);
-        paintToUse.setTextSize(100);
-        paintToUse.setTextAlign(Paint.Align.CENTER);
+        paintToUse.setTextAlign(Paint.Align.LEFT);
         paintToUse.setStrokeWidth(20);
         return paintToUse;
     }
@@ -73,7 +73,7 @@ public class GameModule {
     @Provides
     @Singleton
     GameCellsToBitmap getGameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint) {
-        return new GameCellsToBitmap(bitmapProvider, paint);
+        return new GameCellsToBitmap(bitmapProvider, paint, new Rect());
     }
 
     @Provides
