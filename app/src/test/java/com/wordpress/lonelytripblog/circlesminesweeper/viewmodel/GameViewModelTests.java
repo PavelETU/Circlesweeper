@@ -6,16 +6,9 @@ import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel4X6;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel6X10;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FifthLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FirstLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FourthLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -423,9 +416,8 @@ public class GameViewModelTests {
 
     private void startGameWithLevel(GameLevel level) {
         Handler mockHandler = mock(Handler.class);
-        GameCellsToBitmap gameCellsToBitmap = mock(GameCellsToBitmap.class);
         when(mockRepo.getLevelToPlay()).thenReturn(level);
-        viewModel = new GameViewModel(cellsGenerator, mockHandler, gameCellsToBitmap, mockRepo);
+        viewModel = new GameViewModel(cellsGenerator, mockHandler, mockRepo);
         viewModel.getCheckButtonSrc();
         circleObserver = (Observer<GameCell[][]>) mock(Observer.class);
         viewModel.getGameCells(defaultWidth, defaultHeight).observeForever(circleObserver);

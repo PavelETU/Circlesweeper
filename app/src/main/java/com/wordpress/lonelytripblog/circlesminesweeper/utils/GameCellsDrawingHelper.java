@@ -8,12 +8,10 @@ import android.graphics.Rect;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
-import javax.inject.Inject;
-
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
 
-public class GameCellsToBitmap {
+public class GameCellsDrawingHelper {
 
     private BitmapProvider bitmapProvider;
     private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
@@ -21,26 +19,14 @@ public class GameCellsToBitmap {
     private Paint paintToUse;
     private Rect rectForTextMeasurement;
 
-    @Inject
-    public GameCellsToBitmap(BitmapProvider bitmapProvider, Paint paint, Rect rectForTextMeasurement) {
+    public GameCellsDrawingHelper(BitmapProvider bitmapProvider, Paint paint, Rect rectForTextMeasurement) {
         this.bitmapProvider = bitmapProvider;
         paintToUse = paint;
         this.rectForTextMeasurement = rectForTextMeasurement;
     }
 
-    public Bitmap gameCellsToBitmap(GameCell[][] gameCells, float width, float height) {
-        return createGameBitmapInOriginalSize(gameCells, width, height);
-    }
-
-    private Bitmap createGameBitmapInOriginalSize(GameCell[][] gameCells, float initWidth, float initHeight) {
-        Bitmap bitmapForGame = Bitmap.createBitmap((int) initWidth, (int) initHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmapForGame);
-        drawCellsOnCanvas(canvas, gameCells);
-        return bitmapForGame;
-    }
-
-    @VisibleForTesting
-    void drawCellsOnCanvas(Canvas canvasToDraw, GameCell[][] gameCells) {
+    public void drawCellsOnCanvas(Canvas canvasToDraw, @Nullable GameCell[][] gameCells) {
+        if (gameCells == null || gameCells.length == 0) return;
         adjustPaintTextSizeToGameCells(gameCells);
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {

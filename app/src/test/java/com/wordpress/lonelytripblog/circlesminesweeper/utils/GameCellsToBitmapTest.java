@@ -19,14 +19,14 @@ import static org.mockito.Mockito.when;
 
 public class GameCellsToBitmapTest {
 
-    private GameCellsToBitmap gameCellsToBitmap;
+    private GameCellsDrawingHelper gameCellsToBitmap;
     private Canvas canvas = mock(Canvas.class);
     private GameCell[][] gameCells = new GameCell[2][2];
 
     @Before
     public void setUp() {
         BitmapProvider bitmapProvider = mock(BitmapProvider.class);
-        gameCellsToBitmap = new GameCellsToBitmap(bitmapProvider, mock(Paint.class), mock(Rect.class));
+        gameCellsToBitmap = new GameCellsDrawingHelper(bitmapProvider, mock(Paint.class), mock(Rect.class));
     }
 
     @Test

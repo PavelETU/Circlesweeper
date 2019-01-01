@@ -24,7 +24,7 @@ import static com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDial
 public class GameActivity extends DaggerAppCompatActivity
         implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
-    private ImageView gameImage;
+    private GameView gameImage;
     private GameViewModel viewModel;
     @Inject
     ViewModelProvider.Factory factory;
@@ -38,8 +38,8 @@ public class GameActivity extends DaggerAppCompatActivity
         gameImage.post(() -> {
             int width = gameImage.getWidth();
             int height = gameImage.getHeight();
-            viewModel.getGameImageLiveData(width, height).observe(GameActivity.this,
-                    gameImage::setImageBitmap);
+            viewModel.getGameCells(width, height).observe(GameActivity.this,
+                    gameImage::setGameCells);
         });
         gameImage.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {

@@ -5,13 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import javax.inject.Inject;
-
 public class BitmapProviderImpl implements BitmapProvider {
 
     private Resources resources;
 
-    @Inject
     public BitmapProviderImpl(Resources resources) {
         this.resources = resources;
     }

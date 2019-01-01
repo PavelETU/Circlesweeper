@@ -1,6 +1,5 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.viewmodel;
 
-import android.graphics.Bitmap;
 import android.os.Handler;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
@@ -9,7 +8,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameToSaveObject;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.GameCellsToBitmap;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LiveEvent;
 
 import java.util.ArrayList;
@@ -17,13 +15,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 public class GameViewModel extends ViewModel {
@@ -44,7 +40,7 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<Integer> gameCondition = new MutableLiveData<>();
     private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> checkButtonSrc;
-    private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<LiveEvent<Integer>>();
+    private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -53,22 +49,14 @@ public class GameViewModel extends ViewModel {
     private boolean circleWithBombWasEliminated;
     private boolean markState;
     private List<GameCell> eliminatedCells = new ArrayList<>();
-    private GameCellsToBitmap gameCellsToBitmap;
     private GameRepository gameRepository;
     private boolean minesGenerated;
 
     @Inject
-    GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameCellsToBitmap gameCellsToBitmap,
-                  GameRepository gameRepository) {
+    GameViewModel(CellsGenerator cellsGenerator, Handler mainHandler, GameRepository gameRepository) {
         this.cellsGenerator = cellsGenerator;
         this.mainHandler = mainHandler;
-        this.gameCellsToBitmap = gameCellsToBitmap;
         this.gameRepository = gameRepository;
-    }
-
-    public LiveData<Bitmap> getGameImageLiveData(int width, int height) {
-        return Transformations.map(getGameCells(width, height),
-                gameCells -> gameCellsToBitmap.gameCellsToBitmap(gameCells, width, height));
     }
 
     // For convenience get circles as array[row][col],
@@ -76,8 +64,7 @@ public class GameViewModel extends ViewModel {
     // For example for the first level field is 3X4,
     // so array with size 3X4 returned even in portrait orientation,
     // while technically it should be 4x3
-    @VisibleForTesting
-    LiveData<GameCell[][]> getGameCells(int width, int height) {
+    public LiveData<GameCell[][]> getGameCells(int width, int height) {
         if (cellsLiveData == null) {
             gameWindowWidth = width;
             gameWindowHeight = height;
@@ -85,7 +72,7 @@ public class GameViewModel extends ViewModel {
             startGame();
         }
         if (width != gameWindowWidth || height != gameWindowHeight) {
-                recreateCellsWithNewSize(width, height);
+            recreateCellsWithNewSize(width, height);
             gameWindowWidth = width;
             gameWindowHeight = height;
         }
