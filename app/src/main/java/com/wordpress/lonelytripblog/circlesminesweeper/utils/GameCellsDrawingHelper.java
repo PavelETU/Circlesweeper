@@ -1,6 +1,5 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -9,13 +8,10 @@ import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
 import androidx.annotation.Nullable;
-import androidx.collection.SparseArrayCompat;
 
 public class GameCellsDrawingHelper {
 
     private BitmapProvider bitmapProvider;
-    private SparseArrayCompat<Bitmap> bitmapCache = new SparseArrayCompat<>();
-    private int bitmapSideLength;
     private Paint paintToUse;
     private Rect rectForTextMeasurement;
 
@@ -65,11 +61,11 @@ public class GameCellsDrawingHelper {
     }
 
     private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
-        canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bang, length), x, y, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bang, length), x, y, paintToUse);
     }
 
     private void drawBombBitmap(Canvas canvasToDraw, int length, int x, int y) {
-        canvasToDraw.drawBitmap(getBitmapByResource(R.drawable.bomb, length), x, y, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bomb, length), x, y, paintToUse);
     }
 
     private void drawMinesNumber(Canvas canvasToDraw, int length, int x, int y, int minesNumber) {
@@ -86,7 +82,7 @@ public class GameCellsDrawingHelper {
     }
 
     private void drawCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
-        canvasToDraw.drawBitmap(getBitmapByResource(drawableSrc, length), topX, topY, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(drawableSrc, length), topX, topY, paintToUse);
     }
 
     private void drawLinesAboveCircle(Canvas canvasToDraw, int length, int topX, int topY) {
@@ -101,23 +97,6 @@ public class GameCellsDrawingHelper {
                 y + radius * (float) Math.sin(7 * Math.PI / 4),
                 x + radius * (float) Math.cos(3 * Math.PI / 4),
                 y + radius * (float) Math.sin(3 * Math.PI / 4), paintToUse);
-    }
-
-    private Bitmap getBitmapByResource(int resourceId, int sizeOfSide) {
-        clearCacheIfSizeUpdated(sizeOfSide);
-        Bitmap bitmap = bitmapCache.get(resourceId);
-        if (bitmap == null) {
-            bitmap = bitmapProvider.getBitmapByResourceId(resourceId, sizeOfSide);
-            bitmapCache.put(resourceId, bitmap);
-        }
-        return bitmap;
-    }
-
-    private void clearCacheIfSizeUpdated(int sizeOfSide) {
-        if (sizeOfSide != bitmapSideLength) {
-            bitmapCache.clear();
-            bitmapSideLength = sizeOfSide;
-        }
     }
 
 }
