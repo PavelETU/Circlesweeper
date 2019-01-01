@@ -154,6 +154,8 @@ public class GameViewModel extends ViewModel {
         }
         if (takenGameCell.isCircleInsideAlive()) {
             takenGameCell.moveCircleTo(x, y);
+        } else {
+            takenGameCell = null;
         }
         updateCellsLiveData();
         endGameIfWon();
