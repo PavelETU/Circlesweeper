@@ -77,7 +77,7 @@ public class GameCellsDrawingHelper {
 
     private void drawMarkedCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
         drawCircle(canvasToDraw, drawableSrc, length, topX, topY);
-        drawLinesAboveCircle(canvasToDraw, length, topX, topX);
+        drawLinesAboveCircle(canvasToDraw, length, topX, topY);
     }
 
     private void drawCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
