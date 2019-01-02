@@ -3,7 +3,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 // Circle DATA STRUCTURE. I could go with public fields, but stick to the Beans convention
 public class Circle {
 
-    private static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
+    public static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private int x;
     private int y;
     private final int colorDrawableSrc;

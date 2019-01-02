@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
 import androidx.annotation.Nullable;
@@ -61,11 +60,11 @@ public class GameCellsDrawingHelper {
     }
 
     private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
-        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bang, length), x, y, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getBangBitmap(length), x, y, paintToUse);
     }
 
     private void drawBombBitmap(Canvas canvasToDraw, int length, int x, int y) {
-        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(R.drawable.bomb, length), x, y, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getBombBitmap(length), x, y, paintToUse);
     }
 
     private void drawMinesNumber(Canvas canvasToDraw, int length, int x, int y, int minesNumber) {
@@ -82,7 +81,7 @@ public class GameCellsDrawingHelper {
     }
 
     private void drawCircle(Canvas canvasToDraw, int drawableSrc, int length, int topX, int topY) {
-        canvasToDraw.drawBitmap(bitmapProvider.getBitmapByResourceId(drawableSrc, length), topX, topY, paintToUse);
+        canvasToDraw.drawBitmap(bitmapProvider.getCircleBitmapWithSize(drawableSrc, length), topX, topY, paintToUse);
     }
 
     private void drawLinesAboveCircle(Canvas canvasToDraw, int length, int topX, int topY) {
