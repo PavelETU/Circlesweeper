@@ -11,6 +11,7 @@ public class Circle {
     private int smallRadius;
     private int radius;
     private boolean isAlive;
+    private boolean isMoving;
 
     Circle(int x, int y, int radius, int colorDrawableSrc) {
         this(x, y, radius, colorDrawableSrc, true);
@@ -43,10 +44,12 @@ public class Circle {
     }
 
     public void makeCircleSmall() {
+        isMoving = true;
         radius = smallRadius;
     }
 
     public void makeCircleBig() {
+        isMoving = false;
         radius = defaultRadius;
     }
 
@@ -70,5 +73,9 @@ public class Circle {
 
     public void setAlive(boolean alive) {
         isAlive = alive;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
     }
 }

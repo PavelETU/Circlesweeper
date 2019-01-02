@@ -154,4 +154,8 @@ public class GameCell {
     public void setMinesNear(int minesNear) {
         this.minesNear = minesNear;
     }
+
+    public boolean drawCellLast() {
+        return circle.isMoving();
+    }
 }

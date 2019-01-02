@@ -6,6 +6,9 @@ import android.graphics.Rect;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.Nullable;
 
 public class GameCellsDrawingHelper {
@@ -23,33 +26,45 @@ public class GameCellsDrawingHelper {
     public void drawCellsOnCanvas(Canvas canvasToDraw, @Nullable GameCell[][] gameCells) {
         if (gameCells == null || gameCells.length == 0) return;
         adjustPaintTextSizeToGameCells(gameCells);
+        List<GameCell> cellsToDrawLater = new ArrayList<>();
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
                 GameCell currentCell = gameCells[row][col];
-                if (currentCell.isCircleInsideAlive()) {
-                    if (currentCell.isMarked()) {
-                        drawMarkedCircle(canvasToDraw, currentCell.getDrawableForCircle(),
-                                currentCell.getCircleSideLength(),
-                                currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY());
-                    } else {
-                        drawCircle(canvasToDraw, currentCell.getDrawableForCircle(),
-                                currentCell.getCircleSideLength(),
-                                currentCell.getCircleTopLeftX(), currentCell.getCircleTopLeftY());
-                    }
+                if (currentCell.drawCellLast()) {
+                    cellsToDrawLater.add(currentCell);
                 } else {
-                    if (currentCell.isAnimated()) {
-                        drawBangBitmap(canvasToDraw, currentCell.getSideLength(),
-                                currentCell.getTopLeftX(), currentCell.getTopLeftY());
-                    } else {
-                        if (currentCell.isWithMine()) {
-                            drawBombBitmap(canvasToDraw, currentCell.getSideLength(),
-                                    currentCell.getTopLeftX(), currentCell.getTopLeftY());
-                        } else {
-                            drawMinesNumber(canvasToDraw, currentCell.getSideLength(),
-                                    currentCell.getTopLeftX(), currentCell.getTopLeftY(),
-                                    currentCell.getMinesNear());
-                        }
-                    }
+                    drawCell(currentCell, canvasToDraw);
+                }
+            }
+        }
+        for (GameCell gameCell : cellsToDrawLater) {
+            drawCell(gameCell, canvasToDraw);
+        }
+    }
+
+    private void drawCell(GameCell cellToDraw, Canvas canvasToDrawIn) {
+        if (cellToDraw.isCircleInsideAlive()) {
+            if (cellToDraw.isMarked()) {
+                drawMarkedCircle(canvasToDrawIn, cellToDraw.getDrawableForCircle(),
+                        cellToDraw.getCircleSideLength(),
+                        cellToDraw.getCircleTopLeftX(), cellToDraw.getCircleTopLeftY());
+            } else {
+                drawCircle(canvasToDrawIn, cellToDraw.getDrawableForCircle(),
+                        cellToDraw.getCircleSideLength(),
+                        cellToDraw.getCircleTopLeftX(), cellToDraw.getCircleTopLeftY());
+            }
+        } else {
+            if (cellToDraw.isAnimated()) {
+                drawBangBitmap(canvasToDrawIn, cellToDraw.getSideLength(),
+                        cellToDraw.getTopLeftX(), cellToDraw.getTopLeftY());
+            } else {
+                if (cellToDraw.isWithMine()) {
+                    drawBombBitmap(canvasToDrawIn, cellToDraw.getSideLength(),
+                            cellToDraw.getTopLeftX(), cellToDraw.getTopLeftY());
+                } else {
+                    drawMinesNumber(canvasToDrawIn, cellToDraw.getSideLength(),
+                            cellToDraw.getTopLeftX(), cellToDraw.getTopLeftY(),
+                            cellToDraw.getMinesNear());
                 }
             }
         }
