@@ -33,7 +33,7 @@ public class GameCellsToBitmapTest {
     public void whenCircleNotAliveTextWithMinesDrawn() {
         teachCellsToReturnNumbers();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells);
+        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawText(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -43,7 +43,7 @@ public class GameCellsToBitmapTest {
     public void circlesDrawnAsBitmapWhenTheyArePresent() {
         teachCellsToReturnDrawables();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells);
+        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -53,7 +53,7 @@ public class GameCellsToBitmapTest {
     public void bombDrawnWhenCircleIsNotAliveAndCellAnimated() {
         teachCellsToBeAnimated();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells);
+        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -63,7 +63,7 @@ public class GameCellsToBitmapTest {
     public void circlesAndLinesAboveDrawnWhenCirclesPresentAndMarked() {
         teachCellsToReturnDrawablesAndMarked();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells);
+        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verify(canvas, times(8)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), any());

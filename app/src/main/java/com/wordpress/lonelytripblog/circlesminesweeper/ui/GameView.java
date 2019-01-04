@@ -19,6 +19,7 @@ public class GameView extends View {
     private GameCellsDrawingHelper gameCellsDrawingHelper;
     private GameCell[][] gameCells;
     private BitmapProvider bitmapProvider;
+    private String score;
 
     public GameView(Context context) {
         this(context, null);
@@ -40,7 +41,7 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        gameCellsDrawingHelper.drawCellsOnCanvas(canvas, gameCells);
+        gameCellsDrawingHelper.drawCellsOnCanvas(canvas, gameCells, score);
     }
 
     public void setGameCells(@Nullable GameCell[][] gameCells) {
@@ -49,5 +50,9 @@ public class GameView extends View {
             bitmapProvider.updateCacheIfNeeded(gameCells[0][0].getSideLength());
         }
         invalidate();
+    }
+
+    public void setScoreToDisplay(@Nullable String score) {
+        this.score = score;
     }
 }

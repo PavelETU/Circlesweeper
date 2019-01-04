@@ -98,6 +98,7 @@ public class GameActivity extends DaggerAppCompatActivity
             }
         });
         nextRepeatBtn.setOnClickListener(v -> viewModel.nextRepeatClicked());
+        viewModel.getScoreToDisplayInGameView().observe(this, gameImage::setScoreToDisplay);
         viewModel.getToastEvent().observe(this, integerLiveEvent -> {
             Integer stringResourceForToast = integerLiveEvent.getValueOrNull();
             if (stringResourceForToast != null) {

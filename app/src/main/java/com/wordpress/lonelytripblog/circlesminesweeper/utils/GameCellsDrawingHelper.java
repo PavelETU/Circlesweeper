@@ -1,6 +1,7 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.utils;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -9,13 +10,20 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class GameCellsDrawingHelper {
-
+    private static final int SCORE_OUT_FRAME_PADDING = 10;
     private BitmapProvider bitmapProvider;
     private Paint paintToUse;
     private Rect rectForTextMeasurement;
+    private int xTopLeftMostOfBangedCircles;
+    private int yTopLeftMostOfBangedCircles;
+    private int xBottomRightMostOfBangedCircles;
+    private int yBottomRightMostOfBangedCircles;
+    private int centerOfAllBangsX;
+    private int centerOfAllBangsY;
 
     public GameCellsDrawingHelper(BitmapProvider bitmapProvider, Paint paint, Rect rectForTextMeasurement) {
         this.bitmapProvider = bitmapProvider;
@@ -23,9 +31,10 @@ public class GameCellsDrawingHelper {
         this.rectForTextMeasurement = rectForTextMeasurement;
     }
 
-    public void drawCellsOnCanvas(Canvas canvasToDraw, @Nullable GameCell[][] gameCells) {
+    public void drawCellsOnCanvas(Canvas canvasToDraw, @Nullable GameCell[][] gameCells, @Nullable String score) {
         if (gameCells == null || gameCells.length == 0) return;
         adjustPaintTextSizeToGameCells(gameCells);
+        setCoordsForScoreToDefault();
         List<GameCell> cellsToDrawLater = new ArrayList<>();
         for (int row = 0; row < gameCells.length; row++) {
             for (int col = 0; col < gameCells[0].length; col++) {
@@ -40,6 +49,7 @@ public class GameCellsDrawingHelper {
         for (GameCell gameCell : cellsToDrawLater) {
             drawCell(gameCell, canvasToDraw);
         }
+        drawScoreInTheMiddleOfBangedCircles(canvasToDraw, score);
     }
 
     private void drawCell(GameCell cellToDraw, Canvas canvasToDrawIn) {
@@ -55,7 +65,7 @@ public class GameCellsDrawingHelper {
             }
         } else {
             if (cellToDraw.isAnimated()) {
-                drawBangBitmap(canvasToDrawIn, cellToDraw.getSideLength(),
+                drawBangBitmapAndUpdateCoordsForScore(canvasToDrawIn, cellToDraw.getSideLength(),
                         cellToDraw.getTopLeftX(), cellToDraw.getTopLeftY());
             } else {
                 if (cellToDraw.isWithMine()) {
@@ -74,8 +84,9 @@ public class GameCellsDrawingHelper {
         paintToUse.setTextSize(gameCells[0][0].getSideLength() / 2);
     }
 
-    private void drawBangBitmap(Canvas canvasToDraw, int length, int x, int y) {
+    private void drawBangBitmapAndUpdateCoordsForScore(Canvas canvasToDraw, int length, int x, int y) {
         canvasToDraw.drawBitmap(bitmapProvider.getBangBitmap(length), x, y, paintToUse);
+        updateCoordsForScore(length, x, y);
     }
 
     private void drawBombBitmap(Canvas canvasToDraw, int length, int x, int y) {
@@ -111,6 +122,92 @@ public class GameCellsDrawingHelper {
                 y + radius * (float) Math.sin(7 * Math.PI / 4),
                 x + radius * (float) Math.cos(3 * Math.PI / 4),
                 y + radius * (float) Math.sin(3 * Math.PI / 4), paintToUse);
+    }
+
+    private void setCoordsForScoreToDefault() {
+        xTopLeftMostOfBangedCircles = Integer.MAX_VALUE;
+        yTopLeftMostOfBangedCircles = Integer.MAX_VALUE;
+        xBottomRightMostOfBangedCircles = -1;
+        yBottomRightMostOfBangedCircles = -1;
+    }
+
+    private void updateCoordsForScore(int length, int x, int y) {
+        int bottomX = x + length;
+        int bottomY = y + length;
+        if (xTopLeftMostOfBangedCircles > x) {
+            xTopLeftMostOfBangedCircles = x;
+        }
+        if (yTopLeftMostOfBangedCircles > y) {
+            yTopLeftMostOfBangedCircles = y;
+        }
+        if (xBottomRightMostOfBangedCircles < bottomX) {
+            xBottomRightMostOfBangedCircles = bottomX;
+        }
+        if (yBottomRightMostOfBangedCircles < bottomY) {
+            yBottomRightMostOfBangedCircles = bottomY;
+        }
+    }
+
+    private void drawScoreInTheMiddleOfBangedCircles(Canvas canvas, @Nullable String score) {
+        if (score == null || score.isEmpty() || xBottomRightMostOfBangedCircles == -1) return;
+        makePaintTextSizeTwoTimesSmaller();
+        calculateCenterOfAllBangBitmaps();
+        drawScoreOnCanvas(canvas, score);
+    }
+
+    private void makePaintTextSizeTwoTimesSmaller() {
+        paintToUse.setTextSize(paintToUse.getTextSize() / 2);
+    }
+
+    private void calculateCenterOfAllBangBitmaps() {
+        centerOfAllBangsX = xTopLeftMostOfBangedCircles
+                + (xBottomRightMostOfBangedCircles - xTopLeftMostOfBangedCircles) / 2;
+        centerOfAllBangsY = yTopLeftMostOfBangedCircles
+                + (yBottomRightMostOfBangedCircles - yTopLeftMostOfBangedCircles) / 2;
+    }
+
+    private void drawScoreOnCanvas(@NonNull Canvas canvas, @NonNull String score) {
+        int transparentBlackColor = Color.argb(150, 0, 0, 0);
+        String[] scoreOutput = score.split("\n");
+        if (scoreOutput.length == 2) {
+            drawTextLineAboveCenter(canvas, scoreOutput[0], transparentBlackColor);
+            drawTextLineBelowCenter(canvas, scoreOutput[1], transparentBlackColor);
+        } else {
+            drawTextInTheCenter(canvas, score, transparentBlackColor);
+        }
+        paintToUse.setColor(Color.BLACK);
+    }
+
+    private void drawTextLineAboveCenter(Canvas canvas, String lineToDraw, int transparentBlackColor) {
+        paintToUse.getTextBounds(lineToDraw, 0, lineToDraw.length(), rectForTextMeasurement);
+        float xPosition = centerOfAllBangsX - rectForTextMeasurement.width() / 2 - rectForTextMeasurement.left;
+        float yPosition = centerOfAllBangsY - rectForTextMeasurement.bottom - SCORE_OUT_FRAME_PADDING;
+        drawTextWithBackground(canvas, lineToDraw, transparentBlackColor, xPosition, yPosition);
+    }
+
+    private void drawTextLineBelowCenter(Canvas canvas, String lineToDraw, int transparentBlackColor) {
+        paintToUse.getTextBounds(lineToDraw, 0, lineToDraw.length(), rectForTextMeasurement);
+        float xPosition = centerOfAllBangsX - rectForTextMeasurement.width() / 2 - rectForTextMeasurement.left;
+        float yPosition = centerOfAllBangsY - rectForTextMeasurement.top + SCORE_OUT_FRAME_PADDING;
+        drawTextWithBackground(canvas, lineToDraw, transparentBlackColor, xPosition, yPosition);
+    }
+
+    private void drawTextInTheCenter(Canvas canvas, String lineToDraw, int transparentBlackColor) {
+        paintToUse.getTextBounds(lineToDraw, 0, lineToDraw.length(), rectForTextMeasurement);
+        float xPosition = centerOfAllBangsX - rectForTextMeasurement.width() / 2 - rectForTextMeasurement.left;
+        float yPosition = centerOfAllBangsY + rectForTextMeasurement.height() / 2 - rectForTextMeasurement.bottom;
+        drawTextWithBackground(canvas, lineToDraw, transparentBlackColor, xPosition, yPosition);
+    }
+
+    private void drawTextWithBackground(Canvas canvas, String lineToDraw, int transparentBlackColor,
+                                        float xPosition, float yPosition) {
+        paintToUse.setColor(transparentBlackColor);
+        canvas.drawRect(xPosition + rectForTextMeasurement.left - SCORE_OUT_FRAME_PADDING,
+                yPosition + rectForTextMeasurement.top - SCORE_OUT_FRAME_PADDING,
+                xPosition + rectForTextMeasurement.right + SCORE_OUT_FRAME_PADDING,
+                yPosition + rectForTextMeasurement.bottom + SCORE_OUT_FRAME_PADDING, paintToUse);
+        paintToUse.setColor(Color.WHITE);
+        canvas.drawText(lineToDraw, xPosition, yPosition, paintToUse);
     }
 
 }

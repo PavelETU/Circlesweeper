@@ -41,6 +41,7 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<Integer> minesToDisplayLiveData = new MutableLiveData<>();
     private MutableLiveData<Integer> checkButtonSrc;
     private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<>();
+    private MutableLiveData<String> scoreToDisplayInGameView = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -288,10 +289,14 @@ public class GameViewModel extends ViewModel {
 
     private void updateScoreBasedOnGoneCircles(int circlesGoneBecauseOfFirstCircle,
                                                int circlesGoneBecauseOfSecondCircle) {
+        StringBuilder scoreToDisplay = new StringBuilder();
         int scoreToAdd = circlesGoneBecauseOfFirstCircle * 10 + circlesGoneBecauseOfSecondCircle * 10;
         if (circlesGoneBecauseOfFirstCircle != 0 && circlesGoneBecauseOfSecondCircle != 0) {
+            scoreToDisplay.append("Combo!\n");
             scoreToAdd *= 2;
         }
+        scoreToDisplay.append('+').append(scoreToAdd);
+        scoreToDisplayInGameView.setValue(scoreToDisplay.toString());
         addToScoreLiveData(scoreToAdd);
     }
 
@@ -509,5 +514,9 @@ public class GameViewModel extends ViewModel {
         } else {
             gameRepository.nothingToLoadNextTime();
         }
+    }
+
+    public MutableLiveData<String> getScoreToDisplayInGameView() {
+        return scoreToDisplayInGameView;
     }
 }
