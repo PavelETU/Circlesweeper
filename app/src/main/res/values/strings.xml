@@ -44,4 +44,5 @@
     <string name="specify_mines_amount">Specify number of mines</string>
     <string name="no_score_for_you">You have no achievements yet.\nPlay some game and return</string>
     <string name="new_record_set">New record set!</string>
+    <string name="first_tutorial_message">To bang circles drag one circle to another</string>
 </resources>

@@ -6,7 +6,7 @@ public class Circle {
     public static final float PERCENTAGE_FOR_SMALLER_CIRCLE = 0.85f;
     private int x;
     private int y;
-    private final int colorDrawableSrc;
+    private int colorDrawableSrc;
     private int defaultRadius;
     private int smallRadius;
     private int radius;
@@ -77,5 +77,9 @@ public class Circle {
 
     public boolean isMoving() {
         return isMoving;
+    }
+
+    public void setColorDrawableSrc(int colorDrawableSrc) {
+        this.colorDrawableSrc = colorDrawableSrc;
     }
 }

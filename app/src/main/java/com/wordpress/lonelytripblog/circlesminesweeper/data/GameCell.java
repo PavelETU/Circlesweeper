@@ -14,13 +14,7 @@ public class GameCell {
     private int sideLength;
 
     public GameCell(Circle circle, boolean initWithMine, int minesNear) {
-        this.circle = circle;
-        int radius = circle.getRadius();
-        topLeftX = circle.getX() - radius;
-        topLeftY = circle.getY() - radius;
-        sideLength = radius * 2;
-        withMine = initWithMine;
-        this.minesNear = minesNear;
+        this(circle, initWithMine, minesNear, false);
     }
 
     public GameCell(Circle circle, boolean initWithMine, int minesNear, boolean marked) {
@@ -157,5 +151,10 @@ public class GameCell {
 
     public boolean drawCellLast() {
         return circle.isMoving();
+    }
+
+    public void setCircleAliveWithColor(int color) {
+        circle.setAlive(true);
+        circle.setColorDrawableSrc(color);
     }
 }

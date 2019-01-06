@@ -25,6 +25,7 @@ public class CellsGeneratorImpl implements CellsGenerator {
     private Random random;
     private List<Integer> amountOfCellsWithSameColorForIndex;
     private boolean invertCells;
+    private boolean populateWithEmptyCells;
 
     @Override
     public GameCell[][] regenerateCellsForNewSize(GameCell[][] gameCells, int newWidth, int newHeight) {
@@ -61,6 +62,12 @@ public class CellsGeneratorImpl implements CellsGenerator {
     }
 
     @Override
+    public GameCell[][] generateEmptyCells(int width, int height, int amountOnSmallerSide, int amountOnBiggerSide) {
+        populateWithEmptyCells = true;
+        return saveParametersAndGenerateCells(width, height, amountOnSmallerSide, amountOnBiggerSide);
+    }
+
+    @Override
     public GameCell[][] generateMines(GameCell[][] gameCells, int mines) {
         bombsAmount = mines;
         amountOnSmallerSide = gameCells.length;
@@ -88,7 +95,11 @@ public class CellsGeneratorImpl implements CellsGenerator {
         gameCells = new GameCell[amountOnSmallerSide][amountOnBiggerSide];
         calculateLengthForCellSideAndRadius();
         calculateShiftForCells();
-        populateGameCells();
+        if (populateWithEmptyCells) {
+            populateEmptyGameCells();
+        } else {
+            populateGameCells();
+        }
         return gameCells;
     }
 
@@ -121,6 +132,16 @@ public class CellsGeneratorImpl implements CellsGenerator {
             for (int col = 0; col < gameCells[0].length; col++) {
                 Circle circle = new Circle(getXForCol(row, col), getYForRow(row, col), radiusForCircles,
                         colorsForCircles[row][col]);
+                gameCells[row][col] = new GameCell(circle, false, 0);
+            }
+        }
+    }
+
+    private void populateEmptyGameCells() {
+        for (int row = 0; row < gameCells.length; row++) {
+            for (int col = 0; col < gameCells[0].length; col++) {
+                Circle circle = new Circle(getXForCol(row, col), getYForRow(row, col), radiusForCircles,
+                        0, false);
                 gameCells[row][col] = new GameCell(circle, false, 0);
             }
         }

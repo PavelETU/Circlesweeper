@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 public class CellsGeneratorTests {
@@ -43,6 +44,8 @@ public class CellsGeneratorTests {
     public void verifyCellProperPositionsFor3X4() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400, 300);
 
+        assertEquals(3, generatedGameCells.length);
+        assertEquals(4, generatedGameCells[0].length);
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
@@ -55,6 +58,8 @@ public class CellsGeneratorTests {
     public void verifyCellProperPositionsFor3X4WithShiftDown() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300);
 
+        assertEquals(3, generatedGameCells.length);
+        assertEquals(4, generatedGameCells[0].length);
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100 + 50, generatedGameCells[row][col].getTopLeftX());
@@ -67,6 +72,8 @@ public class CellsGeneratorTests {
     public void verifyCellProperPositionsFor3X4WithShiftRight() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField3X4(400 + 100, 300);
 
+        assertEquals(3, generatedGameCells.length);
+        assertEquals(4, generatedGameCells[0].length);
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100 + 50, generatedGameCells[row][col].getTopLeftX());
@@ -79,6 +86,8 @@ public class CellsGeneratorTests {
     public void verifyCellProperPositionsFor4X6() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField4X6(600, 400);
 
+        assertEquals(4, generatedGameCells.length);
+        assertEquals(6, generatedGameCells[0].length);
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
@@ -91,6 +100,8 @@ public class CellsGeneratorTests {
     public void verifyCellProperPositionsFor6X10() {
         GameCell[][] generatedGameCells = cellsGenerator.generateCellsForField6X10(1000, 600);
 
+        assertEquals(6, generatedGameCells.length);
+        assertEquals(10, generatedGameCells[0].length);
         for (int row = 0; row < generatedGameCells.length; row++) {
             for (int col = 0; col < generatedGameCells[0].length; col++) {
                 assertEquals(col * 100, generatedGameCells[row][col].getTopLeftX());
@@ -105,6 +116,8 @@ public class CellsGeneratorTests {
 
         GameCell[][] regeneratedGameCells = cellsGenerator.regenerateCellsForNewSize(generatedGameCells, 600, 1000);
 
+        assertEquals(6, regeneratedGameCells.length);
+        assertEquals(10, regeneratedGameCells[0].length);
         for (int row = 0; row < regeneratedGameCells.length; row++) {
             for (int col = 0; col < regeneratedGameCells[0].length; col++) {
                 assertEquals((regeneratedGameCells.length - row - 1) * 100, generatedGameCells[row][col].getTopLeftX());
@@ -204,6 +217,35 @@ public class CellsGeneratorTests {
         cellsGenerator.generateMines(cells, minesToGenerate);
 
         verifyThatMinesNearIsMaximumForAllCells(cells);
+    }
+
+    @Test
+    public void emptyCellsOnRightPositions() {
+        GameCell[][] cells = cellsGenerator.generateEmptyCells(10000, 10000, 100, 100);
+
+        assertEquals(100, cells.length);
+        assertEquals(100, cells[0].length);
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[0].length; col++) {
+                assertEquals(col * 100, cells[row][col].getTopLeftX());
+                assertEquals(row * 100, cells[row][col].getTopLeftY());
+            }
+        }
+    }
+
+    @Test
+    public void emptyCellsAreIndeedEmpty() {
+        GameCell[][] cells = cellsGenerator.generateEmptyCells(1000, 1000, 10, 10);
+
+        assertEquals(10, cells.length);
+        assertEquals(10, cells[0].length);
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[0].length; col++) {
+                assertFalse(cells[row][col].isCircleInsideAlive());
+                assertFalse(cells[row][col].isWithMine());
+                assertFalse(cells[row][col].isAnimated());
+            }
+        }
     }
 
     private int countMinesInCells(GameCell[][] generatedGameCells) {

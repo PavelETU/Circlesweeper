@@ -33,4 +33,7 @@
     <string name="valid_value_for_mines_3">Диапазон значений 0&#8230;20</string>
     <string name="continue_last_game">Продолжить последнюю игру</string>
     <string name="specify_mines_amount">Укажите количество мин</string>
+    <string name="no_score_for_you">Рекорды отсутствуют</string>
+    <string name="new_record_set">Новый рекорд!</string>
+    <string name="first_tutorial_message">Для взрыва шарика перетащите один шарик к другому</string>
 </resources>
