@@ -180,4 +180,14 @@ public class GameRepositoryImpl implements GameRepository {
     public void nothingToLoadNextTime() {
         sharedPreferences.edit().putBoolean(LAST_GAME_WAS_SAVED_KEY, false).apply();
     }
+
+    @Override
+    public boolean messageForThisTutorialLevelWasShown() {
+        return false;
+    }
+
+    @Override
+    public void saveThatMessageForTutorialLevelWasShown() {
+
+    }
 }

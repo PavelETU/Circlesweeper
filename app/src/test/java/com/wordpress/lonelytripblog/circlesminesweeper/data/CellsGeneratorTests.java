@@ -234,6 +234,22 @@ public class CellsGeneratorTests {
     }
 
     @Test
+    public void firstTutorialLevelSetup() {
+        GameCell[][] cells = cellsGenerator.generateEmptyCells(500, 500, 5, 5);
+
+        assertEquals(5, cells.length);
+        assertEquals(5, cells[0].length);
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[0].length; col++) {
+                assertEquals(col * 100, cells[row][col].getTopLeftX());
+                assertEquals(row * 100, cells[row][col].getTopLeftY());
+                assertEquals(50, cells[row][col].getCircle().getRadius());
+                assertEquals(100, cells[row][col].getSideLength());
+            }
+        }
+    }
+
+    @Test
     public void emptyCellsAreIndeedEmpty() {
         GameCell[][] cells = cellsGenerator.generateEmptyCells(1000, 1000, 10, 10);
 

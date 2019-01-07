@@ -7,6 +7,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.TutorialLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameToSaveObject;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.LiveEvent;
 
@@ -42,6 +43,7 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<Integer> checkButtonSrc;
     private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<>();
     private MutableLiveData<String> scoreToDisplayInGameView = new MutableLiveData<>();
+    private MutableLiveData<LiveEvent<Integer>> snackbarMessage = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -196,6 +198,7 @@ public class GameViewModel extends ViewModel {
     private void startGameWithoutDialog() {
         minesGenerated = false;
         setLevel(gameRepository.getLevelToPlay());
+        setupSpecificToTutorialLevel();
         gameCells = getCirclesForLevel();
         gameScore.setValue(0);
         gameCondition.setValue(GAME_IN_PROCESS);
@@ -203,6 +206,15 @@ public class GameViewModel extends ViewModel {
         notMarkedCellsWithMines = level.getMinesAmount();
         updateMinesLiveData();
         updateCellsLiveData();
+    }
+
+    private void setupSpecificToTutorialLevel() {
+        if (level instanceof TutorialLevel) {
+            minesGenerated = true;
+            if (!gameRepository.messageForThisTutorialLevelWasShown()) {
+                snackbarMessage.setValue(new LiveEvent<>(((TutorialLevel) level).getMessageResToDisplay()));
+            }
+        }
     }
 
     private void showDialog() {
@@ -507,16 +519,26 @@ public class GameViewModel extends ViewModel {
     }
 
     public void beforeGameGoAway() {
-        if (gameCondition.getValue() == GAME_IN_PROCESS) {
-            gameRepository.saveGame(new GameToSaveObject(gameCells, gameWindowWidth, gameWindowHeight,
-                    gameScore.getValue(), minesToDisplayLiveData.getValue(), markState,
-                    minesGenerated, notMarkedCellsWithMines));
-        } else {
-            gameRepository.nothingToLoadNextTime();
+        if (!(level instanceof TutorialLevel)) {
+            if (gameCondition.getValue() == GAME_IN_PROCESS) {
+                gameRepository.saveGame(new GameToSaveObject(gameCells, gameWindowWidth, gameWindowHeight,
+                        gameScore.getValue(), minesToDisplayLiveData.getValue(), markState,
+                        minesGenerated, notMarkedCellsWithMines));
+            } else {
+                gameRepository.nothingToLoadNextTime();
+            }
         }
     }
 
     public MutableLiveData<String> getScoreToDisplayInGameView() {
         return scoreToDisplayInGameView;
+    }
+
+    public MutableLiveData<LiveEvent<Integer>> getSnackbarMessage() {
+        return snackbarMessage;
+    }
+
+    public void onSnackbarMessageClicked() {
+        gameRepository.saveThatMessageForTutorialLevelWasShown();
     }
 }

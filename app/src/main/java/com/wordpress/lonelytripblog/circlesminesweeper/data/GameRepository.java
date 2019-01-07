@@ -24,4 +24,6 @@ public interface GameRepository {
     boolean shouldLoadGame();
     void openSavedGame();
     void nothingToLoadNextTime();
+    boolean messageForThisTutorialLevelWasShown();
+    void saveThatMessageForTutorialLevelWasShown();
 }
