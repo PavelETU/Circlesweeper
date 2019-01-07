@@ -32,6 +32,16 @@ public class GameViewModel extends ViewModel {
 
     private final CellsGenerator cellsGenerator;
     private final Handler mainHandler;
+    private final Runnable stopAnimationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            for (GameCell gameCell : eliminatedCells) {
+                gameCell.setAnimated(false);
+            }
+            eliminatedCells.clear();
+            updateCellsLiveData();
+        }
+    };
     private GameLevel level;
     private GameCell[][] gameCells;
     private int gameWindowWidth;
@@ -135,6 +145,7 @@ public class GameViewModel extends ViewModel {
             endGameWithLoosing();
             return;
         }
+        stopAnimationImmediatelyIfItsPending();
         moveCircleAndUpdateLiveData(x, y);
     }
 
@@ -314,13 +325,7 @@ public class GameViewModel extends ViewModel {
 
     private void setUpAnimationIfCirclesWereEliminated() {
         if (eliminatedCells.size() != 0) {
-            mainHandler.postDelayed(() -> {
-                for (GameCell gameCell : eliminatedCells) {
-                    gameCell.setAnimated(false);
-                }
-                eliminatedCells.clear();
-                updateCellsLiveData();
-            }, 1000);
+            mainHandler.postDelayed(stopAnimationRunnable, 1000);
         }
     }
 
@@ -540,5 +545,12 @@ public class GameViewModel extends ViewModel {
 
     public void onSnackbarMessageClicked() {
         gameRepository.saveThatMessageForTutorialLevelWasShown();
+    }
+
+    private void stopAnimationImmediatelyIfItsPending() {
+        if (mainHandler.hasMessages(0)) {
+            mainHandler.removeCallbacksAndMessages(null);
+            mainHandler.post(stopAnimationRunnable);
+        }
     }
 }
