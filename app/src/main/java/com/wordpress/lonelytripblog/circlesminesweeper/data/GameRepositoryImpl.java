@@ -23,14 +23,17 @@ import androidx.lifecycle.Transformations;
 
 public class GameRepositoryImpl implements GameRepository {
 
+    // One based level
     private static final int LAST_LEVEL = 6;
     private static final String KEY_FOR_BEST_SCORE = "best_score";
     private static final String KEY_FOR_DATE_OF_BEST_SCORE = "data_of_best_score";
     private static final String LEVEL_OF_SAVED_GAME = "level_of_saved_game";
     private static final String LAST_GAME_WAS_SAVED_KEY = "last_game_was_saved";
     private static final String MINES_TO_GENERATE_KEY = "generate_this_amount";
+    private static final String MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL = "message_tutorial_";
     private LevelFactory levelFactory;
     private SharedPreferences sharedPreferences;
+    // One based level
     private int level;
     private int fieldSizeCustom;
     private int minesCustom;
@@ -56,6 +59,9 @@ public class GameRepositoryImpl implements GameRepository {
         return gameLevel;
     }
 
+    /**
+     * @param levelNumber - one based integer (first level = 1)
+     */
     @Override
     public void setLevelNumber(int levelNumber) {
         openLastGame = false;
@@ -91,14 +97,13 @@ public class GameRepositoryImpl implements GameRepository {
     @Override
     public LiveData<List<Score>> getScores() {
         List<Score> scores = new ArrayList<>();
-        for (int i = 0; i < LAST_LEVEL - 1; i++) {
-            int correspondingLevel = i + 1;
+        for (int level = 1; level < LAST_LEVEL; level++) {
             int bestScore = sharedPreferences.getInt(KEY_FOR_BEST_SCORE
-                    + String.valueOf(correspondingLevel), 0);
+                    + String.valueOf(level), 0);
             if (bestScore > 0) {
-                scores.add(new Score(correspondingLevel,
+                scores.add(new Score(level,
                         sharedPreferences.getString(KEY_FOR_DATE_OF_BEST_SCORE
-                                + String.valueOf(correspondingLevel), "-"),
+                                + String.valueOf(level), "-"),
                         bestScore));
             }
         }
@@ -108,6 +113,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public boolean thisScoreBeatsRecord(int score) {
+        if (isCurrentLevelRequiresDialog()) return false;
         int bestScoreSoFar = sharedPreferences.getInt(KEY_FOR_BEST_SCORE
                 + String.valueOf(level), 0);
         return score > bestScoreSoFar;
@@ -183,11 +189,11 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public boolean messageForThisTutorialLevelWasShown() {
-        return false;
+        return sharedPreferences.getBoolean(MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL + level, false);
     }
 
     @Override
     public void saveThatMessageForTutorialLevelWasShown() {
-
+        sharedPreferences.edit().putBoolean(MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL + level, true).apply();
     }
 }
