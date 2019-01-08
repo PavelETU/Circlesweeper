@@ -1,6 +1,7 @@
 # Circlesweeper
 
 [![Build Status](https://travis-ci.org/PavelETU/Circlesweeper.svg?branch=develop)](https://travis-ci.org/PavelETU/Circlesweeper)
+[![codecov](https://codecov.io/gh/PavelETU/Circlesweeper/branch/develop/graph/badge.svg)](https://codecov.io/gh/PavelETU/Circlesweeper)
 
 This is the variation of the classic Minesweeper game. In order to open the field of the game you have to bomb circles 
 with same colors (hello candy crash) and mark circles instead of squares.
