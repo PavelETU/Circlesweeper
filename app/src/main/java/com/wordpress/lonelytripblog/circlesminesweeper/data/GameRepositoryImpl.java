@@ -23,14 +23,13 @@ import androidx.lifecycle.Transformations;
 
 public class GameRepositoryImpl implements GameRepository {
 
-    // One based level
-    private static final int LAST_LEVEL = 6;
     private static final String KEY_FOR_BEST_SCORE = "best_score";
     private static final String KEY_FOR_DATE_OF_BEST_SCORE = "data_of_best_score";
     private static final String LEVEL_OF_SAVED_GAME = "level_of_saved_game";
     private static final String LAST_GAME_WAS_SAVED_KEY = "last_game_was_saved";
     private static final String MINES_TO_GENERATE_KEY = "generate_this_amount";
     private static final String MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL = "message_tutorial_";
+    private static final String OPENED_LEVELS_KEY = "opened_levels";
     private LevelFactory levelFactory;
     private SharedPreferences sharedPreferences;
     // One based level
@@ -76,28 +75,28 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public int getLastOpenedLevel() {
-        return sharedPreferences.getInt("opened_levels", 1);
+        return sharedPreferences.getInt(OPENED_LEVELS_KEY, 1);
     }
 
     @Override
-    public void incrementLastOpenedLevel() {
-        if (level != LAST_LEVEL) {
+    public void openNextLevelIfItsExist() {
+        if (level != getLevelsAmount()) {
             level = level + 1;
             if (getLastOpenedLevel() < level) {
-                sharedPreferences.edit().putInt("opened_levels", level).apply();
+                sharedPreferences.edit().putInt(OPENED_LEVELS_KEY, level).apply();
             }
         }
     }
 
     @Override
     public boolean isCurrentLevelRequiresDialog() {
-        return level == LAST_LEVEL;
+        return level == getLevelsAmount();
     }
 
     @Override
     public LiveData<List<Score>> getScores() {
         List<Score> scores = new ArrayList<>();
-        for (int level = 1; level < LAST_LEVEL; level++) {
+        for (int level = 1; level < getLevelsAmount(); level++) {
             int bestScore = sharedPreferences.getInt(KEY_FOR_BEST_SCORE
                     + String.valueOf(level), 0);
             if (bestScore > 0) {
@@ -195,5 +194,10 @@ public class GameRepositoryImpl implements GameRepository {
     @Override
     public void saveThatMessageForTutorialLevelWasShown() {
         sharedPreferences.edit().putBoolean(MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL + level, true).apply();
+    }
+
+    @Override
+    public int getLevelsAmount() {
+        return levelFactory.getAmountOfLevels();
     }
 }

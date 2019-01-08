@@ -18,6 +18,8 @@ public class ChooseLevelViewModel extends ViewModel {
         gameRepository.setLevelNumber(levelNumber);
     }
 
+    public int getLevelsAmount() { return gameRepository.getLevelsAmount(); }
+
     public int getLastLevelNumber() {
         return gameRepository.getLastOpenedLevel();
     }

@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class GameRepoTests {
@@ -31,30 +32,34 @@ public class GameRepoTests {
     private SharedPreferences.Editor editor;
     private SharedPreferences sharedPreferences;
     private GameRepository gameRepository;
+    private LevelFactory levelFactory;
 
     @Before
     public void setUp() {
-        LevelFactory levelFactory = mock(LevelFactory.class);
+        levelFactory = mock(LevelFactory.class);
         sharedPreferences = mock(SharedPreferences.class);
         editor = mock(SharedPreferences.Editor.class);
         when(sharedPreferences.edit()).thenReturn(editor);
         when(editor.putBoolean(any(), anyBoolean())).thenReturn(editor);
+        when(editor.putInt(any(), anyInt())).thenReturn(editor);
         GameDatabase db = mock(GameDatabase.class);
         Executor executor = mock(Executor.class);
         gameRepository = new GameRepositoryImpl(levelFactory, sharedPreferences, db, executor);
     }
 
     @Test
-    public void ifAllScoresSetArrayContainsScoresForAll5Levels() {
+    public void ifAllScoresSetArrayContainsScoresForAllLevelsApartLast() {
+        when(levelFactory.getAmountOfLevels()).thenReturn(80);
         when(sharedPreferences.getInt(anyString(), anyInt())).thenReturn(100);
 
         List<Score> scoreList = gameRepository.getScores().getValue();
 
-        Assert.assertEquals(5, scoreList.size());
+        Assert.assertEquals(79, scoreList.size());
     }
 
     @Test
     public void nothingBeatsScoreForLastLevel() {
+        when(levelFactory.getAmountOfLevels()).thenReturn(6);
         when(sharedPreferences.getInt(anyString(), anyInt())).thenReturn(0);
         gameRepository.setLevelNumber(6);
 
@@ -103,5 +108,38 @@ public class GameRepoTests {
         gameRepository.messageForThisTutorialLevelWasShown();
 
         verify(sharedPreferences).getBoolean("message_tutorial_80", false);
+    }
+
+    @Test
+    public void newLevelGetsOpenedWhenItShouldBe() {
+        when(levelFactory.getAmountOfLevels()).thenReturn(256);
+        when(sharedPreferences.getInt("opened_levels", 1)).thenReturn(255);
+        gameRepository.setLevelNumber(255);
+
+        gameRepository.openNextLevelIfItsExist();
+
+        verify(editor).putInt("opened_levels", 256);
+    }
+
+    @Test
+    public void ifThereAreNoLevelsNothingGetsOpened() {
+        when(levelFactory.getAmountOfLevels()).thenReturn(255);
+        when(sharedPreferences.getInt("opened_levels", 1)).thenReturn(255);
+        gameRepository.setLevelNumber(255);
+
+        gameRepository.openNextLevelIfItsExist();
+
+        verifyZeroInteractions(editor);
+    }
+
+    @Test
+    public void ifLevelOpenedIfWontBeOpenedAgain() {
+        when(levelFactory.getAmountOfLevels()).thenReturn(256);
+        when(sharedPreferences.getInt("opened_levels", 1)).thenReturn(256);
+        gameRepository.setLevelNumber(255);
+
+        gameRepository.openNextLevelIfItsExist();
+
+        verifyZeroInteractions(editor);
     }
 }

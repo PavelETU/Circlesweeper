@@ -32,6 +32,11 @@ public class DefaultLevelFactory implements LevelFactory {
         }
     }
 
+    @Override
+    public int getAmountOfLevels() {
+        return 6;
+    }
+
     private GameLevel getLevelForCustom(int customFieldSize, int customMines) {
         switch (customFieldSize) {
             case CustomLevelDialogFragment.FIELD_3_4:

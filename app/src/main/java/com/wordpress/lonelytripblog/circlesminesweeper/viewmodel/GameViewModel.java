@@ -374,7 +374,7 @@ public class GameViewModel extends ViewModel {
             gameRepository.updateScore(gameScore.getValue());
             toastEvent.setValue(new LiveEvent<>(R.string.new_record_set));
         }
-        gameRepository.incrementLastOpenedLevel();
+        gameRepository.openNextLevelIfItsExist();
         endGameWithStatus(GAME_WON);
     }
 

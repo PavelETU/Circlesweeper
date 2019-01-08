@@ -27,7 +27,6 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
-        FullWindowUtils.enterFullScreenMode(getWindow());
         levelButtons[0] = findViewById(R.id.first);
         levelButtons[1] = findViewById(R.id.second);
         levelButtons[2] = findViewById(R.id.third);
@@ -40,7 +39,9 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        FullWindowUtils.enterFullScreenMode(getWindow());
         syncContinueButtonVisibility();
+        syncLevelButtonsWithLevelsAmount();
         syncLevelButtonsWithPastLevels();
         setListenersForLevelButtons();
     }
@@ -78,6 +79,19 @@ public class ChooseLevelActivity extends DaggerAppCompatActivity {
 
     private boolean gameWasSaved() {
         return viewModel.gameWasSaved();
+    }
+
+    private void syncLevelButtonsWithLevelsAmount() {
+        int levelsAmountZeroBased = viewModel.getLevelsAmount() - 1;
+        for (int i = 0; i < levelButtons.length; i++) {
+            int visibilityToSet;
+            if (i <= levelsAmountZeroBased) {
+                visibilityToSet = View.VISIBLE;
+            } else {
+                visibilityToSet = View.INVISIBLE;
+            }
+            levelButtons[i].setVisibility(visibilityToSet);
+        }
     }
 
     private void syncLevelButtonsWithPastLevels() {

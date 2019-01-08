@@ -12,7 +12,7 @@ public interface GameRepository {
     void setLevelNumber(int levelNumber);
     void setLevelWithParams(int fieldSize, int amountOfMines);
     int getLastOpenedLevel();
-    void incrementLastOpenedLevel();
+    void openNextLevelIfItsExist();
     boolean isCurrentLevelRequiresDialog();
     LiveData<List<Score>> getScores();
     boolean thisScoreBeatsRecord(int score);
@@ -26,4 +26,5 @@ public interface GameRepository {
     void nothingToLoadNextTime();
     boolean messageForThisTutorialLevelWasShown();
     void saveThatMessageForTutorialLevelWasShown();
+    int getLevelsAmount();
 }
