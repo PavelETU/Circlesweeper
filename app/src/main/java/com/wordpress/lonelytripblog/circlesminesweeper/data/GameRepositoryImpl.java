@@ -27,7 +27,6 @@ public class GameRepositoryImpl implements GameRepository {
     private static final String KEY_FOR_DATE_OF_BEST_SCORE = "data_of_best_score";
     private static final String LEVEL_OF_SAVED_GAME = "level_of_saved_game";
     private static final String LAST_GAME_WAS_SAVED_KEY = "last_game_was_saved";
-    private static final String MINES_TO_GENERATE_KEY = "generate_this_amount";
     private static final String MESSAGE_WAS_SHOWN_FOR_TUTORIAL_LEVEL = "message_tutorial_";
     private static final String OPENED_LEVELS_KEY = "opened_levels";
     private LevelFactory levelFactory;
@@ -40,7 +39,6 @@ public class GameRepositoryImpl implements GameRepository {
     private GameDatabase db;
     private Executor executor;
     private boolean openLastGame;
-    private int minesToGenerate;
 
     @Inject
     public GameRepositoryImpl(LevelFactory levelFactory, SharedPreferences sharedPreferences,
@@ -53,9 +51,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public GameLevel getLevelToPlay() {
-        GameLevel gameLevel = levelFactory.makeLevel(level, fieldSizeCustom, minesCustom);
-        minesToGenerate = gameLevel.getMinesAmount();
-        return gameLevel;
+        return levelFactory.makeLevel(level, fieldSizeCustom, minesCustom);
     }
 
     /**
@@ -126,11 +122,6 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public int getMinesForCurrentLevel() {
-        return minesToGenerate;
-    }
-
-    @Override
     public void saveGame(GameToSaveObject gameToSaveObject) {
         executor.execute(() -> {
             db.clearAllTables();
@@ -138,7 +129,6 @@ public class GameRepositoryImpl implements GameRepository {
         });
         sharedPreferences.edit().putBoolean(LAST_GAME_WAS_SAVED_KEY, true)
                 .putInt(LEVEL_OF_SAVED_GAME, level)
-                .putInt(MINES_TO_GENERATE_KEY, minesToGenerate)
                 .putInt(GameToSaveObject.WIDTH_KEY, gameToSaveObject.getWidth())
                 .putInt(GameToSaveObject.HEIGHT_KEY, gameToSaveObject.getHeight())
                 .putInt(GameToSaveObject.SCORE_KEY, gameToSaveObject.getScore())
@@ -153,7 +143,6 @@ public class GameRepositoryImpl implements GameRepository {
     public LiveData<GameToSaveObject> loadGame() {
         openLastGame = false;
         level = sharedPreferences.getInt(LEVEL_OF_SAVED_GAME, 0);
-        minesToGenerate = sharedPreferences.getInt(MINES_TO_GENERATE_KEY, 0);
         return Transformations.map(db.gameCellsDao().getCells(), gameCells ->
                 new GameToSaveObject(GameCellsAdapter.toGameCells(gameCells),
                         sharedPreferences.getInt(GameToSaveObject.WIDTH_KEY, -1),

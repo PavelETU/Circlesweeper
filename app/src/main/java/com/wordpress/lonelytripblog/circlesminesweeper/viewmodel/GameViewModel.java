@@ -331,7 +331,7 @@ public class GameViewModel extends ViewModel {
 
     private void addToScoreLiveData(int scoreToAdd) {
         if (scoreToAdd != 0 && !minesGenerated) {
-            cellsGenerator.generateMines(gameCells, gameRepository.getMinesForCurrentLevel());
+            cellsGenerator.generateMines(gameCells, notMarkedCellsWithMines);
             updateNotMarkedMinesCount();
             minesGenerated = true;
         }

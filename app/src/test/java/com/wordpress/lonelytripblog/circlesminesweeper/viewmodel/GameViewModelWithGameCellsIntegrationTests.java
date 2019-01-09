@@ -7,7 +7,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGenerator;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.Circle;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FirstLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
 
 import org.junit.Before;
@@ -33,6 +32,7 @@ public class GameViewModelWithGameCellsIntegrationTests {
     private GameViewModel viewModel;
     private CellsGenerator cellsGenerator;
     private GameCell[][] gameCells;
+
     @Before
     public void setUp() {
         cellsGenerator = mock(CellsGenerator.class);
@@ -43,7 +43,6 @@ public class GameViewModelWithGameCellsIntegrationTests {
         });
         GameRepository gameRepository = mock(GameRepository.class);
         when(gameRepository.getLevelToPlay()).thenReturn(new SecondLevel());
-        when(gameRepository.getMinesForCurrentLevel()).thenReturn(1);
         viewModel = new GameViewModel(cellsGenerator, handler, gameRepository);
         viewModel.getCheckButtonSrc();
     }

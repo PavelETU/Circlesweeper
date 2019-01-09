@@ -17,7 +17,6 @@ public interface GameRepository {
     LiveData<List<Score>> getScores();
     boolean thisScoreBeatsRecord(int score);
     void updateScore(int newScore);
-    int getMinesForCurrentLevel();
     void saveGame(GameToSaveObject gameToSaveObject);
     LiveData<GameToSaveObject> loadGame();
     boolean lastGameWasSaved();
