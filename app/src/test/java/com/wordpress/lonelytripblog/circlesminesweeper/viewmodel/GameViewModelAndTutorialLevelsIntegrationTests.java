@@ -40,12 +40,9 @@ public class GameViewModelAndTutorialLevelsIntegrationTests {
         gameCellsObserver = (Observer<GameCell[][]>) mock(Observer.class);
         CellsGenerator cellsGenerator = new CellsGeneratorImpl();
         Handler handler = mock(Handler.class);
-        when(handler.postDelayed(any(), anyLong())).thenAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                ((Runnable) invocation.getArgument(0)).run();
-                return null;
-            }
+        when(handler.postDelayed(any(), anyLong())).thenAnswer((Answer<Void>) invocation -> {
+            ((Runnable) invocation.getArgument(0)).run();
+            return null;
         });
         gameRepository = mock(GameRepository.class);
         gameTutorialLevel = new FirstTutorialLevel();

@@ -13,7 +13,7 @@ public class Circle {
     private boolean isAlive;
     private boolean isMoving;
 
-    Circle(int x, int y, int radius, int colorDrawableSrc) {
+    public Circle(int x, int y, int radius, int colorDrawableSrc) {
         this(x, y, radius, colorDrawableSrc, true);
     }
 

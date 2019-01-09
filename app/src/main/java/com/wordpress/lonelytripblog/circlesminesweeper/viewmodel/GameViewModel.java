@@ -332,9 +332,22 @@ public class GameViewModel extends ViewModel {
     private void addToScoreLiveData(int scoreToAdd) {
         if (scoreToAdd != 0 && !minesGenerated) {
             cellsGenerator.generateMines(gameCells, gameRepository.getMinesForCurrentLevel());
+            updateNotMarkedMinesCount();
             minesGenerated = true;
         }
         gameScore.setValue(gameScore.getValue() + scoreToAdd);
+    }
+
+    private void updateNotMarkedMinesCount() {
+        if (notMarkedCellsWithMines != 0) {
+            for (int row = 0; row < gameCells.length; row++) {
+                for (int col = 0; col < gameCells[0].length; col++) {
+                    if (gameCells[row][col].isWithMine() && gameCells[row][col].isMarked()) {
+                        notMarkedCellsWithMines--;
+                    }
+                }
+            }
+        }
     }
 
     private boolean gameWon() {
