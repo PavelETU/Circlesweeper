@@ -45,4 +45,5 @@
     <string name="no_score_for_you">You have no achievements yet.\nPlay some game and return</string>
     <string name="new_record_set">New record set!</string>
     <string name="first_tutorial_message">To bang circles drag one circle to another</string>
+    <string name="got_it">Got it</string>
 </resources>

@@ -12,7 +12,6 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.TutorialLevel
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
@@ -57,7 +56,7 @@ public class GameViewModelAndTutorialLevelsIntegrationTests {
         viewModel.getGameCells(500, 500).observeForever(gameCellsObserver);
 
         assertEquals(gameTutorialLevel.getMessageResToDisplay(),
-                (int) viewModel.getSnackbarMessage().getValue().getValueOrNull());
+                (int) viewModel.getSnackbarMessage().getValue());
     }
 
     @Test
@@ -77,6 +76,16 @@ public class GameViewModelAndTutorialLevelsIntegrationTests {
         viewModel.onSnackbarMessageClicked();
 
         verify(gameRepository).saveThatMessageForTutorialLevelWasShown();
+    }
+
+    @Test
+    public void whenSnackbarMessageClickedItBecameNull() {
+        when(gameRepository.messageForThisTutorialLevelWasShown()).thenReturn(false);
+
+        viewModel.getGameCells(500, 500).observeForever(gameCellsObserver);
+        viewModel.onSnackbarMessageClicked();
+
+        assertNull(viewModel.getSnackbarMessage().getValue());
     }
 
     @Test

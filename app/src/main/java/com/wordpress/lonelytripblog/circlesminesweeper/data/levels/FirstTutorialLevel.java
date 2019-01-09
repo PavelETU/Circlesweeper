@@ -22,9 +22,9 @@ public class FirstTutorialLevel implements TutorialLevel {
 
     @Override
     public GameCell[][] generateCircles(CellsGenerator cellsGenerator, int width, int height) {
-        GameCell[][] gameCells = cellsGenerator.generateEmptyCells(width, height, 5, 5);
+        GameCell[][] gameCells = cellsGenerator.generateEmptyCells(width, height, 4, 4);
         gameCells[0][0].setCircleAliveWithColor(R.drawable.red_ball);
-        gameCells[4][4].setCircleAliveWithColor(R.drawable.red_ball);
+        gameCells[3][3].setCircleAliveWithColor(R.drawable.red_ball);
         return gameCells;
     }
 

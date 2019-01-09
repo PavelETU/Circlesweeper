@@ -53,7 +53,7 @@ public class GameViewModel extends ViewModel {
     private MutableLiveData<Integer> checkButtonSrc;
     private MutableLiveData<LiveEvent<Integer>> toastEvent = new MutableLiveData<>();
     private MutableLiveData<String> scoreToDisplayInGameView = new MutableLiveData<>();
-    private MutableLiveData<LiveEvent<Integer>> snackbarMessage = new MutableLiveData<>();
+    private MutableLiveData<Integer> snackbarMessage = new MutableLiveData<>();
     private GameCell takenGameCell;
     private Pair<Integer, Integer> takenGameCellPosition;
     private Pair<Integer, Integer> swappedCirclePosition;
@@ -223,7 +223,7 @@ public class GameViewModel extends ViewModel {
         if (level instanceof TutorialLevel) {
             minesGenerated = true;
             if (!gameRepository.messageForThisTutorialLevelWasShown()) {
-                snackbarMessage.setValue(new LiveEvent<>(((TutorialLevel) level).getMessageResToDisplay()));
+                snackbarMessage.setValue(((TutorialLevel) level).getMessageResToDisplay());
             }
         }
     }
@@ -552,11 +552,12 @@ public class GameViewModel extends ViewModel {
         return scoreToDisplayInGameView;
     }
 
-    public MutableLiveData<LiveEvent<Integer>> getSnackbarMessage() {
+    public MutableLiveData<Integer> getSnackbarMessage() {
         return snackbarMessage;
     }
 
     public void onSnackbarMessageClicked() {
+        snackbarMessage.setValue(null);
         gameRepository.saveThatMessageForTutorialLevelWasShown();
     }
 

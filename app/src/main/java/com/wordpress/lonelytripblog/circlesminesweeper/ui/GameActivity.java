@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
@@ -24,7 +25,7 @@ import static com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDial
 public class GameActivity extends DaggerAppCompatActivity
         implements CustomLevelDialogFragment.CustomLevelDialogCallback {
 
-    private GameView gameImage;
+    private GameView gameView;
     private GameViewModel viewModel;
     @Inject
     ViewModelProvider.Factory factory;
@@ -34,14 +35,14 @@ public class GameActivity extends DaggerAppCompatActivity
         setContentView(R.layout.activity_game);
         FullWindowUtils.enterFullScreenMode(getWindow());
         viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
-        gameImage = findViewById(R.id.game_image);
-        gameImage.post(() -> {
-            int width = gameImage.getWidth();
-            int height = gameImage.getHeight();
+        gameView = findViewById(R.id.game_image);
+        gameView.post(() -> {
+            int width = gameView.getWidth();
+            int height = gameView.getHeight();
             viewModel.getGameCells(width, height).observe(GameActivity.this,
-                    gameImage::setGameCells);
+                    gameView::setGameCells);
         });
-        gameImage.setOnTouchListener((v, event) -> {
+        gameView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     viewModel.actionDown((int) event.getX(), (int) event.getY());
@@ -98,11 +99,17 @@ public class GameActivity extends DaggerAppCompatActivity
             }
         });
         nextRepeatBtn.setOnClickListener(v -> viewModel.nextRepeatClicked());
-        viewModel.getScoreToDisplayInGameView().observe(this, gameImage::setScoreToDisplay);
+        viewModel.getScoreToDisplayInGameView().observe(this, gameView::setScoreToDisplay);
         viewModel.getToastEvent().observe(this, integerLiveEvent -> {
             Integer stringResourceForToast = integerLiveEvent.getValueOrNull();
             if (stringResourceForToast != null) {
                 showToastWithResource(stringResourceForToast);
+            }
+        });
+        viewModel.getSnackbarMessage().observe(this, stringSrc -> {
+            if (stringSrc != null) {
+                Snackbar.make(gameView, stringSrc, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.got_it, v -> viewModel.onSnackbarMessageClicked()).show();
             }
         });
     }
