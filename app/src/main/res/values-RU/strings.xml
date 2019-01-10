@@ -5,17 +5,16 @@
         Для того чтобы выиграть необходимо взорвать все шарики одинакового цвета и
         отметить все бомбы.\n\n
         Для отметки бомбы нажмите на иконку с бомбой в верхнем правом углу,
-        затем на шарик с бомбой. Отмеченный шарики не могут быть взорваны или перемещены.\n\n
+        затем на шарик с бомбой. Отмеченные шарики не могут быть взорваны или перемещены.\n\n
         Для большего количества очков необходимо взорвать как можно больше шариков одновременно,
         оставшиеся без пары шарики не считаются.\n\n
-        Не забудьте оценить приложения в Google Play!\n
         Удачи в уничтожении шариков!</string>
     <string name="back_to_menu">В предыдущее меню</string>
     <string name="table_of_best_score">Таблица лучших результатов</string>
     <string name="level">Уровень</string>
     <string name="date_and_time">Дата и время</string>
     <string name="score">Очки</string>
-    <string name="chose_mission">Выбирите уровень</string>
+    <string name="chose_mission">Выберите уровень</string>
     <string name="continue_str">Продолжить</string>
     <string name="size_of_the_field">Размер поля</string>
     <string name="number_of_mines">Количество бомб</string>
@@ -24,20 +23,20 @@
     <string name="how_to_play">Правила</string>
     <string name="exit">Выход</string>
     <string name="game_over">Игра закончена</string>
-    <string name="bad_outcome_out">К сожелению Вы взорвали мину.</string>
+    <string name="bad_outcome_out">К сожалению Вы взорвали мину</string>
     <string name="try_again">Попробывать снова</string>
     <string name="winner">Вы выиграли</string>
     <string name="congratulation">Поздравляем!</string>
     <string name="valid_value_for_mines_1">Диапазон значений 0&#8230;4</string>
     <string name="valid_value_for_mines_2">Диапазон значений 0&#8230;8</string>
     <string name="valid_value_for_mines_3">Диапазон значений 0&#8230;20</string>
-    <string name="continue_last_game">Продолжить последнюю игру</string>
+    <string name="continue_last_game">Продолжить</string>
     <string name="specify_mines_amount">Укажите количество мин</string>
     <string name="no_score_for_you">Рекорды отсутствуют</string>
     <string name="new_record_set">Новый рекорд!</string>
     <string name="first_tutorial_message">Для взрыва шарика перетащите один шарик к другому</string>
-    <string name="second_tutorial_message">В центре Вы видете ширик с бомбой. Для победы Вам
-        необходимо отметить его. Сначала нажмите на бомбу в правом вернем углу, затем на ширик с бомбой</string>
+    <string name="second_tutorial_message">В центре Вы видете шарик с бомбой. Для победы Вам
+        необходимо отметить его. Сначала нажмите на бомбу в правом верхнем углу, затем на шарик с бомбой</string>
     <string name="third_tutorial_message">Вы можете удвоить очки взорвав шарики разных цветов
         одновременно. Вам необходимо сдвинуть шарик так, чтобы сразу взорвать все четыре шарика.
         Так Вы получите 80 очков вместо 40</string>

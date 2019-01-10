@@ -1,14 +1,13 @@
 <resources>
     <string name="app_name">Circlesweeper</string>
     <string name="about_game">This is the variation of the classic game Minesweeper.\n\n
-        In order for you to win you have to bang all circles with the same color
+        In order to win you have to bang all circles with the same color
         as well as mark all circles with mine.\n\n
-        For marking bomb click on the bomb sign in the upper right corner, then on
+        For marking circle click on the bomb sign in the upper right corner, then on
         the circle with mine itself. Marked circles can\'t be shifted or banged.\n\n
         For the best score try to bang as many circles as possible simultaneously,
         and don\'t worry if you\'ve got spare circles - they don\'t count.\n\n
-        Don\'t forget to rate this app and enjoy the game.\n
-        Good luck with your circles handling!</string>
+        Enjoy the game.\nGood luck with your circles handling!</string>
     <string name="back_to_menu">Back to menu</string>
     <string name="table_of_best_score">Table of the best scores</string>
     <string name="level">Level</string>
