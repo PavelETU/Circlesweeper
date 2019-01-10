@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.ui;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui.activities;
 
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -10,6 +10,9 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.InjectMe;
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDialogFragment;
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.GameView;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 
@@ -18,12 +21,11 @@ import javax.inject.Inject;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import dagger.android.support.DaggerAppCompatActivity;
 
 import static com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDialogFragment.TAG_IN_BACKSTACK;
 
-public class GameActivity extends DaggerAppCompatActivity
-        implements CustomLevelDialogFragment.CustomLevelDialogCallback {
+public class GameActivity extends FullScreenActivity
+        implements CustomLevelDialogFragment.CustomLevelDialogCallback, InjectMe {
 
     private GameView gameView;
     private GameViewModel viewModel;
@@ -33,7 +35,6 @@ public class GameActivity extends DaggerAppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        FullWindowUtils.enterFullScreenMode(getWindow());
         viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameView = findViewById(R.id.game_image);
         gameView.post(() -> {
@@ -111,6 +112,12 @@ public class GameActivity extends DaggerAppCompatActivity
                 showSnackBar(stringSrc);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FullWindowUtils.enterFullScreenMode(getWindow());
     }
 
     @Override

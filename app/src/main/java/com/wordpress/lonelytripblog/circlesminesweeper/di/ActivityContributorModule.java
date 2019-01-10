@@ -1,8 +1,8 @@
 package com.wordpress.lonelytripblog.circlesminesweeper.di;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.ui.BestScoreActivity;
-import com.wordpress.lonelytripblog.circlesminesweeper.ui.ChooseLevelActivity;
-import com.wordpress.lonelytripblog.circlesminesweeper.ui.GameActivity;
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.activities.BestScoreActivity;
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.activities.ChooseLevelActivity;
+import com.wordpress.lonelytripblog.circlesminesweeper.ui.activities.GameActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

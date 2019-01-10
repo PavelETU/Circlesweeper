@@ -24,7 +24,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class CustomLevelDialogFragment extends DialogFragment {
 
-    final static String TAG_IN_BACKSTACK = "choose";
+    public final static String TAG_IN_BACKSTACK = "choose";
     public final static int FIELD_3_4 = 1;
     public final static int FIELD_4_6 = 2;
     public final static int FIELD_6_10 = 3;
@@ -193,7 +193,7 @@ public class CustomLevelDialogFragment extends DialogFragment {
         }
     }
 
-    interface CustomLevelDialogCallback {
+    public interface CustomLevelDialogCallback {
         void onLevelParamsChosen(int fieldSize, int amountOfMines);
 
         void onDismiss();

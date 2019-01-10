@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.ui;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.InjectMe;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.ChooseLevelViewModel;
 
@@ -13,9 +14,8 @@ import javax.inject.Inject;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import dagger.android.support.DaggerAppCompatActivity;
 
-public class ChooseLevelActivity extends DaggerAppCompatActivity {
+public class ChooseLevelActivity extends FullScreenActivity implements InjectMe {
 
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
     private final Button[] levelButtons = new Button[6];

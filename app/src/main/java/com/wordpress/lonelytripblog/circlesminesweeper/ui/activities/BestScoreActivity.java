@@ -1,9 +1,10 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.ui;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui.activities;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.InjectMe;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.adapters.BestScoreAdapter;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.BestScoreViewModel;
@@ -14,9 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import dagger.android.support.DaggerAppCompatActivity;
 
-public class BestScoreActivity extends DaggerAppCompatActivity {
+public class BestScoreActivity extends FullScreenActivity implements InjectMe {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -25,7 +25,6 @@ public class BestScoreActivity extends DaggerAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_best_score);
-        FullWindowUtils.enterFullScreenMode(getWindow());
         BestScoreViewModel viewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(BestScoreViewModel.class);
         TextView title = findViewById(R.id.level_scores_text);
@@ -39,6 +38,12 @@ public class BestScoreActivity extends DaggerAppCompatActivity {
                 scoresList.setAdapter(new BestScoreAdapter(scores));
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FullWindowUtils.enterFullScreenMode(getWindow());
     }
 
 }
