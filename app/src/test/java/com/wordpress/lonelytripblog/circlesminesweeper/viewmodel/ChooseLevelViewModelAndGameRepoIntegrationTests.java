@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepositoryImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database.GameDatabase;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.LevelFactory;
 
 import org.junit.Before;
 import org.junit.Rule;

@@ -1,4 +1,4 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.utils;
+package com.wordpress.lonelytripblog.circlesminesweeper.data.levels;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 

@@ -387,7 +387,7 @@ public class GameViewModel extends ViewModel {
     }
 
     private void endGameWithWinning() {
-        if (gameRepository.thisScoreBeatsRecord(gameScore.getValue())) {
+        if (!(level instanceof TutorialLevel) && gameRepository.thisScoreBeatsRecord(gameScore.getValue())) {
             gameRepository.updateScore(gameScore.getValue());
             toastEvent.setValue(new LiveEvent<>(R.string.new_record_set));
         }

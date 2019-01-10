@@ -3,7 +3,7 @@ package com.wordpress.lonelytripblog.circlesminesweeper.data;
 import android.content.SharedPreferences;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database.GameDatabase;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.LevelFactory;
 
 import org.junit.Assert;
 import org.junit.Before;

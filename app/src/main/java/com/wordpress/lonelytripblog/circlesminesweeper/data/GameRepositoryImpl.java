@@ -6,9 +6,7 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameCellsAdapter;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.GameToSaveObject;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database.GameDatabase;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.TutorialLevelFactory;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.LevelFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +86,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public boolean isCurrentLevelRequiresDialog() {
-        return !(levelFactory instanceof TutorialLevelFactory) && level == getLevelsAmount();
+        return level == getLevelsAmount();
     }
 
     @Override
@@ -110,7 +108,7 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public boolean thisScoreBeatsRecord(int score) {
-        if (isCurrentLevelRequiresDialog() || levelFactory instanceof TutorialLevelFactory) return false;
+        if (isCurrentLevelRequiresDialog()) return false;
         int bestScoreSoFar = sharedPreferences.getInt(KEY_FOR_BEST_SCORE + level, 0);
         return score > bestScoreSoFar;
     }

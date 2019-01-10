@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProviders;
 public class ChooseLevelActivity extends FullScreenActivity implements InjectMe {
 
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
-    private final Button[] levelButtons = new Button[6];
+    private final Button[] levelButtons = new Button[9];
     @Inject
     ViewModelProvider.Factory viewModelFactory;
     private ChooseLevelViewModel viewModel;
@@ -33,6 +33,9 @@ public class ChooseLevelActivity extends FullScreenActivity implements InjectMe 
         levelButtons[3] = findViewById(R.id.fourth);
         levelButtons[4] = findViewById(R.id.fifth);
         levelButtons[5] = findViewById(R.id.sixth);
+        levelButtons[6] = findViewById(R.id.seventh);
+        levelButtons[7] = findViewById(R.id.eighth);
+        levelButtons[8] = findViewById(R.id.ninth);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ChooseLevelViewModel.class);
     }
 
@@ -73,7 +76,7 @@ public class ChooseLevelActivity extends FullScreenActivity implements InjectMe 
         if (gameWasSaved()) {
             continueButton.setVisibility(View.VISIBLE);
         } else {
-            continueButton.setVisibility(View.INVISIBLE);
+            continueButton.setVisibility(View.GONE);
         }
     }
 
@@ -125,6 +128,12 @@ public class ChooseLevelActivity extends FullScreenActivity implements InjectMe 
                 return R.drawable.yellow_ball_with_lock;
             case 5:
                 return R.drawable.green_ball_with_lock;
+            case 6:
+                return R.drawable.green_ball_with_lock;
+            case 7:
+                return R.drawable.red_ball_with_lock;
+            case 8:
+                return R.drawable.purple_ball_with_lock;
             default:
                 throw new UnsupportedOperationException("Not defined level");
 

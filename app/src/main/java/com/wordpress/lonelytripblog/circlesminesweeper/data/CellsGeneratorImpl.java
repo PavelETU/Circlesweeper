@@ -48,16 +48,19 @@ public class CellsGeneratorImpl implements CellsGenerator {
 
     @Override
     public GameCell[][] generateCellsForField3X4(int width, int height) {
+        populateWithEmptyCells = false;
         return saveParametersAndGenerateCells(width, height, 3, 4);
     }
 
     @Override
     public GameCell[][] generateCellsForField4X6(int width, int height) {
+        populateWithEmptyCells = false;
         return saveParametersAndGenerateCells(width, height, 4, 6);
     }
 
     @Override
     public GameCell[][] generateCellsForField6X10(int width, int height) {
+        populateWithEmptyCells = false;
         return saveParametersAndGenerateCells(width, height, 6, 10);
     }
 

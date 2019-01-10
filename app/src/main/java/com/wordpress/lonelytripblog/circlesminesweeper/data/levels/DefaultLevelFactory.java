@@ -1,14 +1,5 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.utils;
+package com.wordpress.lonelytripblog.circlesminesweeper.data.levels;
 
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel3X4;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel4X6;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.CustomLevel6X10;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FifthLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FirstLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.FourthLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.GameLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.SecondLevel;
-import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.ThirdLevel;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDialogFragment;
 
 public class DefaultLevelFactory implements LevelFactory {
@@ -16,16 +7,22 @@ public class DefaultLevelFactory implements LevelFactory {
     public GameLevel makeLevel(int level, int customFieldSize, int customMines) {
         switch (level) {
             case 1:
-                return new FirstLevel();
+                return new FirstTutorialLevel();
             case 2:
-                return new SecondLevel();
+                return new SecondTutorialLevel();
             case 3:
-                return new ThirdLevel();
+                return new ThirdTutorialLevel();
             case 4:
-                return new FourthLevel();
+                return new FirstLevel();
             case 5:
-                return new FifthLevel();
+                return new SecondLevel();
             case 6:
+                return new ThirdLevel();
+            case 7:
+                return new FourthLevel();
+            case 8:
+                return new FifthLevel();
+            case 9:
                 return getLevelForCustom(customFieldSize, customMines);
             default:
                 throw new UnsupportedOperationException("Unknown level");
@@ -34,7 +31,7 @@ public class DefaultLevelFactory implements LevelFactory {
 
     @Override
     public int getAmountOfLevels() {
-        return 6;
+        return 9;
     }
 
     private GameLevel getLevelForCustom(int customFieldSize, int customMines) {

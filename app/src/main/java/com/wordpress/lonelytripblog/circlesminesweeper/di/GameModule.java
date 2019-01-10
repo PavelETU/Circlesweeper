@@ -10,9 +10,8 @@ import com.wordpress.lonelytripblog.circlesminesweeper.data.CellsGeneratorImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepository;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.GameRepositoryImpl;
 import com.wordpress.lonelytripblog.circlesminesweeper.data.savegame.database.GameDatabase;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.DefaultLevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.LevelFactory;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.TutorialLevelFactory;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.DefaultLevelFactory;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.levels.LevelFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -37,7 +36,7 @@ public class GameModule {
     @Provides
     @Singleton
     LevelFactory getLevelFactory() {
-        return new TutorialLevelFactory();
+        return new DefaultLevelFactory();
     }
 
     @Provides
