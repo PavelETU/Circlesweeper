@@ -152,6 +152,12 @@ public class ChooseLevelActivity extends FullScreenActivity implements InjectMe 
                 return R.drawable.yellow_ball;
             case 5:
                 return R.drawable.green_ball;
+            case 6:
+                return R.drawable.green_ball;
+            case 7:
+                return R.drawable.red_ball;
+            case 8:
+                return R.drawable.purple_ball;
             default:
                 throw new UnsupportedOperationException("Not defined level");
 
