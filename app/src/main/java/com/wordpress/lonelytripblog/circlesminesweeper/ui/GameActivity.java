@@ -108,8 +108,7 @@ public class GameActivity extends DaggerAppCompatActivity
         });
         viewModel.getSnackbarMessage().observe(this, stringSrc -> {
             if (stringSrc != null) {
-                Snackbar.make(gameView, stringSrc, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.got_it, v -> viewModel.onSnackbarMessageClicked()).show();
+                showSnackBar(stringSrc);
             }
         });
     }
@@ -140,6 +139,14 @@ public class GameActivity extends DaggerAppCompatActivity
     @Override
     public void onDismiss() {
         onBackPressed();
+    }
+
+    private void showSnackBar(int resId) {
+        Snackbar snackbar = Snackbar.make(gameView, resId, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.got_it, v -> viewModel.onSnackbarMessageClicked());
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setMaxLines(10);
+        snackbar.show();
     }
 
 }

@@ -36,5 +36,11 @@
     <string name="no_score_for_you">Рекорды отсутствуют</string>
     <string name="new_record_set">Новый рекорд!</string>
     <string name="first_tutorial_message">Для взрыва шарика перетащите один шарик к другому</string>
+    <string name="second_tutorial_message">В центре Вы видете ширик с бомбой. Для победы Вам
+        необходимо отметить его. Сначала нажмите на бомбу в правом вернем углу, затем на ширик с бомбой</string>
+    <string name="third_tutorial_message">Вы можете удвоить очки взорвав шарики разных цветов
+        одновременно. Вам необходимо сдвинуть шарик так, чтобы сразу взорвать все четыре шарика.
+        Так Вы получите 80 очков вместо 40</string>
+    <string name="third_tutorial_level_lost_message">Для комбо сдвинуть правый верхних шарик влево</string>
     <string name="got_it">Ok</string>
 </resources>

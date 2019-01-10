@@ -253,7 +253,11 @@ public class GameViewModel extends ViewModel {
 
     private void endGameIfWon() {
         if (gameWon()) {
-            endGameWithWinning();
+            if (lostInTutorial()) {
+                displayToastForLostTutorialAndEndGameWithLoosing();
+            } else {
+                endGameWithWinning();
+            }
         }
     }
 
@@ -566,5 +570,17 @@ public class GameViewModel extends ViewModel {
             mainHandler.removeCallbacksAndMessages(null);
             mainHandler.post(stopAnimationRunnable);
         }
+    }
+
+    private boolean lostInTutorial() {
+        return level instanceof TutorialLevel && ((TutorialLevel) level).getMinScoreToWin() > gameScore.getValue();
+    }
+
+    private void displayToastForLostTutorialAndEndGameWithLoosing() {
+        int messageRes = ((TutorialLevel) level).getMessageResToDisplayIfLost();
+        if (messageRes != TutorialLevel.EMPTY_MESSAGE) {
+            toastEvent.setValue(new LiveEvent<>(messageRes));
+        }
+        endGameWithLoosing();
     }
 }

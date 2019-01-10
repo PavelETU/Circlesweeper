@@ -26,7 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class GameViewModelAndTutorialLevelsIntegrationTests {
+public class GameViewModelAndFirstTutorialLevelIntegrationTests {
     @Rule
     public InstantTaskExecutorRule architectureRule = new InstantTaskExecutorRule();
     private GameViewModel viewModel;

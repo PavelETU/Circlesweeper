@@ -45,5 +45,11 @@
     <string name="no_score_for_you">You have no achievements yet.\nPlay some game and return</string>
     <string name="new_record_set">New record set!</string>
     <string name="first_tutorial_message">To bang circles drag one circle to another</string>
+    <string name="second_tutorial_message">In the center you can see circle with mine, you have to mark it.
+    For this click in right up corner and then on circle</string>
+    <string name="third_tutorial_message">You can double your score if you bang circles with two
+        different colors simultaneously. So move one circle such as to bang all four at once.
+        You will get 80 points instead of 40</string>
+    <string name="third_tutorial_level_lost_message">Make a combo! Move right up circle to the left</string>
     <string name="got_it">Got it</string>
 </resources>
