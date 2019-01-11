@@ -1,42 +1,50 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.ui;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+import com.wordpress.lonelytripblog.circlesminesweeper.di.InjectMe;
 import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
+import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.ChooseLevelViewModel;
 
-public class ChooseLevelActivity extends AppCompatActivity
-        implements CustomLevelDialogFragment.CustomLevelDialogCallback {
+import javax.inject.Inject;
 
-    private static final int SAVED_GAME_LEVEL = -1;
-    private static final int LAST_LEVEL = 6;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+
+public class ChooseLevelActivity extends FullScreenActivity implements InjectMe {
+
     private static final int AMOUNT_OF_ALWAYS_OPENED_LEVELS = 1;
-    private SharedPreferences cachedSharedPref = null;
-    private final Button[] levelButtons = new Button[6];
+    private final Button[] levelButtons = new Button[9];
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    private ChooseLevelViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_level);
-        FullWindowUtils.enterFullScreenMode(getWindow());
         levelButtons[0] = findViewById(R.id.first);
         levelButtons[1] = findViewById(R.id.second);
         levelButtons[2] = findViewById(R.id.third);
         levelButtons[3] = findViewById(R.id.fourth);
         levelButtons[4] = findViewById(R.id.fifth);
         levelButtons[5] = findViewById(R.id.sixth);
+        levelButtons[6] = findViewById(R.id.seventh);
+        levelButtons[7] = findViewById(R.id.eighth);
+        levelButtons[8] = findViewById(R.id.ninth);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ChooseLevelViewModel.class);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        FullWindowUtils.enterFullScreenMode(getWindow());
         syncContinueButtonVisibility();
+        syncLevelButtonsWithLevelsAmount();
         syncLevelButtonsWithPastLevels();
         setListenersForLevelButtons();
     }
@@ -44,31 +52,23 @@ public class ChooseLevelActivity extends AppCompatActivity
     private void setListenersForLevelButtons() {
         for (int i = 0; i < levelButtons.length; i++) {
             final int level = i + 1;
-            if (!isThisLevelOpensDialog(level)) {
-                levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
-            } else {
-                levelButtons[i].setOnClickListener(view -> openDialogForCustomLevel());
-            }
+            levelButtons[i].setOnClickListener(view -> openGameActivityWithLevel(level));
         }
     }
 
-    private void openGameActivityWithLevel(final int level) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", level);
-        startActivity(intent);
-    }
-
-    private boolean isThisLevelOpensDialog(int level) {
-        return level == LAST_LEVEL;
-    }
-
-    public void openDialogForCustomLevel() {
-        DialogFragment choose_dialog = new CustomLevelDialogFragment();
-        choose_dialog.show(getSupportFragmentManager(), "choose");
+    private void openGameActivityWithLevel(int level) {
+        viewModel.setLevel(level);
+        goToGameActivity();
     }
 
     public void continueLastGame(View view) {
-        openGameActivityWithLevel(SAVED_GAME_LEVEL);
+        viewModel.openSavedLevel();
+        goToGameActivity();
+    }
+
+    private void goToGameActivity() {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 
     private void syncContinueButtonVisibility() {
@@ -76,12 +76,25 @@ public class ChooseLevelActivity extends AppCompatActivity
         if (gameWasSaved()) {
             continueButton.setVisibility(View.VISIBLE);
         } else {
-            continueButton.setVisibility(View.INVISIBLE);
+            continueButton.setVisibility(View.GONE);
         }
     }
 
     private boolean gameWasSaved() {
-        return getSharedPreferences().getInt("game_saved", 0) == 1;
+        return viewModel.gameWasSaved();
+    }
+
+    private void syncLevelButtonsWithLevelsAmount() {
+        int levelsAmountZeroBased = viewModel.getLevelsAmount() - 1;
+        for (int i = 0; i < levelButtons.length; i++) {
+            int visibilityToSet;
+            if (i <= levelsAmountZeroBased) {
+                visibilityToSet = View.VISIBLE;
+            } else {
+                visibilityToSet = View.INVISIBLE;
+            }
+            levelButtons[i].setVisibility(visibilityToSet);
+        }
     }
 
     private void syncLevelButtonsWithPastLevels() {
@@ -100,14 +113,7 @@ public class ChooseLevelActivity extends AppCompatActivity
     }
 
     private int getAmountOfOpenedLevels() {
-        return getSharedPreferences().getInt("opened_levels", 1);
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        if (cachedSharedPref == null) {
-            cachedSharedPref = getSharedPreferences("levels", MODE_PRIVATE);
-        }
-        return cachedSharedPref;
+        return viewModel.getLastLevelNumber();
     }
 
     private int getBackgroundWithLockDependingOnPosition(final int i) {
@@ -122,13 +128,19 @@ public class ChooseLevelActivity extends AppCompatActivity
                 return R.drawable.yellow_ball_with_lock;
             case 5:
                 return R.drawable.green_ball_with_lock;
+            case 6:
+                return R.drawable.green_ball_with_lock;
+            case 7:
+                return R.drawable.red_ball_with_lock;
+            case 8:
+                return R.drawable.purple_ball_with_lock;
             default:
                 throw new UnsupportedOperationException("Not defined level");
 
         }
     }
 
-    private int getBackgroundDependingOnPosition(final int i) {
+    private int getBackgroundDependingOnPosition(int i) {
         switch (i) {
             case 1:
                 return R.drawable.purple_ball;
@@ -140,23 +152,16 @@ public class ChooseLevelActivity extends AppCompatActivity
                 return R.drawable.yellow_ball;
             case 5:
                 return R.drawable.green_ball;
+            case 6:
+                return R.drawable.green_ball;
+            case 7:
+                return R.drawable.red_ball;
+            case 8:
+                return R.drawable.purple_ball;
             default:
                 throw new UnsupportedOperationException("Not defined level");
 
         }
-    }
-
-    @Override
-    public void onLevelParamsChosen(final int fieldSize, final int amountOfMines) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("level", LAST_LEVEL);
-        intent.putExtra("field_size", fieldSize);
-        intent.putExtra("number_of_mines", amountOfMines);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onDismiss() {
     }
 
 }

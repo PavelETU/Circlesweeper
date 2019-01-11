@@ -1,19 +1,16 @@
-package com.wordpress.lonelytripblog.circlesminesweeper.ui;
+package com.wordpress.lonelytripblog.circlesminesweeper.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
-import com.wordpress.lonelytripblog.circlesminesweeper.utils.FullWindowUtils;
 
-public class MainMenuActivity extends AppCompatActivity {
+public class MainMenuActivity extends FullScreenActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        FullWindowUtils.enterFullScreenMode(getWindow());
         setClickListeners();
     }
 

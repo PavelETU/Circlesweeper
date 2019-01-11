@@ -6,4 +6,6 @@
     <dimen name="margin_for_button_im_main_menu">20dp</dimen>
     <dimen name="margin_start_end_button">30dp</dimen>
     <dimen name="padding_for_continue_btn">15dp</dimen>
+    <dimen name="margin_bottom_in_best_score">20dp</dimen>
+    <dimen name="padding_for_scores_in_recycler">10dp</dimen>
 </resources>
