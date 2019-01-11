@@ -33,7 +33,7 @@ public class GameCellsDrawingHelper {
 
     public void drawCellsOnCanvas(Canvas canvasToDraw, @Nullable GameCell[][] gameCells, @Nullable String score) {
         if (gameCells == null || gameCells.length == 0) return;
-        adjustPaintTextSizeToGameCells(gameCells);
+        adjustPaintToLength(gameCells[0][0].getSideLength());
         setCoordsForScoreToDefault();
         List<GameCell> cellsToDrawLater = new ArrayList<>();
         for (int row = 0; row < gameCells.length; row++) {
@@ -80,8 +80,9 @@ public class GameCellsDrawingHelper {
         }
     }
 
-    private void adjustPaintTextSizeToGameCells(GameCell[][] gameCells) {
-        paintToUse.setTextSize(gameCells[0][0].getSideLength() / 2);
+    private void adjustPaintToLength(int length) {
+        paintToUse.setTextSize(length / 2);
+        paintToUse.setStrokeWidth(length / 15);
     }
 
     private void drawBangBitmapAndUpdateCoordsForScore(Canvas canvasToDraw, int length, int x, int y) {

@@ -17,23 +17,23 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class GameCellsToBitmapTest {
+public class GameCellsDrawingTests {
 
-    private GameCellsDrawingHelper gameCellsToBitmap;
+    private GameCellsDrawingHelper gameCellsDrawer;
     private Canvas canvas = mock(Canvas.class);
     private GameCell[][] gameCells = new GameCell[2][2];
 
     @Before
     public void setUp() {
         BitmapProvider bitmapProvider = mock(BitmapProvider.class);
-        gameCellsToBitmap = new GameCellsDrawingHelper(bitmapProvider, mock(Paint.class), mock(Rect.class));
+        gameCellsDrawer = new GameCellsDrawingHelper(bitmapProvider, mock(Paint.class), mock(Rect.class));
     }
 
     @Test
     public void whenCircleNotAliveTextWithMinesDrawn() {
         teachCellsToReturnNumbers();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
+        gameCellsDrawer.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawText(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -43,7 +43,7 @@ public class GameCellsToBitmapTest {
     public void circlesDrawnAsBitmapWhenTheyArePresent() {
         teachCellsToReturnDrawables();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
+        gameCellsDrawer.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -53,7 +53,7 @@ public class GameCellsToBitmapTest {
     public void bombDrawnWhenCircleIsNotAliveAndCellAnimated() {
         teachCellsToBeAnimated();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
+        gameCellsDrawer.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verifyNoMoreInteractions(canvas);
@@ -63,7 +63,7 @@ public class GameCellsToBitmapTest {
     public void circlesAndLinesAboveDrawnWhenCirclesPresentAndMarked() {
         teachCellsToReturnDrawablesAndMarked();
 
-        gameCellsToBitmap.drawCellsOnCanvas(canvas, gameCells, null);
+        gameCellsDrawer.drawCellsOnCanvas(canvas, gameCells, null);
 
         verify(canvas, times(4)).drawBitmap(any(), anyFloat(), anyFloat(), any());
         verify(canvas, times(8)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), any());

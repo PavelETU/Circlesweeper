@@ -18,6 +18,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -64,5 +65,24 @@ public class GameViewModelAndSecondTutorialLevelIntegrationTests {
         viewModel.actionDown(250, 250);
 
         assertEquals(GameViewModel.GAME_LOST, (int) viewModel.getGameCondition().getValue());
+    }
+
+    @Test
+    public void messageDismissedAfterWinning() {
+        viewModel.getGameCells(500, 500).observeForever(gameCellsObserver);
+
+        viewModel.markClicked();
+        viewModel.actionDown(250, 250);
+
+        assertNull(viewModel.getSnackbarMessage().getValue());
+    }
+
+    @Test
+    public void messageDismissedAfterLoosing() {
+        viewModel.getGameCells(500, 500).observeForever(gameCellsObserver);
+
+        viewModel.actionDown(250, 250);
+
+        assertNull(viewModel.getSnackbarMessage().getValue());
     }
 }

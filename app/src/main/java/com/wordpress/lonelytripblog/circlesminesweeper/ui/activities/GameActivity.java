@@ -31,6 +31,7 @@ public class GameActivity extends FullScreenActivity
     private GameViewModel viewModel;
     @Inject
     ViewModelProvider.Factory factory;
+    private Snackbar snackbar;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +111,8 @@ public class GameActivity extends FullScreenActivity
         viewModel.getSnackbarMessage().observe(this, stringSrc -> {
             if (stringSrc != null) {
                 showSnackBar(stringSrc);
+            } else {
+                hideSnackBar();
             }
         });
     }
@@ -149,11 +152,18 @@ public class GameActivity extends FullScreenActivity
     }
 
     private void showSnackBar(int resId) {
-        Snackbar snackbar = Snackbar.make(gameView, resId, Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(gameView, resId, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.got_it, v -> viewModel.onSnackbarMessageClicked());
         TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
         textView.setMaxLines(10);
         snackbar.show();
+    }
+
+    private void hideSnackBar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
+        snackbar = null;
     }
 
 }

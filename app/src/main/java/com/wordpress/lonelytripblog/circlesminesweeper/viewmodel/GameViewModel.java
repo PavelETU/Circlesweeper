@@ -400,6 +400,9 @@ public class GameViewModel extends ViewModel {
     }
 
     private void endGameWithStatus(int status) {
+        if (level instanceof TutorialLevel) {
+            snackbarMessage.setValue(null);
+        }
         takenGameCell = null;
         eliminateAllCircles();
         updateCellsLiveData();
