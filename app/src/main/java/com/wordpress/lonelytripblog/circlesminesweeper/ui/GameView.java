@@ -20,6 +20,7 @@ public class GameView extends View {
     private GameCell[][] gameCells;
     private BitmapProvider bitmapProvider;
     private String score;
+    private OnGameViewSizeChanged callbackForSizeChange;
 
     public GameView(Context context) {
         this(context, null);
@@ -40,6 +41,11 @@ public class GameView extends View {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        callbackForSizeChange.onSizeChanged(w, h);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         gameCellsDrawingHelper.drawCellsOnCanvas(canvas, gameCells, score);
     }
@@ -54,5 +60,13 @@ public class GameView extends View {
 
     public void setScoreToDisplay(@Nullable String score) {
         this.score = score;
+    }
+
+    public void setCallbackForSizeChange(OnGameViewSizeChanged callbackForSizeChange) {
+        this.callbackForSizeChange = callbackForSizeChange;
+    }
+
+    public interface OnGameViewSizeChanged {
+        void onSizeChanged(int newWidth, int newHeight);
     }
 }
