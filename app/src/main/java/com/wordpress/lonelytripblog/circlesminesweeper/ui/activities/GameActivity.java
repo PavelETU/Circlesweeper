@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.wordpress.lonelytripblog.circlesminesweeper.R;
+import com.wordpress.lonelytripblog.circlesminesweeper.data.GameCell;
 import com.wordpress.lonelytripblog.circlesminesweeper.di.InjectMe;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.CustomLevelDialogFragment;
 import com.wordpress.lonelytripblog.circlesminesweeper.ui.GameView;
@@ -19,6 +20,8 @@ import com.wordpress.lonelytripblog.circlesminesweeper.viewmodel.GameViewModel;
 import javax.inject.Inject;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -29,6 +32,8 @@ public class GameActivity extends FullScreenActivity
 
     private GameView gameView;
     private GameViewModel viewModel;
+    private Observer<GameCell[][]> observer;
+    private LiveData<GameCell[][]> gameCellsLiveData;
     @Inject
     ViewModelProvider.Factory factory;
     private Snackbar snackbar;
@@ -38,12 +43,8 @@ public class GameActivity extends FullScreenActivity
         setContentView(R.layout.activity_game);
         viewModel = ViewModelProviders.of(this, factory).get(GameViewModel.class);
         gameView = findViewById(R.id.game_image);
-        gameView.post(() -> {
-            int width = gameView.getWidth();
-            int height = gameView.getHeight();
-            viewModel.getGameCells(width, height).observe(GameActivity.this,
-                    gameView::setGameCells);
-        });
+        observer = gameView::setGameCells;
+        gameView.setCallbackForSizeChange(this::reobserveGameCellsForSize);
         gameView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -164,6 +165,14 @@ public class GameActivity extends FullScreenActivity
             snackbar.dismiss();
         }
         snackbar = null;
+    }
+
+    private void reobserveGameCellsForSize(int newWidth, int newHeight) {
+        if (gameCellsLiveData != null && gameCellsLiveData.hasActiveObservers()) {
+            gameCellsLiveData.removeObserver(observer);
+        }
+        gameCellsLiveData = viewModel.getGameCells(newWidth, newHeight);
+        gameCellsLiveData.observe(GameActivity.this, observer);
     }
 
 }
