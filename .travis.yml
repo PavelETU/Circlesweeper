@@ -13,9 +13,7 @@ before_install:
 stages:
 - name: build
 - name: coverage-report
-- name: sign-apk
-  if: branch = master
-- name: deploy
+- name: sign-and-deploy
   if: branch = master
 
 jobs:
@@ -27,13 +25,10 @@ jobs:
     script:
     - ./gradlew jacocoTestReport
     - bash <(curl -s https://codecov.io/bash)
-  - stage: sign-apk
+  - stage: sign-and-deploy
     before_script:
     - openssl aes-256-cbc -K $encrypted_c3eed0a2d6e5_key -iv $encrypted_c3eed0a2d6e5_iv
       -in somestuff.tar.enc -out somestuff.tar -d
     - tar -xvf somestuff.tar
     script:
-    - ./gradlew assembleRelease
-  - stage: deploy
-    script:
-    - ./gradlew publishReleaseApk
+    - ./gradlew assembleRelease publishReleaseApk
