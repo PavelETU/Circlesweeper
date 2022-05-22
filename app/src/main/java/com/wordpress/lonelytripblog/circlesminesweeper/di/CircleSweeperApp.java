@@ -9,14 +9,14 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
+import dagger.android.HasAndroidInjector;
 
-public class CircleSweeperApp extends Application implements HasActivityInjector {
+public class CircleSweeperApp extends Application implements HasAndroidInjector {
 
     private GameComponent gameComponent;
 
     @Inject
-    DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
+    DispatchingAndroidInjector<Object> dispatchingActivityInjector;
 
     @Override
     public void onCreate() {
@@ -67,8 +67,7 @@ public class CircleSweeperApp extends Application implements HasActivityInjector
     }
 
     @Override
-    public AndroidInjector<Activity> activityInjector() {
+    public AndroidInjector<Object> androidInjector() {
         return dispatchingActivityInjector;
     }
-
 }
