@@ -16,9 +16,9 @@
         android:text="@string/zero_number"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/text_about_mines"
-        app:layout_constraintStart_toStartOf="@+id/text_about_mines"
-        app:layout_constraintTop_toBottomOf="@+id/text_about_mines"
+        app:layout_constraintEnd_toEndOf="@id/text_about_mines"
+        app:layout_constraintStart_toStartOf="@id/text_about_mines"
+        app:layout_constraintTop_toBottomOf="@id/text_about_mines"
         app:layout_constraintVertical_bias="0.0" />
 
     <com.wordpress.lonelytripblog.circlesminesweeper.ui.GameView
@@ -33,7 +33,7 @@
         android:layout_marginBottom="8dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/checking_btn"
+        app:layout_constraintEnd_toStartOf="@id/checking_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/text_about_mines"
+        app:layout_constraintStart_toEndOf="@id/text_about_mines"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -66,9 +66,9 @@
         android:text="@string/zero_number"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/text_about_score"
-        app:layout_constraintStart_toStartOf="@+id/text_about_score"
-        app:layout_constraintTop_toBottomOf="@+id/text_about_score"
+        app:layout_constraintEnd_toEndOf="@id/text_about_score"
+        app:layout_constraintStart_toStartOf="@id/text_about_score"
+        app:layout_constraintTop_toBottomOf="@id/text_about_score"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
@@ -84,7 +84,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/game_image"
+        app:layout_constraintStart_toEndOf="@id/game_image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.43" />
 
@@ -102,8 +102,8 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/game_image"
-        app:layout_constraintTop_toBottomOf="@+id/mine_out"
+        app:layout_constraintStart_toEndOf="@id/game_image"
+        app:layout_constraintTop_toBottomOf="@id/mine_out"
         app:layout_constraintVertical_bias="0.72" />
 
     <ImageButton
@@ -127,8 +127,8 @@
 
     <ImageView
         android:id="@+id/smile_out"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
@@ -138,9 +138,9 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="H,1:1"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/game_image"
-        app:layout_constraintTop_toTopOf="@+id/next_repeat_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/next_repeat_btn"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
